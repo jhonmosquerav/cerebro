@@ -1,6 +1,7 @@
 # Estado volátil de la UI de Obsidian (no es conocimiento; no versionar)
 .obsidian/workspace*
 .obsidian/cache
+.obsidian/plugins/
 .trash/
 
 # Basura del SO
