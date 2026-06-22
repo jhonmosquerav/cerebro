@@ -34,8 +34,10 @@ Las reglas completas viven en `genome/genes/`. Resumen:
 
 **Fundamentales**
 - [[gen-raw-inmutable]] — `raw/` solo se lee, jamás se modifica.
-- [[gen-frontmatter-obligatorio]] — toda página de `wiki/` nace con frontmatter válido.
+- [[gen-frontmatter-obligatorio]] — toda página de `wiki/` nace con frontmatter válido; `relations` extensible vía `relation_types` del manifiesto.
 - [[gen-compuerta-mutacion]] — ninguna mutación de genoma se aplica sin aprobación + registro.
+- [[gen-vigencia-temporal]] — vigencia dura (`valido_hasta`); lo vencido se advierte siempre.
+- [[gen-confidencialidad]] — eje `sensibilidad`; lo confidencial no se ancla, no se fusiona ni se cita textual.
 
 **Operativos**
 - [[gen-onboard]] · [[gen-ingest]] · [[gen-bulk-ingest]] · [[gen-query]] · [[gen-lint]] · [[gen-consolidate]] · [[gen-evolve]]

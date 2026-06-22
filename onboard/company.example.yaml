@@ -28,6 +28,10 @@ roles:
   contributors: ["ventas", "ops"]
   mutation_approver: "fundador"      # quién aprueba mutaciones del genoma
 
+# Verbos de relación propios del dominio (amplían el núcleo {usa,depende_de,contradice,reemplaza})
+# LINT valida toda relación contra la unión núcleo + estos tipos declarados.
+relation_types: [recibio_propuesta, proviene_de, define_precio]
+
 # Genes específicos del sector que ONBOARD siembra (pasan por la compuerta)
 seed_genes:
   - id: gen-propuestas
