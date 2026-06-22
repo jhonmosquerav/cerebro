@@ -130,9 +130,9 @@ CEREBRO no existiría sin las ideas y herramientas de otros:
 - **[Andrej Karpathy](https://github.com/karpathy/llm-wiki)** — por la idea original de la
   *LLM Wiki*: una wiki de markdown que el modelo lee y mantiene, sin RAG ni vectores. Es la
   semilla de todo esto.
-- **La comunidad de Claude Code + Obsidian** — por las guías y el
-  [video tutorial](https://youtu.be/p5YgvC6yzCs) que popularizaron el setup y lo hicieron
-  accesible en minutos.
+- **[Benjamín Cordero](https://www.youtube.com/watch?v=p5YgvC6yzCs)** y la comunidad de Skool
+  **Imperio** — por el video *"Claude Code + Obsidian = Memoria Infinita"*, que mostró el setup
+  y encendió la chispa de este proyecto.
 - **[Obsidian](https://obsidian.md)** y su plugin **Dataview** — la ventana visual que
   convierte el grafo y el frontmatter en algo navegable y consultable.
 - **[Anthropic](https://www.anthropic.com) / Claude Code (Claude Opus 4.8)** — co-arquitecto
@@ -146,8 +146,7 @@ cómo convertir notas sueltas en conocimiento conectado.
 
 ## 📄 Licencia
 
-Pendiente de definir. Recomendación: **MIT** (coherente con la filosofía "clónalo y úsalo").
-Mientras no haya un archivo `LICENSE`, aplican los derechos reservados por defecto.
+**MIT** — clónalo, úsalo y adáptalo libremente. Ver [`LICENSE`](LICENSE).
 
 ---
 
