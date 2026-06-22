@@ -32,6 +32,15 @@ roles:
 # LINT valida toda relación contra la unión núcleo + estos tipos declarados.
 relation_types: [recibio_propuesta, proviene_de, define_precio]
 
+# Confianza inicial por tipo de fuente (gen-confianza-por-fuente)
+source_trust:
+  oficial: 0.9     # contratos, fichas técnicas, datos de sistema
+  interna: 0.7     # notas internas, transcripciones
+  blanda: 0.4      # reseñas, redes, rumores (solo corroboran)
+
+# Umbral de eventos con clave común para crear una síntesis (gen-sintesis-de-volumen)
+sintesis_umbral: 3
+
 # Genes específicos del sector que ONBOARD siembra (pasan por la compuerta)
 seed_genes:
   - id: gen-propuestas
