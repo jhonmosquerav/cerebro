@@ -1,0 +1,94 @@
+# BLUEPRINT — sector PRODUCCIÓN / MANUFACTURA (autopartes, metalmecánica, ensamble, planta discreta).
+# Uso: copia este archivo a onboard/company.yaml, rellena la identidad (placeholders <...>), y aplica ONBOARD.
+# =====================================================================
+# Destilado del escenario simulado (sim/produccion). El genoma BASE (18 genes) ya cubre lo universal:
+# relaciones extensibles (relation_types), vigencia, confidencialidad, clase estable|evento,
+# entidad con estado, confianza por fuente y síntesis de volumen. Aquí solo va lo SECTOR-específico.
+# =====================================================================
+
+company:
+  name: "<tu empresa>"
+  sector: "manufactura — producción discreta (estampado, mecanizado, ensamble)"
+  language: es
+  domains: ["<tudominio>.com"]
+
+# Tipos de documento típicos de una planta (guían la clasificación de INGEST)
+document_types:
+  - orden-de-produccion        # OP: qué producir, en qué línea, qué lote
+  - ficha-tecnica-producto     # specs estables del producto/SKU
+  - registro-calidad           # inspecciones, no-conformidades (NCR)
+  - hoja-mantenimiento         # mantenimiento preventivo/correctivo de máquina
+  - ficha-proveedor            # proveedor de insumo (acero, pintura, empaque)
+  - certificado-material       # colada, calibración, certificación de lote/insumo
+
+# Entidades clave: cada clave es una categoría -> carpeta en wiki/semantic/
+entities:
+  lineas:      []              # ej. L1-estampado, L2-mecanizado
+  maquinas:    []              # ej. PR-200-prensa, CNC-07-torno (entidades con estado)
+  productos:   []              # SKUs estables, ej. soporte-motor-SM45
+  lotes:       []              # se crean al ingerir órdenes/registros (trazables)
+  proveedores: []              # ej. acero, pintura, empaque
+
+# Glosario / siglas del sector (el agente las respeta al ingerir y consultar)
+glossary:
+  OP:   "orden de producción"
+  NCR:  "non-conformance report — reporte de no-conformidad"
+  SKU:  "stock keeping unit — referencia única de producto"
+  OEE:  "overall equipment effectiveness — eficiencia global del equipo"
+  MP:   "mantenimiento preventivo"
+  lote: "cantidad de producto fabricada bajo una misma OP, trazable de punta a punta"
+  Cpk:  "índice de capacidad del proceso"
+
+roles:
+  contributors: ["produccion", "calidad", "mantenimiento", "compras"]
+  mutation_approver: "<gerente-de-planta>"
+
+# Verbos de relación propios del dominio (amplían el núcleo {usa,depende_de,contradice,reemplaza}).
+# LINT valida toda relación contra la unión núcleo + estos tipos. Cubren la trazabilidad direccional.
+relation_types:
+  - producido_en     # lote -> máquina/línea donde se fabricó
+  - bajo_orden       # lote -> OP que lo originó
+  - de_producto      # lote -> SKU
+  - insumo_de        # material/proveedor -> lote/producto
+  - afecta_a         # NCR -> lote afectado
+  - viola            # NCR/registro -> SOP que se incumplió
+  - mitiga_con       # NCR -> SOP/acción que la corrige
+  - mantiene_a       # hoja de mantenimiento -> máquina
+  - ubicada_en       # máquina -> línea
+
+# Confianza inicial por tipo de fuente del sector (gen-confianza-por-fuente)
+source_trust:
+  oficial: 0.9     # ficha técnica, OP de sistema, certificado de material, dato de ERP/MES
+  interna: 0.7     # registros de inspección, hojas de mantenimiento, notas de turno
+  blanda: 0.4      # observación verbal, reporte sin firmar (solo corrobora)
+
+# Umbral de eventos con clave común para crear una síntesis (gen-sintesis-de-volumen).
+# Ej.: misma máquina+falla, o mismo SKU+defecto, acumulados -> patrón sistémico visible.
+sintesis_umbral: 3
+
+# Genes SECTOR-específicos que ONBOARD siembra (pasan por la compuerta).
+# Solo lo que el genoma BASE no impone como POLÍTICA. Los mecanismos (clase estable|evento,
+# entidad con estado de máquina, relaciones extensibles) ya los da el base y NO se repiten aquí.
+seed_genes:
+  - id: gen-trazabilidad-lote
+    trigger: "la fuente menciona un lote, OP o número de serie de producción"
+    rule: >
+      Todo lote es una entidad propia en wiki/semantic/lotes/ y su cadena de trazabilidad es
+      OBLIGATORIA: debe enlazar, con relaciones tipadas, al menos producido_en (máquina/línea)
+      y bajo_orden (OP); cuando aplique, de_producto (SKU) e insumo_de (material/proveedor).
+      Ninguna página de lote se acepta sin producido_en + bajo_orden — LINT la marca incompleta.
+    target_tier: semantic
+
+  - id: gen-integridad-ncr
+    trigger: "la fuente es un registro de calidad con un defecto, rechazo o desviación (NCR)"
+    rule: >
+      Toda NCR va a wiki/semantic/calidad/ como clase: evento (decay_rate high, fecha_evento), con
+      severidad (menor|mayor|critica) y disposición (reproceso|rechazo|concesion). DEBE enlazar
+      afecta_a (el lote afectado) y, si la causa es de proceso, viola o mitiga_con (el SOP aplicable).
+      Una NCR sin lote afectado enlazado es inválida; el lote enlazado hereda el flag de calidad.
+    target_tier: semantic
+
+# Taxonomía inicial de carpetas a crear por tier
+taxonomy:
+  semantic:   [productos, lineas, maquinas, lotes, calidad, proveedores]
+  procedural: [sops-calidad, sops-mantenimiento]

@@ -1,0 +1,78 @@
+# Blueprint: AGENCIA DE AUTOMATIZACIÓN / MARKETING (sector fijo, reusable).
+# Uso: copia a onboard/company.yaml, reemplaza los placeholders <...> de `company` y aplica ONBOARD.
+
+company:
+  name: "<tu empresa>"
+  sector: "agencia de automatización y marketing"
+  language: es
+  domains: ["<tudominio>.com"]
+
+# Tipos de documento del sector (guían la clasificación de INGEST)
+document_types:
+  - propuesta              # propuesta comercial con precio y alcance
+  - transcripcion-call     # transcripción de call con prospecto
+  - transcripcion-onboarding
+  - caso-exito             # case study de cliente entregado
+  - lista-objeciones       # objeciones de venta + respuestas
+  - precios-cerrados       # tarifas vigentes (caducan rápido)
+  - contrato
+
+# Entidades clave: cada clave es una categoría -> carpeta en wiki/semantic/
+entities:
+  clientes: []
+  leads: []
+  herramientas: ["n8n", "Make", "Twilio", "WhatsApp Cloud API", "OpenAI"]
+  productos: ["bot-captacion-leads", "automatizacion-follow-up", "dashboard-reporting"]
+
+# Glosario / siglas del sector (el agente las respeta al ingerir y consultar)
+glossary:
+  MRR: "ingreso recurrente mensual (mensualidad de mantenimiento)"
+  setup: "pago único de implementación inicial"
+  lead: "prospecto que pidió información y aún no firma"
+  cliente: "lead que firmó propuesta y está en mantenimiento"
+  SQL: "sales qualified lead, prospecto calificado para venta"
+  no-show: "prospecto que agendó call y no asistió"
+  follow-up: "seguimiento pendiente a un lead con fecha objetivo"
+  SLA: "tiempo de respuesta comprometido del bot"
+
+roles:
+  contributors: ["ventas", "ops", "closer"]
+  mutation_approver: "fundador"
+
+# Verbos de relación propios del sector (amplían el núcleo {usa, depende_de, contradice, reemplaza}).
+# LINT valida toda relación contra la unión núcleo + estos tipos. Declararlos cierra el loop
+# que la regresión marcó pendiente (verbos usados pero no declarados → LINT los rechazaba).
+relation_types:
+  - recibio_propuesta      # lead -> propuesta
+  - define_precio          # propuesta -> precio
+  - proviene_de            # cliente -> lead (conversión, conserva historial)
+  - prueba_para            # caso-exito -> producto/cliente
+  - tiene_followup         # lead -> accionable con fecha_objetivo
+
+# Confianza inicial por tipo de fuente (gen-confianza-por-fuente)
+source_trust:
+  oficial: 0.9     # contratos firmados, fichas técnicas, datos de sistema/CRM
+  interna: 0.7     # transcripciones de call, notas de ventas/ops
+  blanda: 0.4      # reseñas, redes, rumores (solo corroboran)
+
+# Umbral de eventos con clave común para crear una síntesis (gen-sintesis-de-volumen)
+sintesis_umbral: 3
+
+# Genes específicos del sector que ONBOARD siembra (pasan por la compuerta).
+# SOLO lo que el genoma base NO cubre. Precio perecedero (valido_hasta), conversión
+# lead->cliente con estado, clase evento y confianza por fuente YA son del base: no se repiten.
+seed_genes:
+  - id: gen-accionables
+    trigger: "la fuente genera un pendiente con fecha límite (follow-up, renovación, tarea de cuenta)"
+    rule: "El accionable nace con type: accionable, clase: evento, fecha_objetivo: YYYY-MM-DD y estado: {abierto|hecho|vencido}; NO se refuerza por reingesta y NO se borra al vencer (queda como histórico de cuenta). LINT lo revisa: si fecha_objetivo < hoy y estado: abierto, lo reporta como vencido sin cerrar y propone escalar o cerrar. Distinto de valido_hasta (gen-vigencia-temporal), que gobierna caducidad de contenido, no deadlines de tareas."
+    target_tier: working
+
+  - id: gen-objecion-transversal
+    trigger: "la fuente menciona una objeción de venta y su respuesta"
+    rule: "Cada objeción va a wiki/semantic/objeciones/ como página reutilizable (conocimiento transversal, NO atada a un solo lead), enlazada con usa desde las calls donde aparezca. Su confidence sube cada vez que otra fuente la confirma (refuerzo legítimo, a diferencia de los eventos)."
+    target_tier: semantic
+
+# Taxonomía inicial de carpetas a crear por tier
+taxonomy:
+  semantic: [clientes, leads, propuestas, casos-exito, objeciones, precios, herramientas]
+  procedural: [sops-ventas, onboarding-cliente]

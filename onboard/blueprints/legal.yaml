@@ -1,0 +1,73 @@
+# Sector: bufete legal (litigio civil/mercantil, asesoría). Blueprint reusable destilado del sandbox Vega & Alcántara.
+# Cómo usarlo: cópialo a onboard/company.yaml, reemplaza los placeholders "<...>" con tus datos y corre ONBOARD. Los seed_genes ya pasan por la compuerta de mutación.
+
+company:
+  name: "<tu bufete>"
+  sector: "bufete legal — litigio civil y mercantil"
+  language: es
+  domains: ["<tudominio>.legal"]
+
+# Tipos de documento que maneja el negocio (guían la clasificación de INGEST)
+document_types: [contrato, escrito-de-caso, jurisprudencia, normativa, dictamen, minuta-cliente]
+
+# Entidades clave: cada clave es una categoría -> carpeta en wiki/semantic/
+entities:
+  clientes: []
+  casos: []
+  contrapartes: []
+  juzgados: []
+  abogados: []
+
+# Glosario / siglas internas (el agente las respeta al ingerir y consultar)
+glossary:
+  EXP: "número de expediente interno del caso"
+  SP: "secreto profesional / información amparada por confidencialidad abogado-cliente"
+  contraparte: "parte adversa en un litigio o negociación"
+  dictamen: "opinión jurídica formal emitida por el bufete"
+  cláusula-tipo: "cláusula contractual reutilizable de la biblioteca interna"
+  jurisprudencia: "doctrina sentada por sentencias que sirve de precedente"
+
+roles:
+  contributors: ["socios", "asociados", "paralegales"]
+  mutation_approver: "socio-director"
+
+# Verbos de relación propios del dominio (amplían el núcleo {usa,depende_de,contradice,reemplaza})
+# LINT valida toda relación contra la unión núcleo + estos tipos declarados.
+# Resuelve la fricción 2: una sentencia se_apoya_en/cita otra; un dictamen se fundamenta_en una norma;
+# un contrato instancia una cláusula-tipo. Sin estos verbos la semántica jurídica se aplastaba en `usa`.
+relation_types: [cita, se_apoya_en, fundamenta, instancia, deroga]
+
+# Confianza inicial por tipo de fuente (gen-confianza-por-fuente)
+source_trust:
+  oficial: 0.9     # norma publicada, sentencia/auto oficial, contrato firmado, datos de juzgado
+  interna: 0.7     # dictámenes propios, minutas, escritos de caso, notas del bufete
+  doctrina: 0.6    # doctrina académica, comentarios de autor, manuales (orientan, no vinculan)
+  blanda: 0.4      # prensa jurídica, foros, rumores de pasillo (solo corroboran)
+
+# Umbral de eventos con clave común para crear una síntesis (gen-sintesis-de-volumen)
+sintesis_umbral: 3
+
+# Genes específicos del sector que ONBOARD siembra (pasan por la compuerta).
+# NOTA: confidencialidad/secreto profesional, vigencia por fecha, clase estable|evento,
+# entidad-con-estado y confianza-por-fuente YA están en el genoma base; no se repiten aquí.
+# Solo se siembra lo sector-específico que el base no cubre.
+seed_genes:
+  - id: gen-vigencia-normativa
+    trigger: "se ingiere o actualiza una norma o jurisprudencia, o un evento (reforma, sentencia posterior) afecta a una existente"
+    rule: "Añade campo 'vigencia: {vigente|en-revision|derogada}' (default 'vigente'). La invalidación es por EVENTO, no por fecha: cuando una página marca 'reemplaza'/'deroga'/'contradice' hacia una norma o precedente por cambio normativo o jurisprudencial, baja la afectada a 'vigencia: en-revision' y, si el cambio está confirmado en vigor, a 'derogada'. QUERY advierte SIEMPRE la vigencia no-vigente con independencia de antigüedad o decay_rate. Nunca borres la versión derogada (queda como rastro histórico)."
+    target_tier: semantic
+
+  - id: gen-conflicto-interes
+    trigger: "se ingiere un cliente, caso o contraparte nuevo"
+    rule: "Cruza el nuevo cliente/contraparte contra entities.clientes y entities.contrapartes existentes. Si una contraparte coincide con un cliente actual (o viceversa, o comparten matriz/grupo), marca relation 'contradice' + tag 'conflicto-interes' y ELEVA alerta en QUERY antes de aceptar el encargo. Si no hay coincidencia, deja constancia del chequeo pasado (no genera alerta)."
+    target_tier: semantic
+
+  - id: gen-version-clausula
+    trigger: "la fuente es una versión nueva de un contrato o cláusula-tipo ya existente"
+    rule: "Crea página nueva de la versión y marca relation 'reemplaza' hacia la anterior, que pasa a confidence<=0.4 y tag 'historico'; nunca borres la vieja (rastro de negociación). Las cláusulas-tipo reutilizables se enlazan vía 'instancia' desde los contratos que las usan, para rastrear qué contratos hay que revisar cuando cambia la cláusula base."
+    target_tier: semantic
+
+# Taxonomía inicial de carpetas a crear por tier
+taxonomy:
+  semantic: [clientes, casos, contrapartes, contratos, jurisprudencia, normativa, dictamenes]
+  procedural: [sops-litigio, plantillas-clausulas]

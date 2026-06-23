@@ -1,0 +1,95 @@
+# Blueprint SECTOR: salud — clínica ambulatoria / atención primaria + urgencias menores.
+# Cómo usarlo: copia este archivo a onboard/company.yaml, reemplaza los placeholders "<tu ...>"
+# por tus datos reales y corre ONBOARD. El genoma base (18 genes) ya cubre lo universal;
+# aquí solo van los campos del manifiesto y el gen sector-específico que el base no cubre.
+# =====================================================================
+
+company:
+  name: "<tu empresa>"
+  sector: "salud — clínica ambulatoria multiespecialidad (atención primaria + urgencias menores)"
+  language: es
+  domains: ["<tu-dominio>.clinic"]
+
+# Tipos de documento del sector (guían la clasificación de INGEST)
+document_types:
+  - protocolo-clinico          # protocolo / guía de práctica (GPC) con vigencia y revisión
+  - sop-asistencial            # procedimiento operativo (triaje, esterilización, etc.)
+  - historia-clinica           # episodio de paciente ANONIMIZADO (datos sensibles)
+  - registro-incidente         # evento adverso / cuasi-incidente de seguridad
+  - ficha-farmaco              # monografía de fármaco (vademécum interno)
+  - ficha-patologia            # descripción de patología / diagnóstico
+
+# Entidades clave: cada clave es una categoría -> carpeta en wiki/semantic/
+entities:
+  pacientes:     []            # SENSIBLE — solo seudónimos/ID interno, nunca nombre real (gen-confidencialidad)
+  profesionales: []            # ej. "dr-apellido-esp", "enf-apellido"
+  protocolos:    []            # ej. "sepsis-adulto", "dolor-toracico", "anafilaxia"
+  farmacos:      []            # ej. "adrenalina", "amoxicilina-clavulanico"
+  patologias:    []            # ej. "sepsis", "anafilaxia", "neumonia-adquirida-comunidad"
+
+# Glosario / siglas internas (el agente las respeta al ingerir y consultar)
+glossary:
+  HC:     "historia clínica"
+  SOP:    "procedimiento operativo estándar (standard operating procedure)"
+  PII:    "información personal identificable (datos sensibles de paciente)"
+  EA:     "evento adverso — daño no intencionado asociado a la atención"
+  GPC:    "guía de práctica clínica"
+  triaje: "clasificación de gravedad a la llegada del paciente (Manchester I–V)"
+  IM:     "intramuscular"
+  IV:     "intravenoso"
+  RCP:    "reanimación cardiopulmonar"
+
+roles:
+  contributors: ["<area-1>", "<area-2>"]   # ej. medicina-interna, urgencias, enfermeria, farmacia, calidad-seguridad
+  mutation_approver: "<director-medico>"
+
+# Verbos de relación clínicos (amplían el núcleo {usa, depende_de, contradice, reemplaza}).
+# LINT valida toda relación contra la unión núcleo + estos tipos. SIN esta clave, las aristas
+# clínicas se marcarían como relaciones no declaradas (falsos positivos).
+relation_types:
+  - presenta_patologia    # paciente -> patología
+  - tratado_con           # paciente/patología -> fármaco
+  - segun_protocolo       # paciente/tratamiento -> protocolo
+  - atendido_por          # paciente/incidente -> profesional
+  - trata                 # protocolo -> patología
+  - indica                # protocolo -> fármaco
+  - tratamiento_de        # fármaco -> patología
+  - tratada_segun         # patología -> protocolo
+  - afecta_a              # patología/incidente -> paciente/área
+  - reportado_por         # incidente -> profesional
+
+# Confianza inicial por tipo de fuente (gen-confianza-por-fuente)
+source_trust:
+  oficial: 0.9     # guía/protocolo aprobado, GPC vigente, SOP firmado, dato de sistema
+  interna: 0.6     # vademécum interno, ficha de fármaco, nota clínica interna
+  blanda:  0.4     # nota interna sin validar, comentario informal (solo corrobora)
+
+# Umbral de eventos con clave común para crear una síntesis (gen-sintesis-de-volumen).
+# Ej. N incidentes sobre el mismo protocolo/fármaco -> página de síntesis de seguridad.
+sintesis_umbral: 3
+
+# Genes específicos del sector que ONBOARD siembra (pasan por la compuerta de mutación).
+# NOTA: privacidad de paciente (gen-confidencialidad) y vigencia de protocolo
+# (gen-vigencia-temporal) YA están en el genoma base — NO se repiten aquí.
+seed_genes:
+  - id: gen-triada-clinica
+    trigger: "la fuente relaciona un fármaco, una patología y/o un protocolo de tratamiento"
+    rule: >
+      Mantén la tríada clínica COMPLETA y trazable: fármaco <-> patología <-> protocolo.
+      El protocolo `indica` el fármaco y `trata` la patología; el fármaco es `tratamiento_de`
+      la patología; la patología queda `tratada_segun` el protocolo. Ninguna de las tres
+      fichas puede quedar huérfana o incompleta: toda ficha de fármaco enlaza al menos una
+      patología o protocolo, toda ficha de patología enlaza su protocolo de manejo, y todo
+      protocolo enlaza la patología que trata. LINT señala como hallazgo la ficha de la
+      tríada que quede sin sus aristas. Esto permite responder "qué fármaco da el protocolo X
+      para la patología Y" navegando el grafo, sin leer todas las fuentes.
+    target_tier: semantic
+  # Solo se siembra este gen sector-específico. La confidencialidad de paciente y la vigencia
+  # dura de protocolos ya las garantiza el genoma base (gen-confidencialidad, gen-vigencia-temporal):
+  # no se duplican. Si en el futuro el base absorbiera también la integridad de la tríada, este
+  # seed_genes quedaría vacío — señal sana de un base que maduró.
+
+# Taxonomía inicial de carpetas a crear por tier
+taxonomy:
+  semantic:   [pacientes, profesionales, protocolos, farmacos, patologias, incidentes]
+  procedural: [sops-asistenciales, protocolos-clinicos]

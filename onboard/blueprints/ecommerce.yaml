@@ -1,0 +1,75 @@
+# Blueprint: e-commerce / retail — tienda online con catálogo por SKU, proveedores, tickets y reseñas.
+# Cómo usarlo: copia este archivo a onboard/company.yaml, reemplaza los placeholders "<...>" con tus datos y aplica ONBOARD (determinista: mismo manifiesto -> mismo genoma).
+
+company:
+  name: "<tu empresa>"
+  sector: "e-commerce / retail"
+  language: es
+  domains: ["<tudominio>.com"]
+
+# Tipos de documento del negocio (guían la clasificación de INGEST)
+document_types:
+  - ficha-producto          # catálogo: SKU, specs, precio, inventario
+  - ficha-proveedor         # quién fabrica/distribuye cada SKU
+  - ticket-soporte          # incidencia de un cliente (envío, defecto, reembolso)
+  - politica                # devoluciones, garantía, envíos (documento estable)
+  - resena-cliente          # review de producto (señal blanda, baja confianza)
+
+# Entidades clave: cada clave es una categoría -> carpeta en wiki/semantic/
+entities:
+  productos:   []           # se identifican por SKU estable (una página por SKU)
+  categorias:  ["<categoria-1>", "<categoria-2>"]
+  proveedores: ["<proveedor-1>"]
+  clientes:    []           # se crean al ingerir tickets/reseñas
+  tickets:     []           # se crean al ingerir soporte
+
+# Glosario / siglas del sector (el agente las respeta al ingerir y consultar)
+glossary:
+  SKU:   "stock keeping unit — referencia única y estable de producto"
+  RMA:   "return merchandise authorization — autorización de devolución"
+  PDP:   "product detail page — ficha de producto de cara al cliente"
+  SLA:   "service level agreement — tiempo de respuesta comprometido en soporte"
+  NPS:   "net promoter score — indicador de satisfacción"
+  stock: "unidades disponibles en almacén; cambia constantemente"
+  ASP:   "average selling price — precio medio de venta"
+
+roles:
+  contributors: ["catalogo", "soporte", "compras", "logistica"]
+  mutation_approver: "<aprobador-de-mutaciones>"
+
+# Verbos de relación propios del dominio (amplían el núcleo {usa,depende_de,contradice,reemplaza}).
+# LINT valida toda relación contra la unión núcleo + estos tipos declarados.
+relation_types: [sobre_sku, variante_de, suministra, abrio_ticket, agrega, referido_por, refuerza]
+
+# Confianza inicial por tipo de fuente (gen-confianza-por-fuente).
+# Cubre "una reseña pesa menos que la ficha" sin necesidad de un gen extra.
+source_trust:
+  oficial: 0.9     # ficha de producto, catálogo, política, ficha de proveedor (datos de sistema)
+  interna: 0.7     # notas de soporte, transcripciones, registros internos
+  blanda: 0.4      # reseñas, redes, comentarios (solo corroboran; nunca afirmación única)
+
+# Umbral de eventos con clave común para crear una síntesis (gen-sintesis-de-volumen).
+# Cubre "agregar N tickets en una página de patrón" sin gen extra: 3+ tickets sobre el mismo SKU/motivo -> síntesis.
+sintesis_umbral: 3
+
+# Genes específicos del sector que ONBOARD siembra (pasan por la compuerta).
+# Solo lo NO cubierto por el genoma base. Volatilidad de precio/stock (gen-clase-temporal +
+# volatile_fields), confianza de reseña (source_trust) y síntesis de tickets (sintesis_umbral)
+# YA están cubiertos arriba: no se repiten como genes.
+seed_genes:
+  - id: gen-sku-identidad
+    trigger: "la fuente menciona un producto del catálogo (ficha, ticket o reseña)"
+    rule: >
+      El SKU es el identificador ESTABLE y único de cada producto: hay UNA sola página por SKU
+      en wiki/semantic/productos/<SKU>.md, sin importar cuántas fuentes lo mencionen. Sus campos
+      volátiles (precio, stock, estado) viven en esa misma página vía volatile_fields y se
+      ACTUALIZAN in situ (sube last_reinforced), nunca se duplican. Toda otra entidad (ticket,
+      reseña, lote de inventario) enlaza al producto vía la relación tipada `sobre_sku`, jamás
+      recreando la ficha. Productos casi idénticos (mismo modelo, distinto color/talla) son
+      páginas separadas por SKU que comparten `variante_de`.
+    target_tier: semantic
+
+# Taxonomía inicial de carpetas a crear por tier
+taxonomy:
+  semantic:   [productos, categorias, proveedores, clientes, tickets, resenas, sintesis]
+  procedural: [sops-soporte, sops-devoluciones]

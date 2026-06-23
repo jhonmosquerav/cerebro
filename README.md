@@ -109,6 +109,22 @@ cerebro/
 
 ---
 
+## 🔁 Reproducibilidad y replay
+
+CEREBRO es reproducible en dos niveles:
+
+- **Onboarding determinista** — el genoma de una empresa se siembra desde un manifiesto
+  declarativo (`onboard/company.yaml`). *Mismo manifiesto → mismo genoma.* Hay
+  [blueprints de sector](onboard/blueprints/) listos para copiar y aplicar (producción,
+  agencia, legal, salud, e-commerce).
+- **Evolución auditable** — cada mutación del genoma queda como una línea en
+  `genome/events.jsonl` (con fecha, señal y diff) + un commit de git. Puedes **reconstruir o
+  revertir** cómo llegó el genoma a su estado actual. Es *git para el conocimiento*.
+
+Arranque reproducible: **clona → elige un blueprint → rellena tus datos → `ONBOARD`.**
+
+---
+
 ## ✅ Buenas prácticas
 
 - **Navega desde `index.md`**; nunca cargues toda la wiki (presupuesto de contexto).
