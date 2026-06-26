@@ -1,0 +1,32 @@
+company:
+  name: "FixtureCo"
+  sector: "prueba de capacidad de auditoría"
+  language: es
+  domains: ["fixture.local"]
+
+document_types: [ficha, protocolo, caso]
+
+entities:
+  clientes: []
+  productos: ["widget-a"]
+  maquinas: ["prensa-p1"]
+
+roles:
+  contributors: ["ops"]
+  mutation_approver: "fundador"
+
+relation_types: [tratada_segun, sobre_producto]
+
+source_trust:
+  oficial: 0.9
+  interna: 0.7
+  blanda: 0.4
+
+sintesis_umbral: 3
+
+seed_genes: []
+
+# La categoria 'proveedores' se declara pero queda sin paginas -> defecto D6 (vacio).
+taxonomy:
+  semantic: [seguridad, maquinas, clientes, casos, productos, confidencial, proveedores]
+  procedural: []
