@@ -15,18 +15,18 @@ D4 obsolescencia = ambos genes = 2).
 |----|-------|-----------|---------|---------|---------------|
 | D1 | contradicción genes | 5 | 2 | 52 | gen-fix-precio-abierto, gen-fix-precio-vigencia |
 | D2 | vencido-seguridad | 5 | 2 | 52 | protocolo-bloqueo-loto, prensa-p1 |
-| D3 | contradicción wiki | 4 | 2 | 42 | cliente-acme, caso-acme |
+| D3 | violación de invariante (gen-entidad-con-estado) | 4 | 2 | 42 | cliente-acme, caso-acme |
 | D4 | regla obsoleta | 3 | 2 | 32 | gen-fix-clasifica-v1, gen-fix-clasifica-v2 |
 | D5 | vacío (link roto) | 2 | 1 | 21 | prensa-p1 → [[manual-inexistente]] |
 | D6 | vacío (cat. sin cobertura) | 2 | 1 | 21 | taxonomy.semantic: proveedores |
 | D7 | redundancia | 2 | 2 | 22 | widget-a, widget-a-detalle |
 | D8 | redundancia (confidencial) | 2 | 2 | 22 | expediente-x, expediente-x-copia |
 
-> Nota v2: D3 (cliente-acme activo vs caso-acme baja) puede clasificarse como **contradicción
-> wiki** o como **violación de invariante** (de [[gen-entidad-con-estado]]); ambas son sev 4 →
-> impacto 42, sin efecto en el ranking. v2 introdujo clases sev-4 que solapan; elegir entre clases
-> de IGUAL severidad aún no es determinista (friction menor para v3). Los scores SÍ son
-> deterministas.
+> Nota v3: D3 (cliente-acme activo vs caso-acme baja) aplica a dos clases sev-4 (violación de
+> invariante de [[gen-entidad-con-estado]] y contradicción wiki). **Desde v3 la selección de clase
+> es determinista**: gana la fila superior de la tabla → "violación de invariante". Así, tanto el
+> score (42) como la **clase** son reproducibles. (El auditor v2 ya había derivado esta clase; v3
+> la codifica como regla.)
 
 ## Top-3 esperado (la salida que AUDIT debe proponer)
 

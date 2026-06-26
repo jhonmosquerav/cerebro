@@ -146,3 +146,12 @@ aislados, sin ver el oráculo.
 
 **Veredicto v2: PASS — scoring ahora determinista** (cierra el objetivo de reproducibilidad
 exacta). Queda una friction menor de selección-de-clase, sin impacto en scores/ranking.
+
+## v3 — cierre de la selección de clase
+
+`gen-auto-auditoria` v3 añadió el desempate **entre clases de igual severidad** (gana la fila
+superior de la tabla). Con eso, D3 queda fijado de forma determinista en "violación de invariante"
+(de [[gen-entidad-con-estado]]) — exactamente la clase que el auditor de la corrida v2 ya había
+derivado de forma independiente, así que esa corrida es la evidencia empírica. Score (42) y clase
+ahora reproducibles. v3 también blindó la confidencialidad en TODO el artefacto (no solo la
+evidencia). **Sin fricciones abiertas conocidas.**

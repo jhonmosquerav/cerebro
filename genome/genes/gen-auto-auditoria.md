@@ -2,7 +2,7 @@
 id: gen-auto-auditoria
 trigger: operación AUDIT (auto-auditoría de la base)
 status: active
-version: 2
+version: 3
 ---
 
 AUDIT audita la propia base CEREBRO y PROPONE las **≤3 mejoras de mayor impacto**
@@ -72,8 +72,9 @@ sev 5 (cae en la clase que corresponda: obsolescencia, supersedido, o vacío).
 Desempate, en orden: (1) mayor `impacto`; (2) si empatan, prioridad de clase = el orden de
 filas de la tabla de arriba a abajo (ese orden ES la prioridad canónica de clase); (3) si aún
 empatan, ruta de archivo alfabética. Cada defecto pertenece a UNA sola clase: la de mayor
-severidad que le aplique. Top-N = las N de mayor impacto tras el desempate, con
-N = min(3, confirmadas por auditor).
+severidad que le aplique; **si varias clases de IGUAL severidad aplican, gana la que aparece
+primero en la tabla** (orden de filas = prioridad de clase) — la elección de clase es determinista.
+Top-N = las N de mayor impacto tras el desempate, con N = min(3, confirmadas por auditor).
 Cambiar esta rúbrica = subir `version` = pasa por [[gen-compuerta-mutacion]].
 
 ## Estado, identidad y reproducibilidad
@@ -85,7 +86,10 @@ y salida queda en disco → la corrida se reconstruye y reaudita sin re-correr e
 
 ## Confidencialidad (hereda [[gen-confidencialidad]])
 Los artefactos de auditoría se persisten y commitean: para páginas `sensibilidad: confidencial`
-la evidencia se expresa por `[[link]]`/id + campo, NUNCA transcribiendo el valor sensible.
+la evidencia se expresa por `[[link]]`/id + campo, NUNCA transcribiendo el valor sensible. Esto
+aplica a **TODO el artefacto**: ni en la evidencia, ni en el `diff` propuesto (incluido su lado
+"antes"), ni al describir el defecto se copia el valor. Si el defecto es "la página confidencial
+contiene/expone X", se refiere X por **nombre de campo**, jamás por su valor.
 
 ## Gate humano y aplicación
 Las ≤3 quedan `status: pending`. El humano aprueba/rechaza una por una. Un hallazgo sev-5 ligado a

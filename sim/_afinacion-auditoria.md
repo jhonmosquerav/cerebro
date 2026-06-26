@@ -151,5 +151,16 @@ El lote v2 se aprobó por la compuerta y se aplicó (6 genes: `gen-auto-auditori
   severidad aplican a un defecto, la selección no es determinista (score/ranking no se afectan).
   Falta una regla de desempate ENTRE clases de misma severidad.
 
-Ambas son menores (no afectan scores/ranking) y quedan como backlog para una eventual v3 — por la
-compuerta, como siempre.
+Ambas son menores (no afectan scores/ranking).
+
+### Resolución en v3 (2026-06-25, por la compuerta)
+Ambas fricciones se resolvieron en `gen-auto-auditoria` **v3**:
+- **F-v2-a:** la regla de confidencialidad ahora cubre **todo el artefacto** (evidencia + `diff`
+  propuesto, incluido su lado "antes" + la descripción del defecto) — ningún valor sensible puede
+  copiarse al describir un candidato sobre una página confidencial.
+- **F-v2-b:** desempate explícito **entre clases de igual severidad** (gana la fila superior de la
+  tabla) → la selección de clase es determinista. D3 del fixture queda fijado como "violación de
+  invariante" (lo que el auditor v2 ya derivaba). Score y clase ahora reproducibles.
+
+Con v3, la auto-auditoría no tiene fricciones abiertas conocidas: scoring y clasificación
+deterministas, confidencialidad blindada en todo el artefacto.
