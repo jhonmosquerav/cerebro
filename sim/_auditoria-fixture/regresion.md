@@ -127,3 +127,22 @@ Es una mutación de genoma → pasa por [[gen-compuerta-mutacion]]; no se aplica
 - No-determinismo residual: `alcance` ±1 en clases con páginas citantes/relacionadas; el
   top-3 es robusto. Fix de raíz recomendado (rúbrica de `alcance` explícita por clase, vía
   compuerta).
+
+---
+
+## Corrida v2 (run-id 2026-06-25-9d6819a, gen-auto-auditoria v2)
+
+Re-corrida del fixture con el gen v2 (alcance explícito por clase). Maker y auditor en contextos
+aislados, sin ver el oráculo.
+
+- **8/8 candidatos confirmados; scores EXACTOS = oráculo** (52,52,42,32,22,22,21,21). El ±1 de v1
+  **quedó cerrado**: ahora el `alcance` lo fija la regla (página + citantes; ambos genes del par
+  obsoleto; confidenciales cuentan), no el criterio del agente.
+- **Top-3 = [contradicción-genes 52, vencido-seguridad 52, 42]** = oráculo ✓.
+- **Confidencialidad D8:** artefactos limpios (sin transcribir DNI/titular/diagnóstico).
+- **Friction nueva (menor, para v3):** D3 puede caer en dos clases sev-4 distintas (contradicción
+  wiki vs violación de invariante); la selección entre clases de IGUAL severidad no es determinista.
+  Score y ranking NO se ven afectados (ambas = 42). Anotado en `expected.md`.
+
+**Veredicto v2: PASS — scoring ahora determinista** (cierra el objetivo de reproducibilidad
+exacta). Queda una friction menor de selección-de-clase, sin impacto en scores/ranking.

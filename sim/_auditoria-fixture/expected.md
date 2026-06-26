@@ -22,6 +22,12 @@ D4 obsolescencia = ambos genes = 2).
 | D7 | redundancia | 2 | 2 | 22 | widget-a, widget-a-detalle |
 | D8 | redundancia (confidencial) | 2 | 2 | 22 | expediente-x, expediente-x-copia |
 
+> Nota v2: D3 (cliente-acme activo vs caso-acme baja) puede clasificarse como **contradicción
+> wiki** o como **violación de invariante** (de [[gen-entidad-con-estado]]); ambas son sev 4 →
+> impacto 42, sin efecto en el ranking. v2 introdujo clases sev-4 que solapan; elegir entre clases
+> de IGUAL severidad aún no es determinista (friction menor para v3). Los scores SÍ son
+> deterministas.
+
 ## Top-3 esperado (la salida que AUDIT debe proponer)
 
 1. **D1** — contradicción entre `gen-fix-precio-abierto` y `gen-fix-precio-vigencia` (impacto 52).
