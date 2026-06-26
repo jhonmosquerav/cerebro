@@ -2,12 +2,13 @@
 id: gen-lint
 trigger: operación LINT (mantenimiento)
 status: active
-version: 2
+version: 3
 ---
 
 LINT mantiene sano el grafo. Detecta: (a) páginas huérfanas (sin relaciones entrantes ni
 salientes, exceptuando `type: meta`); (b) contradicciones entre páginas; (c) conocimiento
-vencido —por `last_reinforced` + `decay_rate` (blando) y por `valido_hasta < hoy`
+vencido —por `last_reinforced` + `decay_rate` (blando), por `valido_hasta < hoy`, y por
+`vigencia` en estado no-vigente (derogada/en-revision/no-vigente, vencimiento por evento)
 ([[gen-vigencia-temporal]], hallazgo **prioritario** en dominios de seguridad)—; (d) relaciones
 con verbos fuera de la unión núcleo ∪ `relation_types` del manifiesto
 ([[gen-frontmatter-obligatorio]]); (e) campos de frontmatter no reconocidos por ningún gen

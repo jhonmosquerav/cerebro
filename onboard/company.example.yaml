@@ -41,6 +41,10 @@ source_trust:
 # Umbral de eventos con clave común para crear una síntesis (gen-sintesis-de-volumen)
 sintesis_umbral: 3
 
+# Sensibilidad por defecto de las páginas nuevas (gen-confidencialidad). Dominios sensibles
+# (legal, salud) lo ponen en 'confidencial'; el resto suele dejar 'interno'.
+default_sensibilidad: interno
+
 # Genes específicos del sector que ONBOARD siembra (pasan por la compuerta)
 seed_genes:
   - id: gen-propuestas
