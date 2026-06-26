@@ -97,6 +97,27 @@ gen debería prescribir un fallback `sim-<token>` para sandboxes que no son su p
 **Flagueada por:** salud. Un hallazgo sev-5 ligado a un incidente abierto debería exigir un paso de
 revisión / `incident_ref` antes de aprobar la propuesta (no inflar el score).
 
+## 3bis. Verificación adversarial de las fricciones (qué sobrevivió)
+
+Cada fricción se sometió a un verificador independiente con consigna de **refutar** (leyendo el
+texto real del gen v1 + la evidencia citada). Resultado — separa lo real de lo especulativo:
+
+| # | Veredicto | Acción |
+|---|---|---|
+| **P1** alcance | **REAL (parcial)** | Mantener (a) citantes y (b) confidenciales cuentan, (c) re-enmarcada como "ambos lados del par obsoleto/solape". **Quitar (d): el desempate alfabético YA está definido (líneas 53-57 del gen) — refutado.** |
+| **P2** dominio-seguridad/vencido | **REAL (a y b)** | Mantener. Afecta reproducibilidad (sev4 vs5) y correctitud (clase sev-5 inerte en dominios por-evento). |
+| **P3** clases faltantes | **REAL (4/4)** | Mantener. Evidencia dura: académico C-05 cayó 31→21 y salió del top-3 por falta de clase "supersedido a nivel wiki". (d) verbo/campo fuera de esquema = real pero menor. |
+| **P4** eximir deriva_de/síntesis | **REAL** | Mantener. Ausencia confirmada en `gen-auto-auditoria` y `gen-consolidate`; produjo trato no-determinista (académico marcó el par `deriva_de`, ecommerce no marcó el `agregado_en` — ambos por criterio del agente, no por regla). |
+| **P5** confidencial-por-defecto | **MEJORA, no defecto** | **Degradar.** Los leak-checks fueron CLEAN; el audit manejó bien lo confidencial. Es capa de manifiesto/ONBOARD (`default_sensibilidad`) + un fix a `gen-conflicto-interes`, NO de `gen-auto-auditoria`. Derivar a [[gen-evolve]]/ONBOARD. |
+| **P6** "mismo defecto" ambiguo | **REAL (baja)** | Mantener como baja prioridad. No volteó scores esta corrida; gap estructural de reproducibilidad. |
+| **P7** SHA en sandbox | **ESPECULATIVA — no ocurrió** | **Degradar.** `sim/` vive dentro del repo; `git rev-parse HEAD` resolvió bien en las 6 corridas. Solo mordería si alguien desacopla un sandbox como repo propio (contrario al diseño). Nota de robustez opcional, no defecto. |
+| **P8** gate por incidente | **MEJORA, no defecto** | **Degradar.** El gen ya exige gate humano universal sobre TODA propuesta (`status: pending`, sin auto-aplicar); el incidente ya aparece en la evidencia. P8 es pulido procedimental opcional para dominios críticos. |
+
+**Backlog verificado para la `v2` del gen (lo que sí vale una compuerta):** **P1 (a,b,c), P2, P3, P4**
+— son los que afectan reproducibilidad/correctitud del score y la clasificación. **P6** queda como
+mejora menor. **P5, P7, P8** se degradan (mejoras de otra capa o especulativas), y **P1(d) se
+descarta** (ya cubierto). La verificación recortó el backlog de 8 a **4 fricciones de peso + 1 menor**.
+
 ## 4. Cómo se aplicaría (sin comprometer reproducibilidad)
 Cada propuesta de arriba es material para un futuro `EVOLVE` → [[gen-compuerta-mutacion]]: se PROPONE el
 diff + señal, se aprueba, se sube `version` del gen, 1 línea en `genome/events.jsonl`, commit, re-sync
