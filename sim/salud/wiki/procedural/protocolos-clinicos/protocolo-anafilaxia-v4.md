@@ -1,15 +1,15 @@
 ---
-title: Protocolo de anafilaxia en adulto (v3)
+title: Protocolo de anafilaxia en adulto (v4)
 type: sop
 tier: procedural
-tags: [protocolo, urgencias, anafilaxia, alergia, deprecado]
-confidence: 0.55
-created: 2026-06-22
+tags: [protocolo, urgencias, anafilaxia, alergia, vigente]
+confidence: 0.9
+created: 2026-06-26
 last_reinforced: 2026-06-26
 decay_rate: high
-valid_until: 2026-03-01
-status: deprecado
-version_doc: 3
+valid_until: 2028-03-01
+status: vigente
+version_doc: 4
 sources:
   - "[[raw/PROT-ANAFILAXIA-v3-2024]]"
 relations:
@@ -18,15 +18,13 @@ relations:
   trata: ["[[anafilaxia]]"]
   indica: ["[[adrenalina]]"]
   contradice: []
-  reemplaza: []
-  reemplazado_por: ["[[protocolo-anafilaxia-v4]]"]
+  reemplaza: ["[[protocolo-anafilaxia]]"]
 ---
 
-# Protocolo de anafilaxia en adulto — v3
+# Protocolo de anafilaxia en adulto — v4
 
-> ⚠️ **PROTOCOLO DEPRECADO** — `valid_until: 2026-03-01` (vencido). Reemplazado por
-> [[protocolo-anafilaxia-v4]] (vigente hasta 2028-03-01). Ver [[INC-2026-014]].
-> No usar como guía vigente ([[gen-vigencia-protocolo]]).
+> Versión vigente. Reemplaza [[protocolo-anafilaxia]] v3 (vencida 2026-03-01).
+> Revisión bienal programada: 2028-03-01.
 
 ## Primera línea
 - **[[adrenalina]] IM 0,5 mg** (0,5 mL 1:1000) en muslo; repetir cada 5–15 min si no mejora.
@@ -42,4 +40,5 @@ Mínimo 6 h (riesgo de reacción bifásica). Autoinyector al alta + derivación 
 ## Trazabilidad
 - `indica` / `usa` → [[adrenalina]]
 - `trata` → [[anafilaxia]]
-- Referenciado por: [[PAC-7731]] (`segun_protocolo`), [[INC-2026-014]] (`afecta_a`).
+- `reemplaza` → [[protocolo-anafilaxia]]
+- Publicado en respuesta a [[INC-2026-014]].

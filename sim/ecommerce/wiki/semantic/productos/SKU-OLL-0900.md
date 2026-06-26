@@ -16,6 +16,10 @@ relations:
   contradice: []
   reemplaza: []
   referido_por: ["[[TKT-5550]]"]
+volatile_fields:
+  - { campo: precio, valido_a: 2026-06-20 }
+  - { campo: stock,  valido_a: 2026-06-20 }
+  - { campo: estado, valido_a: 2026-06-20 }
 ---
 
 # SKU-OLL-0900 — Set de Ollas Cumbre 7 piezas

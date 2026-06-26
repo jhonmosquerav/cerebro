@@ -14,7 +14,8 @@ sources:
 relations:
   usa: []
   depende_de: []
-  contradice: []
+  contradice:
+    - "[[reforma-cc-2026]]"
   reemplaza: []
 ---
 

@@ -5,7 +5,7 @@ rol: orquestador
 fuente_confirmados: "20-auditor.md"
 n_confirmados: 4
 n_propuestas: 3
-status_global: pending
+status_global: approved
 ---
 
 # 30-Proposals — Propuestas (run 2026-06-25-9d6819a)
@@ -25,7 +25,7 @@ clase: conocimiento supersedido sin degradar tier/estado (wiki)
 severidad: 3
 impacto: 31
 score_auditor: 8/10
-status: pending
+status: approved
 ```
 
 **Motivo:** `[[wp-2024-07]]` declara `tags: [supersedido]` y `confidence: 0.5` conforme
@@ -59,7 +59,7 @@ clase: vacío (link roto)
 severidad: 2
 impacto: 22
 score_auditor: 7/10
-status: pending
+status: approved
 ```
 
 **Motivo:** dos datasets activos (`[[enph-2022-giea]]` y `[[enph-2022-v2-giea]]`) enlazan
@@ -106,7 +106,7 @@ clase: vacío (categoría sin cobertura)
 severidad: 2
 impacto: 21
 score_auditor: 6/10
-status: pending
+status: approved
 ```
 
 **Motivo:** `company.yaml` declara `taxonomy.semantic: [..., convenios]` como carpeta

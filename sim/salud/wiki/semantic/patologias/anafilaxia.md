@@ -14,7 +14,6 @@ relations:
   usa: []
   depende_de: []
   tratada_segun: ["[[protocolo-anafilaxia]]"]
-  tratamiento_de: ["[[adrenalina]]"]
   contradice: []
   reemplaza: []
 ---

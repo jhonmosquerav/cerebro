@@ -26,7 +26,7 @@ Todas en `status: pending`. Ninguna se aplica sin aprobación del humano.
 | severidad | 4 |
 | alcance | 4 |
 | impacto | **44** |
-| status | pending |
+| status | approved |
 
 **Motivo.** `gen-dato-volatil` prescribe que si `valido_a` es anterior a hoy, QUERY debe
 ADVERTIR el dato como vencido. Hoy (2026-06-25) los campos de precio, stock y estado en las
@@ -76,7 +76,7 @@ volatile_fields:
 | severidad | 4 |
 | alcance | 3 |
 | impacto | **43** |
-| status | pending |
+| status | approved |
 
 **Motivo.** `company.yaml` declara `entities.productos: ["SKU-CAF-2200", "SKU-OLL-0900"]`.
 El wiki tiene 4 páginas de producto (`SKU-CAF-2200`, `SKU-CAF-2201`, `SKU-OLL-0900`,
@@ -113,7 +113,7 @@ productos: ["SKU-CAF-2200", "SKU-CAF-2201", "SKU-OLL-0900", "SKU-ORG-1450"]
 | severidad | 2 |
 | alcance | 3 |
 | impacto | **23** |
-| status | pending |
+| status | approved |
 
 **Motivo.** `SKU-OLL-0900.md` declara `relations.usa: ["[[cat-ollas-y-sartenes]]"]` y
 `SKU-ORG-1450.md` declara `relations.usa: ["[[cat-organizadores]]"]`. Ninguna de las dos

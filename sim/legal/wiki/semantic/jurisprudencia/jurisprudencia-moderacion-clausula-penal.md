@@ -16,7 +16,8 @@ relations:
     - "[[art-1154-codigo-civil]]"
     - "[[art-1124-codigo-civil]]"
   depende_de: []
-  contradice: []
+  contradice:
+    - "[[reforma-cc-2026]]"
   reemplaza: []
 ---
 

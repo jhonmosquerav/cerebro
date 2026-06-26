@@ -16,6 +16,7 @@ relations:
   reemplaza: []
   para_lead: ["[[lead-inmobiliaria-vertice]]"]
   define_precio: ["[[precio-vertice-PROP-2026-038]]"]
+advertencia: "precio [[precio-vertice-PROP-2026-038]] vencido 2026-06-14; requiere recotización antes de citar cifras."
 ---
 
 # Propuesta PROP-2026-038 — Inmobiliaria Vértice

@@ -19,7 +19,7 @@ document_types:
 
 # Entidades clave: cada clave es una categoría -> carpeta en wiki/semantic/
 entities:
-  productos:   ["SKU-CAF-2200", "SKU-OLL-0900"]   # se identifican por SKU estable
+  productos:   ["SKU-CAF-2200", "SKU-CAF-2201", "SKU-OLL-0900", "SKU-ORG-1450"]   # se identifican por SKU estable
   categorias:  ["cafeteras", "ollas-y-sartenes", "organizadores"]
   proveedores: ["ElectroHogar-Import", "MenajeGlobal"]
   clientes:    []           # se crean al ingerir tickets/reseñas

@@ -7,7 +7,7 @@ confidence: 0.85
 created: 2026-06-22
 last_reinforced: 2026-06-22
 decay_rate: medium
-estado: en-negociacion
+estado: en-negociacion-sin-followup
 sources:
   - "[[raw/2026-05-12-call-inmobiliaria-vertice]]"
   - "[[raw/2026-05-15-propuesta-inmobiliaria-vertice]]"
@@ -21,6 +21,9 @@ relations:
   reemplaza: []
   recibio_propuesta: ["[[propuesta-vertice-PROP-2026-038]]"]
   tiene_followup: ["[[followup-vertice-2026-05-16]]"]
+advertencia:
+  - "propuesta [[propuesta-vertice-PROP-2026-038]] con precio vencido 2026-06-14; validar precio antes de avanzar en negociación."
+  - "follow-up [[followup-vertice-2026-05-16]] vencido 2026-05-16; junta decisión 2026-05-19 ya pasó. Validar si lead sigue activo o se perdió."
 ---
 
 # Lead — Inmobiliaria Vértice

@@ -5,7 +5,7 @@ role: orquestador
 date: 2026-06-25
 gen_version: gen-auto-auditoria v1
 proposals: 3
-status_global: pending
+status_global: approved
 ---
 
 # 30-proposals — Propuestas de mejora (Clínica Vida Serena)
@@ -25,7 +25,7 @@ status_global: pending
 | **origen** | CAND-01 |
 | **clase** | info vencida en dominio de seguridad |
 | **score** | 55 |
-| **status** | pending |
+| **status** | approved |
 
 ### Motivo
 
@@ -94,7 +94,7 @@ de cierre.
 | **origen** | CAND-02 |
 | **clase** | contradicción entre páginas wiki |
 | **score** | 42 |
-| **status** | pending |
+| **status** | approved |
 
 ### Motivo
 
@@ -140,7 +140,7 @@ diferenciar tipo de nodo.
 | **origen** | CAND-03 |
 | **clase** | vacío (link roto / categoría sin cobertura) |
 | **score** | 27 |
-| **status** | pending |
+| **status** | approved |
 
 ### Motivo
 
@@ -193,9 +193,9 @@ páginas.
 
 | id | origen | clase | score | status |
 |---|---|---|---|---|
-| P1 | CAND-01 | info vencida en dominio de seguridad | **55** | pending |
-| P2 | CAND-02 | contradicción entre páginas wiki | **42** | pending |
-| P3 | CAND-03 | vacío (link roto / categoría sin cobertura) | **27** | pending |
+| P1 | CAND-01 | info vencida en dominio de seguridad | **55** | approved |
+| P2 | CAND-02 | contradicción entre páginas wiki | **42** | approved |
+| P3 | CAND-03 | vacío (link roto / categoría sin cobertura) | **27** | approved |
 
 Gate humano: `mutation_approver: director-medico` aprueba/rechaza cada propuesta de
 forma independiente. P1 acción 1 (publicar v4) es prerequisito de P1 acciones 2 y 3.

@@ -68,6 +68,27 @@ seed_genes:
       fechados vive en hojas de mantenimiento que enlazan mantiene_a la máquina.
     target_tier: semantic
 
+# Verbos de dominio permitidos fuera del núcleo {usa, depende_de, contradice, reemplaza}.
+# Declarados según gen-frontmatter-obligatorio v3; LINT valida contra núcleo ∪ estos.
+relation_types:
+  producido_en:    "lote producido en máquina"
+  bajo_orden:      "lote o NCR bajo orden de producción"
+  de_producto:     "lote/OP de producto (SKU)"
+  insumo_de:       "lote/OP usa insumo de proveedor"
+  afectado_por:    "lote afectado por evento de calidad"
+  afecta_a:        "NCR afecta a lote"
+  viola:           "NCR viola SOP de calidad"
+  causa_en:        "NCR tiene causa en máquina"
+  mitiga_con:      "NCR mitigada con intervención de mantenimiento"
+  ubicada_en:      "máquina ubicada en línea"
+  produjo_lote:    "máquina produjo lote"
+  intervenida_por: "máquina intervenida por evento de mantenimiento"
+  mantiene_a:      "evento de mantenimiento mantiene a máquina"
+  resuelve:        "evento de mantenimiento resuelve NCR"
+  genero_lote:     "OP generó lote"
+  aplica_a:        "SOP aplica a máquina o entidad"
+  reforzado_por:   "SOP reforzado por evento que lo confirma o detecta brecha"
+
 # Taxonomía inicial de carpetas a crear por tier
 taxonomy:
   semantic:   [productos, lineas, maquinas, lotes, calidad, proveedores]

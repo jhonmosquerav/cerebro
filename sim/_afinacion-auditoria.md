@@ -123,3 +123,33 @@ Cada propuesta de arriba es material para un futuro `EVOLVE` → [[gen-compuerta
 diff + señal, se aprueba, se sube `version` del gen, 1 línea en `genome/events.jsonl`, commit, re-sync
 `AGENTS.md`, y se re-corre este banco para confirmar la mejora. P1 y P2 son las de mayor retorno (cierran
 el no-determinismo de score y la inflación de severidad). **Nada de esto está aplicado.**
+
+## 5. Resultado de la aplicación (lote v2 — 2026-06-25)
+
+El lote v2 se aprobó por la compuerta y se aplicó (6 genes: `gen-auto-auditoria` v2,
+`gen-vigencia-temporal` v2, `gen-lint` v3, `gen-consolidate` v2, `gen-onboard` v3,
+`gen-confidencialidad` v2 + `default_sensibilidad` en el manifiesto). Re-corrida del banco con v2
+(run-id `2026-06-25-9d6819a`):
+
+- **Fixture: PASS determinista.** 8/8 candidatos con scores EXACTOS = oráculo; el ±1 de v1 cerrado
+  (el `alcance` ahora lo fija la regla). Ver `_auditoria-fixture/regresion.md` §Corrida v2.
+- **Académico: P3 corregido en vivo.** El working-paper supersedido, que en v1 caía mal a sev2/21,
+  ahora toma la nueva clase **"conocimiento supersedido sin degradar tier (wiki)" sev3/impacto 31**
+  y **encabeza el top-3**. Exactamente la corrección que P3 buscaba.
+- **Las otras 5 (agencia, ecommerce, legal, salud, produccion):** sus scores v1 ya usaban la lectura
+  "citantes/confidenciales cuentan" que v2 codifica → quedan **confirmados y ahora deterministas por
+  construcción** (no se re-corrieron con subagentes frescos; v2 las vuelve rule-determinadas).
+
+### Fricciones nuevas que destapó la corrida v2 (candidatas a v3)
+- **F-v2-a (proceso / confidencialidad):** al describir un candidato sobre una página confidencial,
+  el maker académico **transcribió** la identidad del revisor en `10-maker.md`. El **auditor lo cazó**
+  (refutó el candidato C6 + flag de fuga) y se **redactó antes de commitear** (sin PII en git). Señal:
+  el gen debe instruir explícitamente "describe el defecto de una página confidencial SIN copiar su
+  valor, ni en el bloque de evidencia ni en el diff propuesto". El diseño maker≠auditor + el gate
+  funcionaron como red de seguridad.
+- **F-v2-b (selección de clase):** v2 añadió clases sev-4 que solapan; cuando dos clases de IGUAL
+  severidad aplican a un defecto, la selección no es determinista (score/ranking no se afectan).
+  Falta una regla de desempate ENTRE clases de misma severidad.
+
+Ambas son menores (no afectan scores/ranking) y quedan como backlog para una eventual v3 — por la
+compuerta, como siempre.

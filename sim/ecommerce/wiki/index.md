@@ -16,7 +16,7 @@ Punto de entrada. Navega desde aquí por relaciones `[[...]]`. No cargar la wiki
 
 ### semantic/
 - **productos** — [[SKU-CAF-2200]] · [[SKU-CAF-2201]] · [[SKU-OLL-0900]] · [[SKU-ORG-1450]]
-- **categorias** — [[cat-cafeteras]]
+- **categorias** — [[cat-cafeteras]] · [[cat-ollas-y-sartenes]] · [[cat-organizadores]]
 - **proveedores** — [[prov-electrohogar-import]] · [[prov-menajeglobal]]
 - **clientes** — [[cli-marcela-ortiz]]
 - **tickets** — [[TKT-5521]] · [[TKT-5530]] · [[TKT-5544]] · [[TKT-5561]]

@@ -5,13 +5,13 @@ gene_version: gen-auto-auditoria v1
 candidates_maker: 5
 confirmed_auditor: 5
 proposals_count: 3
-status: pending_gate
+status: approved
 ---
 
 # Propuestas — AUDIT 2026-06-25-f5c6000
 
 Top-3 candidatos confirmados por el auditor, ordenados por impacto descendente.
-N = min(3, 5 confirmados) = 3. Todas quedan `status: pending` hasta aprobación humana.
+N = min(3, 5 confirmados) = 3. Todas quedan `status: approved` hasta aprobación humana.
 Evidencia: referencias por `[[link]]` — ningún valor sensible transcrito (no hay páginas
 `sensibilidad: confidencial` en este escenario).
 
@@ -42,7 +42,7 @@ score:
   severidad: 5
   alcance: 3
   impacto: 53
-status: pending
+status: approved
 ```
 
 ---
@@ -70,7 +70,7 @@ score:
   severidad: 5
   alcance: 2
   impacto: 52
-status: pending
+status: approved
 ```
 
 ---
@@ -106,7 +106,7 @@ score:
   severidad: 4
   alcance: 2
   impacto: 42
-status: pending
+status: approved
 ```
 
 ---

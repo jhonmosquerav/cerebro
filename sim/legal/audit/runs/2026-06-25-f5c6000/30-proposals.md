@@ -25,7 +25,7 @@ se expresan por `[[link]]`/id + campo. Ningún valor sensible transcrito.
 | id | P1 |
 | fuente | C1 |
 | fecha | 2026-06-25 |
-| status | pending |
+| status | approved |
 | clase | contradicción entre páginas wiki (campo sin gen que lo defina ni valide) |
 | severidad | 4 |
 | alcance | 4 |
@@ -95,7 +95,7 @@ línea en log.md.
 | id | P2 |
 | fuente | C3 |
 | fecha | 2026-06-25 |
-| status | pending |
+| status | approved |
 | clase | contradicción entre páginas wiki (asimetría de relación bilateral) |
 | severidad | 4 |
 | alcance | 3 |
@@ -155,7 +155,7 @@ Son cambios de wiki (no de genoma): cambio directo + línea en log.md.
 | id | P3 |
 | fuente | C2 |
 | fecha | 2026-06-25 |
-| status | pending |
+| status | approved |
 | clase | contradicción entre páginas wiki (sources incorrecto) |
 | severidad | 4 |
 | alcance | 2 |
@@ -202,9 +202,9 @@ Cambio de wiki: cambio directo + línea en log.md.
 
 | id | fuente | Clase | Sev | Alcance | Score | Status |
 |---|---|---|---|---|---|---|
-| P1 | C1 | contradicción wikis (campo huérfano) | 4 | 4 | **44** | pending |
-| P2 | C3 | contradicción wikis (contradice asimétrico) | 4 | 3 | **43** | pending |
-| P3 | C2 | contradicción wikis (sources incorrecto) | 4 | 2 | **42** | pending |
+| P1 | C1 | contradicción wikis (campo huérfano) | 4 | 4 | **44** | approved |
+| P2 | C3 | contradicción wikis (contradice asimétrico) | 4 | 3 | **43** | approved |
+| P3 | C2 | contradicción wikis (sources incorrecto) | 4 | 2 | **42** | approved |
 
 ---
 

@@ -17,6 +17,10 @@ relations:
   reemplaza: []
   variante_de: ["[[SKU-CAF-2200]]"]
   referido_por: ["[[TKT-5544]]", "[[sintesis-portafiltro-aurora]]"]
+volatile_fields:
+  - { campo: precio, valido_a: 2026-06-20 }
+  - { campo: stock,  valido_a: 2026-06-20 }
+  - { campo: estado, valido_a: 2026-06-20 }
 ---
 
 # SKU-CAF-2201 — Cafetera Espresso Aurora 15 bar (Negro Mate)

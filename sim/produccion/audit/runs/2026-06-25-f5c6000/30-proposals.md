@@ -6,7 +6,7 @@ gen_auditoria_version: 1
 N: 3
 confirmadas_por_auditor: 4
 top_N: 3
-status_global: pending
+status_global: approved
 ---
 
 # 30 — Propuestas (top-3, status: pending)
@@ -60,7 +60,7 @@ contradicción es interna a la misma página: body vs. sección Brecha.
 (no genoma). Se aplica como cambio directo en wiki + línea en `log.md` + commit.
 No requiere [[gen-compuerta-mutacion]].
 
-**status:** pending
+**status:** approved
 
 ---
 
@@ -123,7 +123,7 @@ del sandbox pero no el genoma base. Se aplica directo + commit. Si la empresa us
 genoma nuevo con [[gen-frontmatter-obligatorio]] v3, pasar también por
 [[gen-migracion-genoma]] para re-validar páginas.
 
-**status:** pending
+**status:** approved
 
 ---
 
@@ -182,7 +182,7 @@ formales), lo que introduce ambigüedad y dependencia de heurísticas de fallbac
 **Nota de aprobación:** cambios en frontmatter de 4 páginas wiki. Se aplican directo +
 línea en `log.md` + commit. No requieren [[gen-compuerta-mutacion]].
 
-**status:** pending
+**status:** approved
 
 ---
 
