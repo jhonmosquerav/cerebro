@@ -29,6 +29,7 @@ correr `ONBOARD` y operar su conocimiento.
 | `CONSOLIDATE` | mantenimiento | Promueve conocimiento confirmado de tier (working→semantic), fusiona duplicados, baja confidence de lo no reforzado. |
 | `EVOLVE` | patrón repetido detectado | PROPONE mutación de genoma (nuevo/editar/deprecar gen). Aplica solo con OK + línea en events.jsonl. |
 | `AUDIT` | "auto-audítate / audita el cerebro" | Audita la base y PROPONE ≤3 mejoras de mayor impacto (contradicciones, vacíos, reglas obsoletas/redundantes), reproducible, con maker≠auditor y gate. Estado en `audit/runs/`. |
+| `GRAPH` | "visualiza / analiza el grafo" | Corre una lente de grafo externa (local, opcional) sobre copia *staging* no-confidencial de `wiki/`; deriva señales (hubs, comunidades, caminos, islas) y las PROPONE a CONSOLIDATE/QUERY/LINT/EVOLVE. Salida derivada en `graphify-out/` (no versionada). Regla: [[gen-graph-lens]]. |
 
 ## Índice de genes activos
 Las reglas completas viven en `genome/genes/`. Resumen:
@@ -49,7 +50,7 @@ Las reglas completas viven en `genome/genes/`. Resumen:
 - [[gen-visualizacion]] — capa opcional de paneles (Dataview, reporte estático o grafo interactivo vía lente externa); ONBOARD la recomienda.
 
 **Operativos**
-- [[gen-onboard]] · [[gen-ingest]] · [[gen-bulk-ingest]] · [[gen-query]] · [[gen-lint]] · [[gen-consolidate]] · [[gen-evolve]] · [[gen-auto-auditoria]]
+- [[gen-onboard]] · [[gen-ingest]] · [[gen-bulk-ingest]] · [[gen-query]] · [[gen-lint]] · [[gen-consolidate]] · [[gen-evolve]] · [[gen-auto-auditoria]] · [[gen-graph-lens]]
 
 ## Mapa de la memoria (tiers de `wiki/`)
 - `working/` — observaciones recientes, `decay_rate: high`. Lo que el hook `PreCompact` vuelca aquí.

@@ -106,6 +106,7 @@ cerebro/
 | `LINT` | Detecta huérfanos, contradicciones, vencidos y relaciones inválidas; propone y aplica tras OK. |
 | `CONSOLIDATE` | Promueve conocimiento confirmado, fusiona duplicados, decae lo no reforzado. |
 | `EVOLVE` | Detecta patrones y **propone** mutaciones del genoma (solo se aplican con tu OK). |
+| `GRAPH` | Lente de grafo externa (local, opcional) sobre `wiki/`; deriva señales (hubs, comunidades, caminos, islas) y las **propone** a las operaciones de mantenimiento. Salida derivada, no es fuente de verdad. |
 
 ---
 

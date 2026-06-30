@@ -56,3 +56,11 @@ seed_genes:
 taxonomy:
   semantic: [clientes, propuestas, casos-exito]
   procedural: [sops-ventas]
+
+# Lente de grafo interactiva (gen-graph-lens, OPCIONAL). CEREBRO funciona sin esto.
+# La exclusión de páginas confidenciales y el backend local son guardrails fijos.
+graph_lens:
+  enable: false                  # opcional; requiere graphify instalado fuera del repo
+  backend: local                 # solo local (Ollama); nunca APIs externas
+  exclude_sensibilidad: [confidencial]
+  out_dir: graphify-out          # derivado, gitignored
