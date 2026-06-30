@@ -46,7 +46,7 @@ Las reglas completas viven en `genome/genes/`. Resumen:
 - [[gen-confianza-por-fuente]] — la `confidence` inicial se ancla a la credibilidad de la fuente.
 - [[gen-sintesis-de-volumen]] — N eventos con clave común → página de síntesis; deriva a EVOLVE si hay riesgo.
 - [[gen-migracion-genoma]] — al cambiar el genoma, re-valida manifiesto y páginas y propone la migración.
-- [[gen-visualizacion]] — capa opcional de paneles (Obsidian/Dataview o reporte estático); ONBOARD la recomienda.
+- [[gen-visualizacion]] — capa opcional de paneles (Dataview, reporte estático o grafo interactivo vía lente externa); ONBOARD la recomienda.
 
 **Operativos**
 - [[gen-onboard]] · [[gen-ingest]] · [[gen-bulk-ingest]] · [[gen-query]] · [[gen-lint]] · [[gen-consolidate]] · [[gen-evolve]] · [[gen-auto-auditoria]]
@@ -63,6 +63,7 @@ Las reglas completas viven en `genome/genes/`. Resumen:
 
 ## Visualización (opcional, removible)
 - `dashboards/` — paneles Dataview (salud del genoma, salud del conocimiento, por sector); ver `dashboards/00-leeme.md`.
+- `dashboards/graph/` — runbook de la **lente de grafo** interactiva (graphify, opcional, backend local); salida derivada en `graphify-out/` (no versionada). Regla: [[gen-visualizacion]].
 - `.obsidian/` — preset con Dataview declarado. Cualquier agente que no sea Obsidian lo ignora. Regla: [[gen-visualizacion]].
 
 ## Loop de memoria infinita (hooks)

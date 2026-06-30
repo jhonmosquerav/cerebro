@@ -6,5 +6,8 @@ Formato: una línea por operación, lo más reciente arriba.
 
 <!-- Anota aquí tus operaciones conforme uses CEREBRO (ONBOARD, INGEST, QUERY, LINT, CONSOLIDATE, EVOLVE, AUDIT). -->
 
+## 2026-06-30
+- EVOLVE: gen-visualizacion v1->v2 — render interactivo (lente de grafo graphify, opcional/local). Ver `genome/events.jsonl`.
+
 ## YYYY-MM-DD
 - _(tu primera operación: corre `ONBOARD` y regístrala aquí)_

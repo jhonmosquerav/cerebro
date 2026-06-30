@@ -8,3 +8,6 @@
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Lente de grafo externa (graphify): salida derivada y regenerable; no es conocimiento
+graphify-out/
