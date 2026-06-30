@@ -58,9 +58,10 @@ taxonomy:
   procedural: [sops-ventas]
 
 # Lente de grafo interactiva (gen-graph-lens, OPCIONAL). CEREBRO funciona sin esto.
-# La exclusión de páginas confidenciales y el backend local son guardrails fijos.
+# Guardrail FIJO: las páginas 'confidencial' nunca entran a la lente (sea cual sea el backend).
 graph_lens:
   enable: false                  # opcional; requiere graphify instalado fuera del repo
-  backend: local                 # solo local (Ollama); nunca APIs externas
+  backend:                       # VACÍO a propósito: el agente lo pregunta 1 vez y lo registra aquí.
+                                 #   claude = conexión Claude Code (API) | local = Ollama | structural = sin LLM
   exclude_sensibilidad: [confidencial]
   out_dir: graphify-out          # derivado, gitignored

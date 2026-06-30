@@ -18,8 +18,9 @@ como *lente*: produce un grafo de nodos clicable a partir de tus páginas de `wi
 1. **Confidencialidad** ([[gen-confidencialidad]]): graphify **no** ve páginas
    `sensibilidad: confidencial`. Se garantiza **controlando la entrada** (staging filtrado), no
    confiando en un flag.
-2. **Backend local**: usa Ollama u otro backend local. **Nada sale de tu máquina.** Esto mantiene
-   el principio "sin servidores" y protege lo interno además de lo confidencial.
+2. **Backend a tu elección**: `claude` (conexión Claude Code), `local` (Ollama) o `structural`
+   (sin LLM), registrado en `graph_lens.backend` del manifiesto y preguntado una vez. El invariante
+   no es el backend: es que **lo `confidencial` nunca entra a la lente**.
 3. **Derivado**: la salida es regenerable y no versionada; no es fuente de verdad.
 
 ## Requisitos
@@ -27,7 +28,8 @@ como *lente*: produce un grafo de nodos clicable a partir de tus páginas de `wi
 - `wiki/` con contenido (tras `ONBOARD` + `INGEST`). Con la wiki vacía no hay nada que graficar.
 - graphify instalado **fuera del repo** (no es dependencia de CEREBRO):
   `pip install graphifyy` (o `pipx install graphifyy`).
-- Un backend local (p. ej. [Ollama](https://ollama.com)) corriendo.
+- El backend que elijas: `claude` no necesita nada extra (ya usas Claude Code); `local` requiere
+  [Ollama](https://ollama.com) corriendo; `structural` no usa LLM.
 
 ## Cómo correrlo (manual)
 
@@ -66,7 +68,7 @@ En `graphify-out/` (todo gitignored):
 
 ## Validación (la primera vez)
 
-- [ ] Corrió **100% local** (sin llamadas a APIs externas).
+- [ ] Usó el backend elegido (`graph_lens.backend`); con `local`/`structural`, **cero** llamadas externas.
 - [ ] **Cero** páginas `sensibilidad: confidencial` en el grafo (ni títulos ni relaciones).
 - [ ] Los nodos corresponden a páginas reales de `wiki/`.
 - [ ] No se escribió nada en `wiki/` ni en `genome/`; `git status` no muestra `graphify-out/`.
