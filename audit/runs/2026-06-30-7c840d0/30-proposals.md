@@ -94,4 +94,6 @@ El humano decidió actuar también sobre las siguientes confirmadas (C5, C6) + u
 - **P5 (C6)**: ✅ approved → applied — filtro de staging de graphify endurecido (patrón tolerante + rutas preservadas + verificación bloqueante). Doc → `log.md`. impacto 41.
 - **C8**: ✅ approved → applied — runbook "backend local" → "con el backend de `graph_lens.backend`". Doc → `log.md`. impacto 31.
 
-Restantes confirmadas de menor impacto (C7 index.md, C9 `FROM "sim"`, C11–C15, C2-degradado) siguen anotadas, sin aplicar.
+- **C7**: ✅ approved → applied — `index.md` actualizado (anclas de `GRAPH`/gen-graph-lens + visualización; `updated` 2026-06-30). Wiki/índice → `log.md`. impacto 33.
+
+Restantes confirmadas de menor impacto (C9 `FROM "sim"`, C11–C15, C2-degradado) siguen anotadas, sin aplicar.

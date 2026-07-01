@@ -7,6 +7,7 @@ Formato: una línea por operación, lo más reciente arriba.
 <!-- Anota aquí tus operaciones conforme uses CEREBRO (ONBOARD, INGEST, QUERY, LINT, CONSOLIDATE, EVOLVE, AUDIT). -->
 
 ## 2026-06-30
+- APPLY (AUDIT C7): `index.md` actualizado (updated 2026-06-30) — anclas de operación `GRAPH`/[[gen-graph-lens]] y de la capa de visualización; el mapa de entrada refleja el genoma vigente.
 - APPLY (AUDIT C8): runbook de grafo — "backend local" → "con el backend de `graph_lens.backend`" (coherente con gen-graph-lens v2).
 - APPLY (AUDIT P5/C6): `dashboards/graph/00-leeme.md` — filtro de staging endurecido (patrón tolerante espacios/comillas, rutas preservadas en PowerShell, verificación bloqueante antes de graphify).
 - APPLY (AUDIT P4/C5): cap-ingesta-de-fuente v1->v2 — el workflow de INGEST ahora compone `gen-confidencialidad` (clasifica sensibilidad + PII-halt; no ancla confidenciales). Ver `genome/events.jsonl`.

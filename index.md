@@ -1,7 +1,7 @@
 ---
 title: CEREBRO — índice
 type: meta
-updated: 2026-06-22
+updated: 2026-06-30
 ---
 
 # 🧠 CEREBRO — mapa principal
@@ -19,6 +19,10 @@ por las relaciones `[[...]]`. Mantener corto: solo páginas-ancla, no todo el co
 - Cápsulas: [[ingesta-de-fuente]].
 - Auditoría de mutaciones: `genome/events.jsonl`.
 - Auto-auditoría: operación `AUDIT` → corridas en `audit/runs/`. Regla: [[gen-auto-auditoria]].
+- Lente de grafo: operación `GRAPH` → salida derivada en `graphify-out/` (no versionada). Regla: [[gen-graph-lens]].
+
+## Visualización (opcional, removible)
+- Paneles Dataview: `dashboards/00-leeme.md`. Lente de grafo interactiva: `dashboards/graph/00-leeme.md`. Regla: [[gen-visualizacion]].
 
 ## Memoria (anclas por tier)
 Aún vacío. Conforme ingieras fuentes, enlaza aquí las páginas-ancla de cada área.
