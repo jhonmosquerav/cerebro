@@ -36,22 +36,37 @@ como *lente*: produce un grafo de nodos clicable a partir de tus páginas de `wi
 1. **Staging filtrado** — copia a un dir temporal solo las páginas no confidenciales:
 
    ```bash
-   # bash
+   # bash — staging filtrado (excluye confidenciales) + verificación bloqueante
    mkdir -p graphify-out/staging
-   # excluye toda página con 'sensibilidad: confidencial' en su frontmatter
-   grep -rL 'sensibilidad: confidencial' wiki --include='*.md' \
-     | xargs -I{} cp --parents {} graphify-out/staging/
+   # patrón tolerante a espacios y comillas alrededor del valor
+   PAT="sensibilidad:[[:space:]]*[\"']?confidencial"
+   grep -rLE "$PAT" wiki --include='*.md' | xargs -I{} cp --parents {} graphify-out/staging/
+   # si algún confidencial se coló, ABORTA antes de invocar graphify
+   if grep -rlE "$PAT" graphify-out/staging --include='*.md' >/dev/null 2>&1; then
+     echo "ABORT: confidencial en staging — no se invoca graphify" >&2
+     rm -rf graphify-out/staging; exit 1
+   fi
    ```
 
    ```powershell
-   # PowerShell
+   # PowerShell — preserva rutas relativas (no aplana) + verificación bloqueante
    New-Item -ItemType Directory -Force graphify-out\staging | Out-Null
+   $pat  = 'sensibilidad:\s*["'']?confidencial'
+   $wiki = (Resolve-Path wiki).Path
    Get-ChildItem wiki -Recurse -Filter *.md |
-     Where-Object { -not (Select-String -Path $_.FullName -Pattern 'sensibilidad:\s*confidencial' -Quiet) } |
-     ForEach-Object { Copy-Item $_.FullName (Join-Path 'graphify-out\staging' $_.Name) }
+     Where-Object { -not (Select-String -Path $_.FullName -Pattern $pat -Quiet) } |
+     ForEach-Object {
+       $dest = Join-Path 'graphify-out\staging' $_.FullName.Substring($wiki.Length).TrimStart('\')
+       New-Item -ItemType Directory -Force (Split-Path $dest) | Out-Null
+       Copy-Item $_.FullName $dest
+     }
+   if (Get-ChildItem graphify-out\staging -Recurse -Filter *.md | Select-String -Pattern $pat -Quiet) {
+     Remove-Item -Recurse -Force graphify-out\staging
+     throw "ABORT: confidencial en staging — no se invoca graphify"
+   }
    ```
 
-2. **Construye el grafo** (backend local):
+2. **Construye el grafo** (con el backend de `graph_lens.backend`):
 
    ```bash
    graphify ./graphify-out/staging --mode deep
