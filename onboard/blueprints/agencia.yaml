@@ -76,3 +76,12 @@ seed_genes:
 taxonomy:
   semantic: [clientes, leads, propuestas, casos-exito, objeciones, precios, herramientas]
   procedural: [sops-ventas, onboarding-cliente]
+
+# Lente de grafo interactiva (gen-graph-lens, OPCIONAL). CEREBRO funciona sin esto.
+# Guardrail FIJO: las páginas 'confidencial' nunca entran a la lente (sea cual sea el backend).
+graph_lens:
+  enable: false                  # opcional; requiere graphify instalado fuera del repo
+  backend:                       # VACÍO a propósito: ONBOARD lo pregunta 1 vez y lo registra aquí
+                                 #   claude = Claude Code (API) | local = Ollama | structural = sin LLM
+  exclude_sensibilidad: [confidencial]
+  out_dir: graphify-out          # derivado, gitignored

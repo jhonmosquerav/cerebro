@@ -68,6 +68,10 @@ source_trust:
 # Ej. N incidentes sobre el mismo protocolo/fármaco -> página de síntesis de seguridad.
 sintesis_umbral: 3
 
+# Sensibilidad por defecto de las páginas nuevas (gen-confidencialidad).
+# Dominio sensible (salud): toda página nueva nace 'confidencial' salvo que se marque distinto.
+default_sensibilidad: confidencial
+
 # Genes específicos del sector que ONBOARD siembra (pasan por la compuerta de mutación).
 # NOTA: privacidad de paciente (gen-confidencialidad) y vigencia de protocolo
 # (gen-vigencia-temporal) YA están en el genoma base — NO se repiten aquí.
@@ -93,3 +97,14 @@ seed_genes:
 taxonomy:
   semantic:   [pacientes, profesionales, protocolos, farmacos, patologias, incidentes]
   procedural: [sops-asistenciales, protocolos-clinicos]
+
+# Lente de grafo interactiva (gen-graph-lens, OPCIONAL). CEREBRO funciona sin esto.
+# Guardrail FIJO: las páginas 'confidencial' nunca entran a la lente (sea cual sea el backend).
+# En salud esto importa doble: con default_sensibilidad: confidencial, las historias clínicas
+# quedan excluidas de la lente por diseño.
+graph_lens:
+  enable: false                  # opcional; requiere graphify instalado fuera del repo
+  backend:                       # VACÍO a propósito: ONBOARD lo pregunta 1 vez y lo registra aquí
+                                 #   claude = Claude Code (API) | local = Ollama | structural = sin LLM
+  exclude_sensibilidad: [confidencial]
+  out_dir: graphify-out          # derivado, gitignored
