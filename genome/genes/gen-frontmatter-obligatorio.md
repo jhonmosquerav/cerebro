@@ -2,14 +2,15 @@
 id: gen-frontmatter-obligatorio
 trigger: crear o actualizar una página en wiki/
 status: active
-version: 3
+version: 4
 ---
 
 Toda página de `wiki/` nace y se mantiene con frontmatter YAML válido:
 `title, type, tier, tags, confidence (0.0-1.0), created, last_reinforced, decay_rate,
 sources, relations`. Campos **opcionales** según contexto (lista no exhaustiva):
-`valido_hasta` ([[gen-vigencia-temporal]]), `sensibilidad` ([[gen-confidencialidad]], default
-`interno`), `clase` / `fecha_evento` / `volatile_fields` ([[gen-clase-temporal]]) y `estado`
+`valido_hasta` ([[gen-vigencia-temporal]]), `sensibilidad` ([[gen-confidencialidad]], default =
+`default_sensibilidad` del manifiesto; si no se declara, `interno`), `clase` / `fecha_evento` /
+`volatile_fields` ([[gen-clase-temporal]]) y `estado`
 ([[gen-entidad-con-estado]]).
 
 `relations` ya **no es un set cerrado**: su núcleo reservado es
