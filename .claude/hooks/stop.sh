@@ -43,6 +43,6 @@ fi
 # --- falta el resumen episódico: bloquear con instrucción precisa ---
 # El reason no debe contener comillas dobles ni backslashes (JSON construido a mano).
 MARKER_REL=".claude/hooks/.state/pending-dump-$SESSION8"
-REASON="La sesión tocó el cerebro (hay cambios en wiki/, genome/, log.md o index.md) y falta el resumen episódico. Crea exactamente el archivo $EPISODIC_REL con frontmatter YAML válido según gen-frontmatter-obligatorio (title, type, tier: episodic, tags, confidence, created, last_reinforced, decay_rate, sources, relations) y un resumen breve de la sesión: qué se hizo, qué páginas se tocaron y qué quedó pendiente. Si existe el marcador $MARKER_REL, bórralo. Después intenta terminar de nuevo."
+REASON="La sesión tocó el cerebro (hay cambios en wiki/, genome/, log.md o index.md) y falta el resumen episódico. Crea exactamente el archivo $EPISODIC_REL con el frontmatter episódico completo según gen-checkpoint y gen-frontmatter-obligatorio (title, type: sesion, tier: episodic, tags, confidence, created, last_reinforced, decay_rate: high, clase: evento, fecha_evento, sources, relations), un resumen breve de la sesión (qué se hizo, qué páginas se tocaron, qué quedó pendiente) y una línea en log.md. Si existe el marcador $MARKER_REL, bórralo. Después intenta terminar de nuevo."
 printf '{"decision":"block","reason":"%s"}\n' "$REASON"
 exit 0

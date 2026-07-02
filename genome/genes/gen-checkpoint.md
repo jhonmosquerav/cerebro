@@ -2,15 +2,16 @@
 id: gen-checkpoint
 trigger: operación CHECKPOINT / "checkpoint" — o el agente la propone ante contexto largo o cierre de sesión sin hooks activos
 status: active
-version: 1
+version: 2
 ---
 
 CHECKPOINT es la implementación **manual y portable** del loop de memoria: vuelca a disco lo
 valioso de la sesión ANTES de que se pierda (compactación de contexto, cierre de sesión,
 cambio de agente). El loop de memoria es un **contrato del genoma** con implementaciones
 intercambiables que deben cumplir estas mismas postcondiciones: la **automática** son los
-hooks de Claude Code (`PreCompact` ≈ paso 1; `Stop` ≈ pasos 2–4 + derivación a EVOLVE; ver
-`.claude/hooks/README.md`); la **manual** es esta operación — cualquier agente que lea
+hooks de Claude Code (`PreCompact` ≈ paso 1; `Stop` exige el paso 2 — los pasos 3–4 y la
+derivación a EVOLVE quedan a cargo del agente; ver `.claude/hooks/README.md`); la
+**manual** es esta operación — cualquier agente que lea
 `AGENTS.md` la ejecuta sin hooks ni harness específico. Ambas comparten la clave de
 idempotencia: si coexisten sobre la misma sesión, actualizan los mismos archivos, no duplican.
 

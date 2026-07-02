@@ -43,9 +43,10 @@ Bloquea el cierre **solo** si se cumplen las dos condiciones a la vez:
 2. no existe `wiki/episodic/<YYYY-MM-DD>-<session8>.md`.
 
 En ese caso imprime `{"decision":"block","reason":"…"}` con la instrucción exacta: crear
-ese archivo con frontmatter válido (`tier: episodic`) y un resumen de la sesión (qué se
-hizo, qué páginas se tocaron, pendientes), y borrar el marcador `pending-dump` de la
-sesión si existe. En **todos** los demás casos permite el cierre:
+ese archivo con el frontmatter episódico completo ([[gen-checkpoint]] paso 2: `type: sesion`,
+`tier: episodic`, `clase: evento`, `fecha_evento`, `decay_rate: high`), un resumen de la
+sesión (qué se hizo, qué páginas se tocaron, pendientes) más una línea en `log.md`, y borrar
+el marcador `pending-dump` de la sesión si existe. En **todos** los demás casos permite el cierre:
 - `stop_hook_active: true` en el stdin → permite SIEMPRE (obligatorio: evita bucles infinitos);
 - árbol limpio en esas rutas → permite;
 - sin `git`, sin `session_id` o sin fecha → permite (degradación: nunca bloquear a ciegas).
