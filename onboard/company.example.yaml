@@ -47,6 +47,22 @@ source_trust:
 # Umbral de eventos con clave común para crear una síntesis (gen-sintesis-de-volumen)
 sintesis_umbral: 3
 
+# Umbrales del ciclo de vida de la memoria (gen-ciclo-de-vida). OPCIONAL: si se omite el
+# bloque (o cualquier clave), aplican estos mismos defaults del genoma base.
+# Defaults v1 razonados pero NO calibrados: se revisan con las métricas del piloto Fase 0.
+ciclo_de_vida:
+  decay_ventana_dias: { high: 14, medium: 60, low: 180 }   # días sin refuerzo = 1 ventana
+  decaimiento_delta: 0.05     # confidence que se resta por ventana vencida
+  refuerzo_delta: { oficial: 0.10, interna: 0.05, blanda: 0.03 }  # subida por confirmación
+  confidence_techo: 0.95      # techo absoluto del refuerzo automático
+  piso_archivo: 0.30          # confidence <= piso => CONSOLIDATE propone archivar
+  archivo_eventos_dias: 180   # eventos más viejos => candidatos a archivo
+  promocion:                  # working -> semantic (todas las condiciones a la vez)
+    confidence_min: 0.70
+    fuentes_min: 2            # fuentes distintas en `sources`...
+    refs_min: 2               # ...o páginas distintas que la referencien
+    edad_min_dias: 7          # y >= 1 refuerzo posterior a `created`
+
 # Sensibilidad por defecto de las páginas nuevas (gen-confidencialidad). Dominios sensibles
 # (legal, salud) lo ponen en 'confidencial'; el resto suele dejar 'interno'.
 default_sensibilidad: interno
