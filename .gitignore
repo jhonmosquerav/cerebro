@@ -11,3 +11,6 @@ desktop.ini
 
 # Lente de grafo externa (graphify): salida derivada y regenerable; no es conocimiento
 graphify-out/
+
+# Estado runtime de los hooks de Claude Code (marcadores de PreCompact; no es conocimiento)
+.claude/hooks/.state/

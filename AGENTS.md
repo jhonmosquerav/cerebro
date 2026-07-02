@@ -68,10 +68,12 @@ Las reglas completas viven en `genome/genes/`. Resumen:
 - `.obsidian/` — preset con Dataview declarado. Cualquier agente que no sea Obsidian lo ignora. Regla: [[gen-visualizacion]].
 
 ## Loop de memoria infinita (hooks)
-Declarados en `.claude/settings.json` (hoy stubs; ver `.claude/hooks/README.md`):
-- `SessionStart` → carga index + log reciente + genes activos.
-- `PreCompact` → antes de compactar, vuelca lo valioso a `wiki/working/` (memoria infinita).
-- `Stop` → escribe resumen episódico + corre `EVOLVE` en modo propuesta.
+Implementados (v1) en `.claude/settings.json` + `.claude/hooks/*.sh` (ver `.claude/hooks/README.md`):
+- `SessionStart` → inyecta index + log reciente + genes activos; recuerda volcados pendientes.
+- `PreCompact` → antes de compactar, vuelca un snapshot mecánico a `wiki/working/`; el
+  destilado inteligente lo hace el agente al ver el recordatorio.
+- `Stop` → exige el resumen episódico en `wiki/episodic/` cuando la sesión tocó el cerebro;
+  correr `EVOLVE` en modo propuesta sigue a cargo del agente.
 
 ## Reproducibilidad y portabilidad
 - Git inicializado: cada mutación = 1 commit + 1 línea en `genome/events.jsonl` → permite replay/rollback.

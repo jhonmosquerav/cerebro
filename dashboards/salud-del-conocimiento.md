@@ -5,7 +5,8 @@ type: meta
 
 # Salud del conocimiento
 
-> Apunta a `wiki/`. Cambia `FROM "wiki"` por `FROM "sim"` para ver los escenarios simulados con datos.
+> Apunta a `wiki/`, que en el template nace vacía: estas tablas se llenan tras `ONBOARD` +
+> `INGEST`. Mientras tanto, verlas sin filas es lo esperado (panel con datos ya: [[salud-del-genoma]]).
 
 ## Confianza más baja primero (candidatas a reforzar o decaer)
 

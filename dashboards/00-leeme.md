@@ -20,5 +20,6 @@ lee el mismo frontmatter y lo arma en markdown. Misma información, render está
 - [[salud-del-conocimiento]] — confianza, vencimientos, confidenciales y eventos de la wiki.
 - [[por-sector]] — vistas que `ONBOARD` adapta a tu negocio.
 
-> Las consultas apuntan a `wiki/` (vacía hasta que ingieras). Para verlas con datos ya,
-> cambia `FROM "wiki"` por `FROM "sim"` y verás los 5 escenarios simulados.
+> Las consultas de conocimiento apuntan a `wiki/`, que en el template nace **vacía**: es
+> normal ver tablas sin filas hasta correr `ONBOARD` + `INGEST`. Para ver un panel con
+> datos desde ya, abre [[salud-del-genoma]]: lee `genome/genes/`, que sí viene poblado.
