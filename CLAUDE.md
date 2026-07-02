@@ -25,6 +25,7 @@ correr `ONBOARD` y operar su conocimiento.
 | `INGEST <X>` | "ingiere / digiere esto" | Clasifica, crea/actualiza página con frontmatter, extrae conceptos, enlaza, actualiza index + log. |
 | `BULK INGEST` | "procesa todo raw/" | Corre INGEST sobre cada archivo de `raw/`; reporta y actualiza index. |
 | `QUERY <X>` | "busca / qué sabemos de" | Navega desde `index.md` por relaciones; responde citando páginas-fuente. |
+| `CHECKPOINT` | "checkpoint" / el agente lo propone ante contexto largo o cierre de sesión sin hooks | Implementación manual portable del loop de memoria: vuelca lo valioso no persistido a `wiki/working/`, actualiza el episódico de la sesión, refresca anclas si nacieron páginas y deja línea en `log.md`. Idempotente por clave de sesión (re-ejecutar actualiza, no duplica). Regla: [[gen-checkpoint]]. |
 | `LINT` | mantenimiento | Detecta huérfanos, contradicciones y páginas vencidas por `decay_rate`; propone y aplica tras OK. |
 | `CONSOLIDATE` | mantenimiento | Promueve conocimiento confirmado de tier (working→semantic), fusiona duplicados, baja confidence de lo no reforzado. |
 | `EVOLVE` | patrón repetido detectado | PROPONE mutación de genoma (nuevo/editar/deprecar gen). Aplica solo con OK + línea en events.jsonl. |
@@ -51,11 +52,11 @@ Las reglas completas viven en `genome/genes/`. Resumen:
 - [[gen-visualizacion]] — capa opcional de paneles (Dataview, reporte estático o grafo interactivo vía lente externa); ONBOARD la recomienda.
 
 **Operativos**
-- [[gen-onboard]] · [[gen-ingest]] · [[gen-bulk-ingest]] · [[gen-query]] · [[gen-lint]] · [[gen-consolidate]] · [[gen-evolve]] · [[gen-auto-auditoria]] · [[gen-graph-lens]]
+- [[gen-onboard]] · [[gen-ingest]] · [[gen-bulk-ingest]] · [[gen-query]] · [[gen-checkpoint]] · [[gen-lint]] · [[gen-consolidate]] · [[gen-evolve]] · [[gen-auto-auditoria]] · [[gen-graph-lens]]
 
 ## Mapa de la memoria (tiers de `wiki/`)
-- `working/` — observaciones recientes, `decay_rate: high`. Lo que el hook `PreCompact` vuelca aquí.
-- `episodic/` — resúmenes por sesión (los escribe el hook `Stop`).
+- `working/` — observaciones recientes, `decay_rate: high`. Lo que el hook `PreCompact` o un `CHECKPOINT` vuelca aquí.
+- `episodic/` — resúmenes por sesión (los escribe el hook `Stop` o un `CHECKPOINT`).
 - `semantic/` — conocimiento consolidado: conceptos, entidades, fuentes, síntesis.
 - `procedural/` — SOPs y procesos de la empresa.
 
@@ -68,13 +69,18 @@ Las reglas completas viven en `genome/genes/`. Resumen:
 - `dashboards/graph/` — runbook de la **lente de grafo** interactiva (graphify, opcional, backend local); salida derivada en `graphify-out/` (no versionada). Regla: [[gen-visualizacion]].
 - `.obsidian/` — preset con Dataview declarado. Cualquier agente que no sea Obsidian lo ignora. Regla: [[gen-visualizacion]].
 
-## Loop de memoria infinita (hooks)
-Implementados (v1) en `.claude/settings.json` + `.claude/hooks/*.sh` (ver `.claude/hooks/README.md`):
-- `SessionStart` → inyecta index + log reciente + genes activos; recuerda volcados pendientes.
-- `PreCompact` → antes de compactar, vuelca un snapshot mecánico a `wiki/working/`; el
-  destilado inteligente lo hace el agente al ver el recordatorio.
-- `Stop` → exige el resumen episódico en `wiki/episodic/` cuando la sesión tocó el cerebro;
-  correr `EVOLVE` en modo propuesta sigue a cargo del agente.
+## Loop de memoria infinita (contrato multi-implementación)
+El loop (volcar lo valioso antes de perderlo → cerrar con resumen episódico) es un **contrato
+del genoma** con implementaciones intercambiables que cumplen las mismas postcondiciones:
+- **Automática — hooks de Claude Code**, implementados (v1) en `.claude/settings.json` + `.claude/hooks/*.sh` (ver `.claude/hooks/README.md`):
+  - `SessionStart` → inyecta index + log reciente + genes activos; recuerda volcados pendientes.
+  - `PreCompact` → antes de compactar, vuelca un snapshot mecánico a `wiki/working/`; el
+    destilado inteligente lo hace el agente al ver el recordatorio.
+  - `Stop` → exige el resumen episódico en `wiki/episodic/` cuando la sesión tocó el cerebro;
+    correr `EVOLVE` en modo propuesta sigue a cargo del agente.
+- **Manual portable — operación `CHECKPOINT`** ([[gen-checkpoint]]): cualquier agente que lea
+  `AGENTS.md` la ejecuta sin hooks ni harness específico. Hooks y CHECKPOINT comparten la
+  clave de idempotencia: sobre la misma sesión actualizan los mismos archivos, no duplican.
 
 ## Reproducibilidad y portabilidad
 - Git inicializado: cada mutación = 1 commit + 1 línea en `genome/events.jsonl` → permite replay/rollback.
