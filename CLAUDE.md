@@ -11,7 +11,7 @@ correr `ONBOARD` y operar su conocimiento.
 ## Principios inviolables
 1. `raw/` es **inmutable**: nunca edites ni borres una fuente; solo lees de ahí.
 2. **Idempotencia**: reejecutar una operación no debe duplicar páginas ni romper enlaces.
-3. **Presupuesto de contexto**: navega SIEMPRE desde `index.md` por relaciones; no leas todo.
+3. **Presupuesto de contexto**: navega primero y SIEMPRE desde `index.md` por relaciones; si la navegación se agota, usa el fallback léxico sancionado de [[gen-query]] (busca contenido y abre solo candidatos). Nunca leas la wiki entera.
 4. **Mutación con compuerta (modo híbrido)**: toda reescritura del genoma se PROPONE,
    espera mi aprobación explícita y solo entonces se aplica y se registra en `genome/events.jsonl`.
 5. **Auditabilidad**: toda mutación deja una línea en `genome/events.jsonl` (append-only, nunca se reescribe).
@@ -24,10 +24,10 @@ correr `ONBOARD` y operar su conocimiento.
 | `ONBOARD` | primera vez / cambio de empresa | Aplica el manifiesto `onboard/company.yaml` (determinista, reproducible) → siembra perfil + genes del sector. La entrevista solo genera ese manifiesto. |
 | `INGEST <X>` | "ingiere / digiere esto" | Clasifica, crea/actualiza página con frontmatter, extrae conceptos, enlaza, actualiza index + log. |
 | `BULK INGEST` | "procesa todo raw/" | Corre INGEST sobre cada archivo de `raw/`; reporta y actualiza index. |
-| `QUERY <X>` | "busca / qué sabemos de" | Navega desde `index.md` por relaciones; responde citando páginas-fuente. |
+| `QUERY <X>` | "busca / qué sabemos de" | Navega desde `index.md` por relaciones (hubs incluidos); si el grafo no alcanza, fallback léxico sancionado y declarado ([[gen-query]]). Responde citando páginas-fuente. |
 | `CHECKPOINT` | "checkpoint" / el agente lo propone ante contexto largo o cierre de sesión sin hooks | Implementación manual portable del loop de memoria: vuelca lo valioso no persistido a `wiki/working/`, actualiza el episódico de la sesión, refresca anclas si nacieron páginas y deja línea en `log.md`. Idempotente por clave de sesión (re-ejecutar actualiza, no duplica). Regla: [[gen-checkpoint]]. |
 | `LINT` | mantenimiento | Detecta huérfanos, contradicciones y páginas vencidas por `decay_rate`; propone y aplica tras OK. |
-| `CONSOLIDATE` | mantenimiento | Promueve conocimiento confirmado de tier (working→semantic), fusiona duplicados, baja confidence de lo no reforzado — con los umbrales numéricos de [[gen-ciclo-de-vida]]. |
+| `CONSOLIDATE` | mantenimiento | Promueve conocimiento confirmado de tier (working→semantic), fusiona duplicados, baja confidence de lo no reforzado — con los umbrales numéricos de [[gen-ciclo-de-vida]]; parte secciones del índice que superen `hub_umbral` en páginas-hub ([[gen-jerarquizacion-indice]]). |
 | `EVOLVE` | patrón repetido detectado | PROPONE mutación de genoma (nuevo/editar/deprecar gen). Aplica solo con OK + línea en events.jsonl. |
 | `AUDIT` | "auto-audítate / audita el cerebro" | Audita la base y PROPONE ≤3 mejoras de mayor impacto (contradicciones, vacíos, reglas obsoletas/redundantes), reproducible, con maker≠auditor y gate. Estado en `audit/runs/`. |
 | `GRAPH` | "visualiza / analiza el grafo" | Corre una lente de grafo externa (local, opcional) sobre copia *staging* no-confidencial de `wiki/`; deriva señales (hubs, comunidades, caminos, islas) y las PROPONE a CONSOLIDATE/QUERY/LINT/EVOLVE. Salida derivada en `graphify-out/` (no versionada). Regla: [[gen-graph-lens]]. |
@@ -50,6 +50,7 @@ Las reglas completas viven en `genome/genes/`. Resumen:
 - [[gen-entidad-con-estado]] — entidad con `estado` se actualiza in-place, con evento de respaldo.
 - [[gen-confianza-por-fuente]] — la `confidence` inicial se ancla a la credibilidad de la fuente.
 - [[gen-sintesis-de-volumen]] — N eventos con clave común → página de síntesis; deriva a EVOLVE si hay riesgo.
+- [[gen-jerarquizacion-indice]] — el índice crece con política: anclado determinista y partición en páginas-hub al superar `hub_umbral`.
 - [[gen-migracion-genoma]] — al cambiar el genoma, re-valida manifiesto y páginas y propone la migración.
 - [[gen-visualizacion]] — capa opcional de paneles (Dataview, reporte estático o grafo interactivo vía lente externa); ONBOARD la recomienda.
 

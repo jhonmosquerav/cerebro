@@ -1,13 +1,15 @@
 ---
 title: CEREBRO — índice
 type: meta
-updated: 2026-06-30
+updated: 2026-07-02
 ---
 
 # 🧠 CEREBRO — mapa principal
 
 Punto de entrada del cerebro. El agente lee este archivo primero y navega desde aquí
-por las relaciones `[[...]]`. Mantener corto: solo páginas-ancla, no todo el contenido.
+por las relaciones `[[...]]`. Mantener corto: solo páginas-ancla, no todo el contenido;
+si una sección supera `hub_umbral` anclas, se parte en página-hub y aquí queda solo
+`[[hub-<área>]]` ([[gen-jerarquizacion-indice]]).
 
 ## Estado
 - Fase: **scaffolding listo** — pendiente correr `ONBOARD`.
@@ -25,7 +27,8 @@ por las relaciones `[[...]]`. Mantener corto: solo páginas-ancla, no todo el co
 - Paneles Dataview: `dashboards/00-leeme.md`. Lente de grafo interactiva: `dashboards/graph/00-leeme.md`. Regla: [[gen-visualizacion]].
 
 ## Memoria (anclas por tier)
-Aún vacío. Conforme ingieras fuentes, enlaza aquí las páginas-ancla de cada área.
+Aún vacío. Conforme ingieras fuentes, ancla aquí según [[gen-jerarquizacion-indice]]
+(determinista: ni confidencial, ni working/episodic, ni `clase: evento`).
 
 - **working/** — _(observaciones recientes)_
 - **episodic/** — _(resúmenes de sesión)_
