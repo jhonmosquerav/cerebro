@@ -2,7 +2,7 @@
 id: gen-ciclo-de-vida
 trigger: reforzar, degradar, promover o archivar páginas de wiki/ (CONSOLIDATE, LINT, QUERY, INGEST)
 status: active
-version: 2
+version: 3
 ---
 
 La memoria por capas deja de ser metáfora: estos son los **números** del ciclo de vida.
@@ -52,7 +52,8 @@ taxonomía que corresponda (los `[[wiki-links]]` van por nombre y no se rompen),
 
 **Suelo y archivo** (CONSOLIDATE lo **propone**, aplica solo tras OK): página
 `clase: estable` con `confidence ≤ 0.30` (`piso_archivo`) y sin refuerzo → mover a
-`wiki/archive/` añadiendo `archivado: YYYY-MM-DD` (frontmatter intacto, `raw/` jamás se
+`wiki/archive/` añadiendo `archivado: YYYY-MM-DD` (frontmatter intacto salvo la
+actualización `id_pagina`/`id_alias` de [[gen-identidad-de-pagina]], `raw/` jamás se
 toca, el ancla en `index.md` se retira). `clase: evento` con `fecha_evento` a más de 180
 días (`archivo_eventos_dias`) → candidata a archivo, de bajo riesgo si ya está agregada en
 una síntesis; los resúmenes de `episodic/` siguen esta misma regla de eventos. **Nunca** se
