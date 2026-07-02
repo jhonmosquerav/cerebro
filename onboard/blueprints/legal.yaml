@@ -73,7 +73,7 @@ seed_genes:
 
 # Taxonomía inicial de carpetas a crear por tier
 taxonomy:
-  semantic: [clientes, casos, contrapartes, contratos, jurisprudencia, normativa, dictamenes]
+  semantic: [clientes, casos, contrapartes, juzgados, abogados, contratos, jurisprudencia, normativa, dictamenes]
   procedural: [sops-litigio, plantillas-clausulas]
 
 # Lente de grafo interactiva (gen-graph-lens, OPCIONAL). CEREBRO funciona sin esto.

@@ -74,7 +74,7 @@ seed_genes:
 
 # Taxonomía inicial de carpetas a crear por tier
 taxonomy:
-  semantic: [clientes, leads, propuestas, casos-exito, objeciones, precios, herramientas]
+  semantic: [clientes, leads, productos, propuestas, casos-exito, objeciones, precios, herramientas]
   procedural: [sops-ventas, onboarding-cliente]
 
 # Lente de grafo interactiva (gen-graph-lens, OPCIONAL). CEREBRO funciona sin esto.
