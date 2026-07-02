@@ -2,7 +2,7 @@
 id: gen-identidad-de-pagina
 trigger: operaciones INGEST/BULK INGEST — decidir qué fuente se procesa y en qué página aterriza
 status: active
-version: 1
+version: 2
 ---
 
 La idempotencia (principio 2) se ejecuta con dos identidades distintas: la **identidad de
@@ -37,8 +37,10 @@ mismo valor en todo OS y es verificable a posteriori contra los blobs del propio
   ([[gen-frontmatter-obligatorio]]: sube `last_reinforced`), nunca crear otra;
 - sujeto distinto (dos nombres normalizan al mismo slug) → la nueva usa `<slug>-<hash8>`.
 Si CONSOLIDATE fusiona páginas, la superviviente lista las claves absorbidas en `id_alias`;
-INGEST busca por `id_pagina` **y** `id_alias` antes de crear. LINT marca toda página cuya
-`id_pagina` no coincida con su ruta.
+INGEST busca por `id_pagina` **y** `id_alias` antes de crear. Al mover una página de tier
+(promoción o archivo, [[gen-ciclo-de-vida]]) CONSOLIDATE recalcula `id_pagina` a la ruta
+nueva y añade la clave anterior a `id_alias`. LINT marca toda página cuya `id_pagina` no
+coincida con su ruta (las claves históricas viven en `id_alias`).
 
 ## Ledger de ingesta (`ingest-ledger.jsonl`, raíz del repo)
 Registro **append-only** de fuentes procesadas (como `genome/events.jsonl`: se añade, jamás
