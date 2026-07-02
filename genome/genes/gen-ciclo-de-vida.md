@@ -2,7 +2,7 @@
 id: gen-ciclo-de-vida
 trigger: reforzar, degradar, promover o archivar páginas de wiki/ (CONSOLIDATE, LINT, QUERY, INGEST)
 status: active
-version: 3
+version: 4
 ---
 
 La memoria por capas deja de ser metáfora: estos son los **números** del ciclo de vida.
@@ -20,7 +20,9 @@ gana sobre el default del tier.
 **Refuerzo** — qué cuenta y su efecto: (1) una fuente nueva que confirma el contenido
 (INGEST / BULK INGEST) pone `last_reinforced: hoy`, se añade a `sources` y sube
 `confidence` según su tipo (`refuerzo_delta`): oficial +0.10, interna +0.05, blanda +0.03 y
-solo si concuerda; (2) citar la página para sostener una respuesta de QUERY refresca
+solo si concuerda — un tipo declarado solo en `source_trust` (p. ej. `doctrina`) usa el
+delta del tipo estándar de trust inmediatamente inferior (conservador), salvo que el
+manifiesto declare el suyo en `ciclo_de_vida.refuerzo_delta`—; (2) citar la página para sostener una respuesta de QUERY refresca
 `last_reinforced` (el uso reinicia el reloj) pero **no** sube `confidence` (uso no es
 verificación); (3) agregar eventos nuevos a una página `type: sintesis` refuerza la
 síntesis. Techo del refuerzo automático: `confidence` nunca supera
