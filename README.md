@@ -80,7 +80,8 @@ cerebro/
 │   ├── working/              # observaciones recientes (decae rápido)
 │   ├── episodic/             # resúmenes por sesión
 │   ├── semantic/             # conocimiento consolidado
-│   └── procedural/           # SOPs y procesos
+│   ├── procedural/           # SOPs y procesos
+│   └── archive/              # retirado de circulación (histórico consultable a pedido)
 ├── dashboards/               # paneles Dataview + lente de grafo (visualización opcional)
 ├── audit/                    # corridas de AUDIT y evaluaciones (con sus propuestas)
 ├── ops/                      # runbooks de operación segura: git seguro + backup cifrado
@@ -112,6 +113,7 @@ cerebro/
 | `INGEST <X>` | Clasifica una fuente, crea su página con frontmatter, extrae conceptos y la enlaza. |
 | `BULK INGEST` | Corre `INGEST` sobre todo `raw/`. |
 | `QUERY <X>` | Navega el grafo desde `index.md` y responde citando las páginas-fuente. |
+| `CHECKPOINT` | Vuelca lo valioso de la sesión a `wiki/working/` y actualiza el episódico — loop de memoria manual y portable, idempotente por sesión. |
 | `LINT` | Detecta huérfanos, contradicciones, vencidos y relaciones inválidas; propone y aplica tras OK. |
 | `CONSOLIDATE` | Promueve conocimiento confirmado, fusiona duplicados, decae lo no reforzado. |
 | `EVOLVE` | Detecta patrones y **propone** mutaciones del genoma (solo se aplican con tu OK). |
