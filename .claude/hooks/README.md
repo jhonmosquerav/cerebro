@@ -25,7 +25,8 @@ nota manual, sin git → permitir el cierre).
 - Crea `wiki/working/<YYYY-MM-DD>-precompact-<session8>.md` (`session8` = primeros 8
   caracteres del `session_id`) con frontmatter válido según [[gen-frontmatter-obligatorio]]:
   `tier: working`, `decay_rate: high`, `confidence: 0.3`. `sensibilidad` se omite a
-  propósito para que aplique el default del manifiesto (gen v4).
+  propósito para que aplique el default del manifiesto (gen-frontmatter-obligatorio,
+  versión vigente en `genome/genes/`).
 - Cuerpo: metadatos de la sesión (fecha, `session_id`, trigger, ruta del transcript) y,
   si hay `python3`/`python` funcional, los últimos ~15 turnos de texto user/assistant del
   transcript JSONL (texto plano, sin tool calls, ~500 caracteres por turno). Sin python:
@@ -86,9 +87,10 @@ echo '{"session_id":"test0000-1111","stop_hook_active":false}' | bash .claude/ho
 - `settings.json` se relee **al iniciar sesión**: los cambios en hooks o permisos aplican
   al reiniciar Claude Code, no en caliente.
 - Además del loop, `settings.json` endurece permisos: `deny` de `Write`/`Edit` sobre
-  `raw/**` ([[gen-raw-inmutable]] hecho mecánico) y `ask` sobre `genome/**` (la compuerta
-  de [[gen-compuerta-mutacion]] materializada: toda escritura al genoma pide confirmación
-  humana).
+  `raw/**` (refuerzo mecánico de [[gen-raw-inmutable]]) y `ask` sobre `genome/**` (refuerzo
+  de [[gen-compuerta-mutacion]]). Límite honesto: estas reglas cubren las herramientas
+  Write/Edit; una escritura vía Bash/PowerShell no pasa por ellas — el gen y el historial
+  de git siguen siendo la barrera de fondo.
 - Gotcha aprendido a la mala: los `command` de los hooks corren en **bash**
   (`/usr/bin/bash`), también en Windows — no en PowerShell. Entrecomilla siempre
   (paréntesis sin comillas rompieron los stubs originales).

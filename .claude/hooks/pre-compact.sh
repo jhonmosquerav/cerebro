@@ -117,7 +117,8 @@ PYEOF
 fi
 
 # --- página nueva: nace con frontmatter válido (gen-frontmatter-obligatorio) ---
-# sensibilidad se omite a propósito: aplica el default del manifiesto (gen v4).
+# sensibilidad se omite a propósito: aplica el default del manifiesto
+# (gen-frontmatter-obligatorio, versión vigente en genome/genes/).
 if [ ! -f "$PAGE" ]; then
   {
     printf '%s\n' "---"
