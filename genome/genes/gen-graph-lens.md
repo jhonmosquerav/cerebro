@@ -2,12 +2,15 @@
 id: gen-graph-lens
 trigger: operación GRAPH / "visualiza o analiza el grafo"
 status: active
-version: 2
+version: 3
 ---
 
 GRAPH corre una lente de grafo externa (p. ej. graphify) sobre una copia *staging* de `wiki/`
-filtrada —excluye toda página `sensibilidad: confidencial` ([[gen-confidencialidad]]): **este es
-el invariante duro — lo confidencial nunca sale, sea cual sea el motor**. El **backend lo elige el
+filtrada por **allowlist fail-closed**: solo entra la página que declara explícitamente
+`sensibilidad: publico|interno` ([[gen-confidencialidad]]) y no está en cuarentena
+`riesgo_inyeccion: true` ([[gen-anti-inyeccion]]); página sin campo, con typo o con
+frontmatter ilegible NO entra. **Este es el invariante duro — lo confidencial y lo
+en-cuarentena nunca salen, sea cual sea el motor**. El **backend lo elige el
 usuario** (`claude` = conexión Claude Code · `local` = Ollama · `structural` = sin LLM) y queda
 **registrado en `graph_lens.backend` del manifiesto**: si está vacío, el agente **pregunta una
 vez** y persiste la elección; si ya está puesto, lo usa sin volver a preguntar (mismo manifiesto →

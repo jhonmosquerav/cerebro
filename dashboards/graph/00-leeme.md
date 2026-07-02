@@ -36,9 +36,11 @@ como *lente*: produce un grafo de nodos clicable a partir de tus páginas de `wi
 ## Cómo correrlo (manual)
 
 1. **Staging por allowlist (fail-closed)** — copia a un dir temporal **solo** las páginas cuyo
-   frontmatter declara **explícitamente** `sensibilidad: publico` o `sensibilidad: interno`.
-   Página sin campo, con valor no reconocido (typo) o con frontmatter ilegible **no entra**, y
-   queda listada con su motivo en `graphify-out/excluidas.txt` (reporte derivado y local,
+   frontmatter declara **explícitamente** `sensibilidad: publico` o `sensibilidad: interno`
+   **y** no está en cuarentena (`riesgo_inyeccion: true`, [[gen-anti-inyeccion]] — su contenido
+   transcribe instrucciones embebidas y no debe llegar a un backend LLM).
+   Página sin campo, con valor no reconocido (typo), en cuarentena o con frontmatter ilegible
+   **no entra**, y queda listada con su motivo en `graphify-out/excluidas.txt` (reporte derivado y local,
    gitignored; revísalo, no lo copies a `wiki/`). Ojo: el `default_sensibilidad` del manifiesto
    **no rescata** páginas aquí — la lente exige declaración explícita en la propia página; una
    página meta sin campo queda fuera del grafo hasta que declare `sensibilidad: publico`.
@@ -51,6 +53,7 @@ como *lente*: produce un grafo de nodos clicable a partir de tus páginas de `wi
    REPORTE="graphify-out/excluidas.txt"
    ALLOW="^sensibilidad:[[:space:]]*[\"']?(publico|interno)[\"']?[[:space:]]*$"
    DENY="^sensibilidad:[[:space:]]*[\"']?confidencial"
+   QUAR="^riesgo_inyeccion:[[:space:]]*[\"']?true"
    rm -rf "$STAGING"
    mkdir -p "$STAGING"
    : > "$REPORTE"
@@ -65,6 +68,8 @@ como *lente*: produce un grafo de nodos clicable a partir de tus páginas de `wi
        printf '%s\tsin frontmatter legible\n' "$rel" >> "$REPORTE"
      elif printf '%s\n' "$fm" | grep -iqE "$DENY"; then
        printf '%s\tconfidencial\n' "$rel" >> "$REPORTE"
+     elif printf '%s\n' "$fm" | grep -iqE "$QUAR"; then
+       printf '%s\ten cuarentena (riesgo_inyeccion)\n' "$rel" >> "$REPORTE"
      elif printf '%s\n' "$fm" | grep -iqE "$ALLOW"; then
        mkdir -p "$STAGING/$(dirname "$rel")"
        cp "$f" "$STAGING/$rel"
@@ -99,6 +104,7 @@ como *lente*: produce un grafo de nodos clicable a partir de tus páginas de `wi
    $reporte = 'graphify-out\excluidas.txt'
    $allow = '^sensibilidad:\s*["'']?(publico|interno)["'']?\s*$'
    $deny  = '^sensibilidad:\s*["'']?confidencial'
+   $quar  = '^riesgo_inyeccion:\s*["'']?true'
    if (Test-Path $staging) { Remove-Item -Recurse -Force $staging }
    New-Item -ItemType Directory -Force $staging | Out-Null
    $excluidas = @()
@@ -114,6 +120,7 @@ como *lente*: produce un grafo de nodos clicable a partir de tus páginas de `wi
      $motivo = $null
      if ($fm.Count -eq 0) { $motivo = 'sin frontmatter legible' }
      elseif ($fm -match $deny) { $motivo = 'confidencial' }
+     elseif ($fm -match $quar) { $motivo = 'en cuarentena (riesgo_inyeccion)' }
      elseif (-not ($fm -match $allow)) { $motivo = 'sin sensibilidad explicita permitida' }
      if ($motivo) {
        $excluidas += ("{0}`t{1}" -f $rel, $motivo)
@@ -162,6 +169,8 @@ En `graphify-out/` (todo gitignored):
 - [ ] `graphify-out/excluidas.txt` revisado: nada que debiera estar en el grafo quedó fuera por
       typo o campo ausente (si falta algo, corrige el frontmatter de la página y repite el paso 1).
 - [ ] **Cero** páginas `sensibilidad: confidencial` en el grafo (ni títulos ni relaciones).
+- [ ] **Cero** páginas en cuarentena (`riesgo_inyeccion: true`) en el staging — su contenido
+      transcribe instrucciones embebidas y no debe llegar al backend.
 - [ ] Los nodos corresponden a páginas reales de `wiki/`.
 - [ ] No se escribió nada en `wiki/` ni en `genome/`; `git status` no muestra `graphify-out/`.
 
