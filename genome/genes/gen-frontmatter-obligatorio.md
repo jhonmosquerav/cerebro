@@ -2,7 +2,7 @@
 id: gen-frontmatter-obligatorio
 trigger: crear o actualizar una página en wiki/
 status: active
-version: 4
+version: 5
 ---
 
 Toda página de `wiki/` nace y se mantiene con frontmatter YAML válido:
@@ -10,8 +10,9 @@ Toda página de `wiki/` nace y se mantiene con frontmatter YAML válido:
 sources, relations`. Campos **opcionales** según contexto (lista no exhaustiva):
 `valido_hasta` ([[gen-vigencia-temporal]]), `sensibilidad` ([[gen-confidencialidad]], default =
 `default_sensibilidad` del manifiesto; si no se declara, `interno`), `clase` / `fecha_evento` /
-`volatile_fields` ([[gen-clase-temporal]]) y `estado`
-([[gen-entidad-con-estado]]).
+`volatile_fields` ([[gen-clase-temporal]]), `estado`
+([[gen-entidad-con-estado]]) e `id_pagina` / `id_alias` ([[gen-identidad-de-pagina]];
+INGEST siempre escribe `id_pagina` al crear una página).
 
 `relations` ya **no es un set cerrado**: su núcleo reservado es
 `{usa, depende_de, contradice, reemplaza}`, ampliable con los `relation_types` que la empresa
