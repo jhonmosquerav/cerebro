@@ -2,7 +2,7 @@
 id: gen-query
 trigger: operación QUERY sobre un tema
 status: active
-version: 4
+version: 5
 ---
 
 QUERY responde navegando el grafo, no leyendo todo, en dos pasos sancionados:
@@ -18,8 +18,10 @@ variantes, incluido el `glossary` del manifiesto (en Obsidian equivale al buscad
 SOLO las páginas que matchean y cítalas igual que en el paso 1 — el fallback localiza
 candidatos, no lee todo, y respeta TODAS las reglas de abajo (confidencialidad incluida).
 **Transparencia obligatoria:** declara en la respuesta "hallado por búsqueda léxica, no
-por navegación" y deja línea en `log.md` (`QUERY fallback-lexico: <tema> → [[página]]`) —
-es la señal para [[gen-lint]] de que a esas páginas les faltan relaciones o ancla.
+por navegación" y deja línea en `log.md` (`QUERY fallback-lexico: <tema> → [[página]]`;
+si la página es `confidencial`, la línea usa su ID seudonimizado — nunca el nombre de
+archivo, [[gen-confidencialidad]] — y no genera señal de ancla: lo confidencial no se
+ancla) — es la señal para [[gen-lint]] de que a esas páginas les faltan relaciones o ancla.
 
 En ambos pasos: cita las páginas-fuente consultadas y su `confidence`, **excepto las
 `sensibilidad: confidencial`** ([[gen-confidencialidad]]): de esas no revela contenido
