@@ -1,8 +1,8 @@
 ---
 id: cap-ingesta-de-fuente
 status: active
-version: 4
-composes: [gen-raw-inmutable, gen-anti-inyeccion, gen-frontmatter-obligatorio, gen-confidencialidad, gen-identidad-de-pagina, gen-ingest]
+version: 5
+composes: [gen-raw-inmutable, gen-anti-inyeccion, gen-frontmatter-obligatorio, gen-confidencialidad, gen-identidad-de-pagina, gen-jerarquizacion-indice, gen-ingest]
 ---
 
 # Cápsula: ingesta de fuente
@@ -39,9 +39,12 @@ Combina genes; ejecútalos en orden y de forma idempotente.
 6. **Extraer** conceptos y entidades clave; crea sus páginas si no existen.
 7. **Enlazar** con `relations` tipadas (`usa`, `depende_de`, `contradice`, `reemplaza`)
    y `[[wiki-links]]` hacia páginas relacionadas.
-8. **Registrar**: añade ancla en `index.md` **solo si `sensibilidad != confidencial`**
-   ([[gen-confidencialidad]]), una línea en `log.md` y, al final (tras escribir las
-   páginas), la línea de la fuente en `ingest-ledger.jsonl` ([[gen-identidad-de-pagina]]).
+8. **Registrar**: añade ancla según los criterios deterministas de
+   [[gen-jerarquizacion-indice]] (`sensibilidad != confidencial`
+   ([[gen-confidencialidad]]), tier `semantic|procedural`, `clase != evento`; destino:
+   `index.md`, o el `hub-<área>` si el área ya se partió), una línea en `log.md` y, al
+   final (tras escribir las páginas), la línea de la fuente en `ingest-ledger.jsonl`
+   ([[gen-identidad-de-pagina]]).
 
 ## Criterio de hecho
 - La fuente quedó intacta en `raw/`.
