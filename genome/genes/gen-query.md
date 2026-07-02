@@ -2,7 +2,7 @@
 id: gen-query
 trigger: operación QUERY sobre un tema
 status: active
-version: 3
+version: 4
 ---
 
 QUERY responde navegando el grafo, no leyendo todo, en dos pasos sancionados:
@@ -24,6 +24,9 @@ es la señal para [[gen-lint]] de que a esas páginas les faltan relaciones o an
 En ambos pasos: cita las páginas-fuente consultadas y su `confidence`, **excepto las
 `sensibilidad: confidencial`** ([[gen-confidencialidad]]): de esas no revela contenido
 sensible ni las cita textualmente — responde con referencia indirecta o ID seudonimizado.
+La referencia indirecta tampoco expone metadatos reidentificadores: ni el título, ni el
+nombre de archivo, ni los tags, ni sus relaciones; el ID seudonimizado aplica también al
+enlace o mención con que se responde.
 Advierte **siempre** lo vencido por `valido_hasta` ([[gen-vigencia-temporal]]), lo
 contradictorio (`relations.contradice`) y la baja `confidence`, en vez de afirmar con
 falsa seguridad. Si ni la navegación ni la búsqueda léxica encuentran, dilo — "no hay
