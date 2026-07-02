@@ -24,7 +24,7 @@ El humano aprueba/rechaza **una por una**. Nada se aplica sin tu OK.
 ## P1 — Reconciliar los verbos de relación del genoma base con el esquema de `relations`
 - id: `AUDIT-2026-07-02-P1` (candidato C1)
 - fecha: 2026-07-02
-- clase: **contradicción entre genes activos** · sev 5 · alcance 7 · **impacto 57** · status: **pending**
+- clase: **contradicción entre genes activos** · sev 5 · alcance 7 · **impacto 57** · status: **applied** (2026-07-02, variante del auditor; 4 commits: gen-frontmatter-obligatorio v6, gen-lint v4, gen-consolidate v5, gen-auto-auditoria v4)
 - motivo: El núcleo de `relations` es `{usa, depende_de, contradice, reemplaza}` y LINT (d) valida contra "núcleo ∪ `relation_types` del manifiesto". Pero 5 genes base activos mandan/presuponen verbos fuera de esa unión: `agrega` (gen-sintesis-de-volumen), `corrobora` (gen-confianza-por-fuente), `sucede_a`/`proviene_de` (gen-entidad-con-estado), `deriva_de`/`supersede`/`agregado_en` (exención de gen-consolidate y gen-auto-auditoria). Ejecutar el genoma base out-of-the-box produce relaciones que su propio LINT marca inválidas, y la exención de fusión jamás podría activarse legítimamente.
 - evidencia: `gen-frontmatter-obligatorio.md:17-18` (núcleo) · `gen-lint.md:12-13` (chequeo d) · `gen-sintesis-de-volumen.md:10` (`agrega`) · `gen-confianza-por-fuente.md:11` (`corrobora`) · `gen-entidad-con-estado.md:12` (`sucede_a`/`proviene_de`) · `gen-consolidate.md:13-14` + `gen-auto-auditoria.md:25-26` (trío de exención) · `company.example.yaml:39` (no los declara).
 - diff (variante recomendada por el auditor — declarar la unión con cláusula de gen, unificando `supersede` con `reemplaza`):
@@ -45,7 +45,7 @@ El humano aprueba/rechaza **una por una**. Nada se aplica sin tu OK.
 ## P2 — La cuarentena `riesgo_inyeccion` entra a los criterios de promoción/fusión
 - id: `AUDIT-2026-07-02-P2` (candidato C2)
 - fecha: 2026-07-02
-- clase: **contradicción entre genes activos** · sev 5 · alcance 3 · **impacto 53** · status: **pending**
+- clase: **contradicción entre genes activos** · sev 5 · alcance 3 · **impacto 53** · status: **applied** (2026-07-02; gen-ciclo-de-vida v2, gen-consolidate v6)
 - motivo: gen-anti-inyeccion ordena que una página en cuarentena no se promueve ni se fusiona; gen-ciclo-de-vida define la promoción como lista cerrada de aplicación directa que omite la cuarentena (aunque sí incorpora el bloqueo de confidencialidad — pretende ser el set completo), y la regla de fusión de gen-consolidate tampoco la excluye. Página en cuarentena que cumpla la lista = dos órdenes incompatibles. Costura A-01 vs A-05.
 - evidencia: `gen-anti-inyeccion.md:48-49` · `gen-ciclo-de-vida.md:40-45` · `gen-consolidate.md:9-10,13-14`.
 - diff:
@@ -64,7 +64,7 @@ El humano aprueba/rechaza **una por una**. Nada se aplica sin tu OK.
 ## P3 — Reconciliar el paso de anclas de CHECKPOINT con el anclado determinista del índice
 - id: `AUDIT-2026-07-02-P3` (candidato C3)
 - fecha: 2026-07-02
-- clase: **contradicción entre genes activos** · sev 5 · alcance 2 · **impacto 52** · status: **pending**
+- clase: **contradicción entre genes activos** · sev 5 · alcance 2 · **impacto 52** · status: **applied** (2026-07-02, variante "excepción declarada"; gen-jerarquizacion-indice v2)
 - motivo: gen-jerarquizacion-indice prohíbe sin zona gris anclar `working/`/`episodic/` en `index.md` ("llega al índice solo cuando CONSOLIDATE lo promueve") y no lista a CHECKPOINT entre sus consumidores; gen-checkpoint (paso 3 + criterio de hecho c) ordena refrescar en `index.md` anclas de esos dos tiers. Dos genes nuevos de la misma tanda con órdenes incompatibles sobre el mismo flujo. Costura A-03 vs A-06.
 - evidencia: `gen-jerarquizacion-indice.md:18-19,22` · `gen-checkpoint.md:64-65` · `index.md:30-31`.
 - diff (reconciliación mínima propuesta por el maker — legalizar el puntero rotatorio como excepción declarada; la alternativa es eliminar el paso 3 de gen-checkpoint: **decidir en el gate**):
@@ -81,7 +81,7 @@ El humano aprueba/rechaza **una por una**. Nada se aplica sin tu OK.
 ---
 
 ## Fuera del corte (siguiente en fila si rechazas alguna)
-- **C4** (impacto 52) — `id_pagina` inmutable/atada a ruta vs promoción/archivo que mueven el archivo de tier (contradicción gen-identidad-de-pagina ↔ gen-ciclo-de-vida). Cuarto sev-5; quedó fuera solo por el desempate alfabético con C3.
+- **C4** (impacto 52) — `id_pagina` inmutable/atada a ruta vs promoción/archivo que mueven el archivo de tier (contradicción gen-identidad-de-pagina ↔ gen-ciclo-de-vida). Cuarto sev-5; quedó fuera solo por el desempate alfabético con C3. → **applied** (2026-07-02, corte ampliado a 4 por decisión del operador en el gate; gen-identidad-de-pagina v2, gen-ciclo-de-vida v3).
 - **C5** (43) — gen-checkpoint atribuye al hook `Stop` postcondiciones que stop.sh/README no cumplen.
 - **C6** (43) — el staging de GRAPH no excluye páginas en cuarentena y gen-graph-lens aún frasea denylist (pendiente A-07).
 - **C7** (42) — el formato del log del fallback léxico de QUERY expone el nombre de archivo de páginas confidenciales.
@@ -95,3 +95,10 @@ C14 y C15 (README de hooks: sobredeclara permissions; "(gen v4)" muerto), C11 (f
 > `810f24e`. Si apruebas P1–P3, C4 debería entrar a la siguiente tanda EVOLVE junto con los
 > "fuera del corte" — o aprobarse aquí mismo como cuarta si decides ampliar el corte (la regla
 > del gen fija N=3; ampliar N es decisión tuya en el gate, no del orquestador).
+
+> **Resolución del gate (2026-07-02):** el operador aprobó P1 (variante del auditor), P2, P3
+> (variante "excepción declarada") y **amplió el corte a C4**. Total aplicado: 9 mutaciones,
+> 9 eventos, 9 commits, `AGENTS.md` re-sincronizado. **C5–C16 quedan confirmados sin aplicar**:
+> decisión del operador = tanda EVOLVE/fixes para la próxima sesión (C5 gen-checkpoint↔stop.sh,
+> C6 staging↔cuarentena + fraseo gen-graph-lens, C7 log del fallback léxico, C8 advertencia de
+> cuarentena en QUERY, C9–C16 fixes de docs/config).
