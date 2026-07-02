@@ -2,7 +2,7 @@
 id: gen-auto-auditoria
 trigger: operación AUDIT (auto-auditoría de la base)
 status: active
-version: 3
+version: 4
 ---
 
 AUDIT audita la propia base CEREBRO y PROPONE las **≤3 mejoras de mayor impacto**
@@ -22,8 +22,8 @@ Disparador: invocación manual `AUDIT`. La corrida TERMINA solo cuando existe
 ## Detección (reusa LINT + CONSOLIDATE; no la reimplementa)
 - Huérfanos, contradicciones (`contradice`), vencidos (`valido_hasta < hoy` o `vigencia` por
   evento: derogada/en-revision/no-vigente), verbos/campos fuera de esquema → [[gen-lint]].
-- Duplicados / near-duplicados → [[gen-consolidate]] (pares con `deriva_de`/`supersede`/`agregado_en`
-  declarado quedan EXENTOS de redundancia; ver [[gen-consolidate]] v2).
+- Duplicados / near-duplicados → [[gen-consolidate]] (pares con `deriva_de`/`reemplaza`/`agregado_en`
+  declarado quedan EXENTOS de redundancia; ver [[gen-consolidate]]).
 - **Redundancia/obsolescencia de genoma (detector nuevo):** dos genes `active` con `trigger`
   solapado, o uno cuya regla quedó subsumida/contradicha por otro.
 La **identidad** de cada candidato (qué página/gen, qué clase) la fija el detector; el LLM solo
