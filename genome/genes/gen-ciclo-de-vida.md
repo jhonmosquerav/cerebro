@@ -2,7 +2,7 @@
 id: gen-ciclo-de-vida
 trigger: reforzar, degradar, promover o archivar páginas de wiki/ (CONSOLIDATE, LINT, QUERY, INGEST)
 status: active
-version: 1
+version: 2
 ---
 
 La memoria por capas deja de ser metáfora: estos son los **números** del ciclo de vida.
@@ -41,8 +41,10 @@ algo ocurrió no se vuelve falso); su ciclo es el archivo por antigüedad. La vi
 cumplen TODAS: `clase: estable` · `confidence ≥ 0.70` · ≥2 fuentes en `sources` **o** ≥2
 páginas distintas que la referencian · edad ≥7 días desde `created` **y** ≥1 refuerzo
 posterior (`last_reinforced > created`, proxy verificable de "confirmada en más de una
-sesión") · sin `contradice` abierta · `sensibilidad ≠ confidencial`
-([[gen-confidencialidad]] prohíbe promoverlas). Procesos repetidos promueven a
+sesión") · sin `riesgo_inyeccion: true` ([[gen-anti-inyeccion]]: la cuarentena bloquea
+promoción y fusión hasta revisión humana) · sin `contradice` abierta ·
+`sensibilidad ≠ confidencial` ([[gen-confidencialidad]] prohíbe promoverlas).
+Procesos repetidos promueven a
 `procedural/` con las mismas condiciones. Al promover: mover el archivo a la carpeta de
 taxonomía que corresponda (los `[[wiki-links]]` van por nombre y no se rompen), ajustar
 `decay_rate` al default del tier destino salvo declaración explícita, y dejar línea en
