@@ -36,7 +36,7 @@ correr `ONBOARD` y operar su conocimiento.
 Las reglas completas viven en `genome/genes/`. Resumen:
 
 **Fundamentales**
-- [[gen-raw-inmutable]] — `raw/` solo se lee, jamás se modifica.
+- [[gen-raw-inmutable]] — `raw/` solo se lee, jamás se modifica; única excepción auditada: purga por incidente (4 condiciones conjuntivas).
 - [[gen-frontmatter-obligatorio]] — toda página de `wiki/` nace con frontmatter válido; `relations` extensible vía `relation_types` del manifiesto.
 - [[gen-identidad-de-pagina]] — clave canónica `id_pagina` (slug determinista del identificador natural) + ledger `ingest-ledger.jsonl`; INGEST/BULK idempotentes por algoritmo.
 - [[gen-compuerta-mutacion]] — ninguna mutación de genoma se aplica sin aprobación + registro.

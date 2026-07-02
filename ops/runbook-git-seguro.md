@@ -127,7 +127,7 @@ destructiva y tiene consecuencias (§3.3, §3.4) — no es mantenimiento rutinar
 
 1. Backup cifrado fresco: `bash ops/backup/backup.sh <destino>` (la purga es irreversible).
 2. Si lo vertido es un secreto/credencial: **rótalo ya** (§4). Purgar no des-compromete.
-3. Si el material vive en `raw/`: lee §3.4 — hoy el genoma lo prohíbe sin excepción.
+3. Si el material vive en `raw/`: lee §3.4 — la excepción única del gen exige sus 4 condiciones.
 
 **3.1 Requisitos**
 
@@ -199,17 +199,17 @@ de la nueva historia. Qué hacer:
 - Los **backups anteriores contienen lo purgado**: destrúyelos y genera uno nuevo
   (`ops/backup/runbook-backup.md`, sección de rotación).
 
-**3.4 `raw/` y el genoma — la excepción pendiente**
+**3.4 `raw/` y el genoma — la excepción vigente (v2)**
 
-[[gen-raw-inmutable]] v1 (vigente) ordena: *"Nunca edites, renombres ni borres una fuente
-en `raw/`"* — sin excepción alguna. **Purgar `raw/` hoy contradice el genoma.** Existe una
-propuesta EVOLVE formal para añadir la excepción única y auditada de purga por incidente
-(condiciones: incidente en `log.md` + aprobación explícita previa + línea en
-`genome/events.jsonl` + re-AUDIT posterior):
-`audit/evaluations/2026-07-01-810f24e/70-propuestas-evolve/prop-a08-excepcion-purga-gen-raw-inmutable.md`
-(status: `pending`). Hasta que pase la compuerta ([[gen-compuerta-mutacion]]), **no purges
-`raw/`**; en un incidente real, la compuerta puede ejercerse en el momento: primero se
-aprueba y registra la mutación del gen, después se purga.
+[[gen-raw-inmutable]] v2 (vigente; mutación A-08 aplicada por compuerta el 2026-07-02, ver
+`genome/events.jsonl`) mantiene la regla — *"Nunca edites, renombres ni borres una fuente
+en `raw/`"* — con UNA excepción única y auditada: la **purga por incidente**. Purgar `raw/`
+NO viola el gen solo si se cumplen TODAS: (1) incidente documentado en `log.md` (id, fecha,
+qué se vertió, alcance); (2) aprobación humana explícita ANTES de ejecutar; (3) línea
+`type: incident_purge` (con `incident_ref` al id del incidente) en `genome/events.jsonl`;
+(4) re-AUDIT posterior sobre el estado purgado. La purga es la mínima necesaria y las
+páginas de `wiki/` que referencien lo purgado se sanean en el mismo incidente. Fuera de
+ese caso, **no purges `raw/`**.
 
 ## 4. Respuesta a incidentes (mínima)
 
@@ -243,5 +243,5 @@ Secreto, credencial o PII vertidos en el repo (o pusheados):
 
 - `ops/backup/runbook-backup.md` — respaldo cifrado off-site + prueba de restauración (A-09).
 - [[gen-confidencialidad]] — el eje `sensibilidad` que este checklist inspecciona.
-- [[gen-raw-inmutable]] · propuesta pendiente `prop-a08-excepcion-purga-gen-raw-inmutable.md` (§3.4).
+- [[gen-raw-inmutable]] v2 · excepción vigente de purga por incidente (§3.4).
 - `dashboards/graph/00-leeme.md` — el otro punto de salida controlada (staging de la lente).
