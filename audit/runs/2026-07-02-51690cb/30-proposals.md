@@ -98,7 +98,13 @@ C14 y C15 (README de hooks: sobredeclara permissions; "(gen v4)" muerto), C11 (f
 
 > **Resolución del gate (2026-07-02):** el operador aprobó P1 (variante del auditor), P2, P3
 > (variante "excepción declarada") y **amplió el corte a C4**. Total aplicado: 9 mutaciones,
-> 9 eventos, 9 commits, `AGENTS.md` re-sincronizado. **C5–C16 quedan confirmados sin aplicar**:
-> decisión del operador = tanda EVOLVE/fixes para la próxima sesión (C5 gen-checkpoint↔stop.sh,
-> C6 staging↔cuarentena + fraseo gen-graph-lens, C7 log del fallback léxico, C8 advertencia de
-> cuarentena en QUERY, C9–C16 fixes de docs/config).
+> 9 eventos, 9 commits, `AGENTS.md` re-sincronizado.
+
+> **Resolución del gate, segunda tanda (2026-07-02, misma fecha):** el operador aprobó la
+> tanda C5–C16 completa. **Applied**: C5 (gen-checkpoint v2 + stop.sh/README coherentes),
+> C6 (gen-graph-lens v3 allowlist+cuarentena + filtro del runbook en bash/PowerShell +
+> checklist — cierra el pendiente A-07), C7 (gen-query v5), C8 (gen-query v6), C12
+> (gen-ciclo-de-vida v4), C16 (gen-ciclo-de-vida v5) — 6 mutaciones = 6 eventos + 6 commits —
+> y los fixes directos C9/C13 (onboard), C10 (README), C11 (fila LINT de CLAUDE.md +
+> re-sync), C14/C15 (hooks) en 4 commits de config. **Los 16 hallazgos de la corrida quedan
+> cerrados: 16/16 applied.**
