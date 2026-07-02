@@ -5,7 +5,7 @@ tarea: A-08
 target: gen-raw-inmutable
 version_actual: 1
 version_propuesta: 2
-status: pending
+status: approved
 fecha: 2026-07-02
 ---
 

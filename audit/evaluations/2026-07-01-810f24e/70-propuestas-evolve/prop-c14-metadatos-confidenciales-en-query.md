@@ -6,7 +6,7 @@ audit_ref: 2026-06-30-7c840d0 (hallazgo C14)
 genes_afectados: [gen-query, gen-confidencialidad]
 version_actual: 2 (ambos)
 version_propuesta: 3 (ambos)
-status: pending
+status: approved
 fecha: 2026-07-02
 ---
 

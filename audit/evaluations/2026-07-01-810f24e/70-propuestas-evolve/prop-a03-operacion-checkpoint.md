@@ -1,7 +1,7 @@
 ---
 tipo: propuesta-evolve
 tarea: A-03
-status: pending
+status: approved
 fecha: 2026-07-02
 genes_afectados: [gen-checkpoint]
 ---

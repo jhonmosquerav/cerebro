@@ -2,7 +2,7 @@
 tipo: propuesta-evolve
 tarea: A-05
 eval_id: 2026-07-01-810f24e
-status: pending
+status: approved
 fecha: 2026-07-02
 genes_afectados: [gen-ciclo-de-vida, gen-consolidate, gen-clase-temporal, gen-confianza-por-fuente]
 ---

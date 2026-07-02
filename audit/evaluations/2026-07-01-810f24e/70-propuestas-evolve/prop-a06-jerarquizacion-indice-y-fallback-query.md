@@ -2,7 +2,7 @@
 tipo: propuesta-evolve
 tarea: A-06
 eval_id: 2026-07-01-810f24e
-status: pending
+status: approved
 fecha: 2026-07-02
 genes_afectados: [gen-jerarquizacion-indice, gen-ingest, gen-query, gen-consolidate, cap-ingesta-de-fuente]
 ---

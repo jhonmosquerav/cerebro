@@ -1,7 +1,7 @@
 ---
 tipo: propuesta-evolve
 tarea: A-04
-status: pending
+status: approved
 fecha: 2026-07-02
 genes_afectados: [gen-identidad-de-pagina, gen-ingest, gen-bulk-ingest, gen-frontmatter-obligatorio, cap-ingesta-de-fuente]
 ---
