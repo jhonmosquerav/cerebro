@@ -23,6 +23,12 @@ entities:
   clientes:    []           # se crean al ingerir tickets/reseñas
   tickets:     []           # se crean al ingerir soporte
 
+# Identificador natural por categoría (gen-identidad-de-pagina). Hace ejecutable en el genoma
+# base la identidad que gen-sku-identidad declara como regla de dominio: una página por SKU.
+identity:
+  productos: sku
+  tickets: numero-de-ticket   # id natural del evento; si falta, fecha_evento + hash8
+
 # Glosario / siglas del sector (el agente las respeta al ingerir y consultar)
 glossary:
   SKU:   "stock keeping unit — referencia única y estable de producto"

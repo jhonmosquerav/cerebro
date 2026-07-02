@@ -19,6 +19,12 @@ entities:
   productos: ["bot-whatsapp"]
   herramientas: ["n8n", "twilio"]
 
+# Identificador natural por categoría (gen-identidad-de-pagina): campo cuyo valor nombra la
+# página única de cada entidad (id_pagina = slug determinista de ese valor). Opcional: sin
+# declararlo aplica el fallback del gen (título normalizado; los eventos usan su id o fecha).
+identity:
+  productos: nombre
+
 # Glosario / siglas internas (el agente las respeta al ingerir y consultar)
 glossary:
   MRR: "ingreso recurrente mensual"
