@@ -2,7 +2,7 @@
 id: gen-jerarquizacion-indice
 trigger: anclar una página nueva / una sección de index.md supera el umbral de anclas
 status: active
-version: 1
+version: 2
 ---
 
 El índice crece con política, no con fe en la curación. `index.md` se mantiene corto
@@ -16,7 +16,9 @@ Una página **SE ancla** si y solo si cumple TODO:
 1. `sensibilidad != confidencial` ([[gen-confidencialidad]]: lo confidencial jamás se
    ancla, ni en `index.md` ni en un hub);
 2. tier `semantic/` o `procedural/` (lo de `working/` y `episodic/` no se ancla: llega al
-   índice solo cuando CONSOLIDATE lo promueve);
+   índice solo cuando CONSOLIDATE lo promueve; excepción declarada: el puntero rotatorio
+   "lo más reciente" por tier que mantiene CHECKPOINT ([[gen-checkpoint]], paso 3) es
+   navegación meta, no ancla de conocimiento, y no cuenta para `hub_umbral`);
 3. `clase != evento` ([[gen-clase-temporal]]: los eventos se alcanzan por su síntesis
    ([[gen-sintesis-de-volumen]]) o por su entidad, no anclados uno a uno).
 Sin zona gris: cumple los tres → se ancla SIEMPRE; falla uno → no se ancla.
