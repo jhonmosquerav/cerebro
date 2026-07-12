@@ -213,7 +213,7 @@ def run(root: Path | str, *, as_of: datetime.date,
 def _short_sha(root: Path) -> str:
     try:
         proc = subprocess.run(["git", "-C", str(root), "rev-parse", "--short=8", "HEAD"],
-                              capture_output=True, text=True, check=True)
+                              capture_output=True, text=True, encoding="utf-8", check=True)
         return proc.stdout.strip()
     except (subprocess.CalledProcessError, FileNotFoundError):
         return "worktree"

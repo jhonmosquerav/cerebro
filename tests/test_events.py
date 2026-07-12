@@ -12,7 +12,9 @@ from cerebro_core import events
 
 REPO = Path(__file__).resolve().parent.parent
 
-LINEA = '{"ts":"2026-07-01","type":"gene_added","target":"gen-x","signal":"s","diff":"d","approved_by":"user","status":"applied"}'
+# Incluye no-ASCII (∅ → señal cápsula) a propósito: guarda contra la regresión de
+# decodificación por locale (Windows/cp1252) en verify_append_only, que lee git show.
+LINEA = '{"ts":"2026-07-01","type":"gene_added","target":"gen-x","signal":"señal ∅ inicial","diff":"∅ → cápsula base","approved_by":"user","status":"applied"}'
 
 
 def escribir_ledger(td: str, lineas: list[str]) -> Path:

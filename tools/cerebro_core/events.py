@@ -100,7 +100,7 @@ def verify_append_only(git_root: Path | str, rel: str) -> list[Finding]:
     try:
         proc = subprocess.run(
             ["git", "-C", str(git_root), "rev-list", "--reverse", "HEAD", "--", rel],
-            capture_output=True, text=True, check=True,
+            capture_output=True, text=True, encoding="utf-8", check=True,
         )
     except (subprocess.CalledProcessError, FileNotFoundError) as e:
         return [Finding("EVT-08", "info", rel,
@@ -108,13 +108,15 @@ def verify_append_only(git_root: Path | str, rel: str) -> list[Finding]:
     shas = [s for s in proc.stdout.split() if s]
     versions: list[list[str]] = []
     for sha in shas:
+        # Salida en BYTES + decode UTF-8 explícito: no delegar al locale, que en
+        # Windows es cp1252 y corrompería '∅'/'→'/acentos → falso EVT-07.
         show = subprocess.run(
             ["git", "-C", str(git_root), "show", f"{sha}:{rel}"],
-            capture_output=True, text=True,
+            capture_output=True,
         )
         if show.returncode != 0:
             continue  # el archivo no existía en ese commit (borrado/renombrado)
-        content = show.stdout.replace("\r\n", "\n")
+        content = show.stdout.decode("utf-8", errors="replace").replace("\r\n", "\n")
         versions.append([l for l in content.split("\n") if l.strip()])
     current = _read_lines(git_root / rel) if (git_root / rel).is_file() else []
     versions.append(current)
