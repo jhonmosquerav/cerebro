@@ -1,6 +1,11 @@
-# 🧠 CEREBRO
+<p align="center">
+  <img src="assets/logo-transparent.png" alt="CEREBRO" width="420">
+</p>
 
-[![ci](https://github.com/jhonmosquerav/cerebro/actions/workflows/ci.yml/badge.svg)](https://github.com/jhonmosquerav/cerebro/actions/workflows/ci.yml)
+<p align="center">
+  <a href="https://github.com/jhonmosquerav/cerebro/actions/workflows/ci.yml"><img src="https://github.com/jhonmosquerav/cerebro/actions/workflows/ci.yml/badge.svg" alt="Estado del CI"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/licencia-MIT-4134E7" alt="Licencia MIT"></a>
+</p>
 
 > Sistema de documentación **agéntico, mutagénico y verificable**, construido 100% sobre
 > markdown + JSONL. Cualquier empresa lo clona, corre `ONBOARD` y opera su conocimiento.

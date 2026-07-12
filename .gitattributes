@@ -11,3 +11,8 @@
 
 # Los resultados esperados de worked/ se comparan byte a byte al regenerarse.
 worked/** text eol=lf
+
+# Binarios: git no debe normalizar saltos de línea (los corrompería).
+*.png binary
+*.jpg binary
+*.ico binary
