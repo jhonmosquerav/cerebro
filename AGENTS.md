@@ -86,7 +86,20 @@ del genoma** con implementaciones intercambiables que cumplen las mismas postcon
   `AGENTS.md` la ejecuta sin hooks ni harness específico. Hooks y CHECKPOINT comparten la
   clave de idempotencia: sobre la misma sesión actualizan los mismos archivos, no duplican.
 
+## Validadores mecánicos (tools/ — infra, corre en CI y pre-commit)
+El núcleo mecánico existe desde 2026-07-12: **nunca re-derives a mano lo que un script
+ya prueba**. Antes de afirmar que el vault está sano, corre y cita su salida:
+- `python tools/cerebro.py verify` — todos los invariantes (espejo, ledger, lint, genes).
+- `lint --as-of <hoy>` · `consolidate scan` · `health` · `xray` — detectores y scores
+  deterministas; tu juicio empieza donde su salida termina (contradicciones semánticas,
+  priorización, redacción de propuestas siguen siendo tuyos, bajo compuerta).
+- `onboard apply --date <hoy>` — el aplicado del manifiesto es mecánico; tu parte es la
+  entrevista que genera `company.yaml` (y la pregunta única de `graph_lens.backend`).
+- `events append --type … --target … --signal … --diff …` — toda línea nueva del ledger
+  nace con hash-chain; jamás la escribas a mano.
+- La integración formal de esto a los genes espera compuerta: `docs/propuestas-evolve/`.
+
 ## Reproducibilidad y portabilidad
-- Git inicializado: cada mutación = 1 commit + 1 línea en `genome/events.jsonl` → permite replay/rollback.
+- Git inicializado: cada mutación = 1 commit + 1 línea en `genome/events.jsonl` → permite replay/rollback (`ops/runbook-replay.md`, ensayado).
 - `AGENTS.md` es copia exacta de este archivo (corre en OpenClaw/Codex/Cursor). Si lo usas con Gemini, copia a `GEMINI.md`.
-- Tras **cualquier** cambio del genoma, vuelve a sincronizar `AGENTS.md`.
+- Tras **cualquier** cambio del genoma, vuelve a sincronizar `AGENTS.md` (`python tools/cerebro.py mirror --fix`).

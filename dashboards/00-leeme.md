@@ -18,6 +18,8 @@ lee el mismo frontmatter y lo arma en markdown. Misma información, render está
 ## Índice
 - [[salud-del-genoma]] — qué genes hay, su versión y estado.
 - [[salud-del-conocimiento]] — confianza, vencimientos, confidenciales y eventos de la wiki.
+- [[salud-mecanica]] — el score determinista 0–100; se regenera con
+  `python tools/cerebro.py health --write` (render estático, sin Obsidian ni LLM).
 - [[por-sector]] — vistas que `ONBOARD` adapta a tu negocio.
 
 > Las consultas de conocimiento apuntan a `wiki/`, que en el template nace **vacía**: es

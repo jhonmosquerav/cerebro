@@ -1,8 +1,11 @@
 # 🧠 CEREBRO
 
-> Sistema de documentación **agéntico, mutagénico y reproducible**, construido 100% sobre
+[![ci](https://github.com/jhonmosquerav/cerebro/actions/workflows/ci.yml/badge.svg)](https://github.com/jhonmosquerav/cerebro/actions/workflows/ci.yml)
+
+> Sistema de documentación **agéntico, mutagénico y verificable**, construido 100% sobre
 > markdown + JSONL. Cualquier empresa lo clona, corre `ONBOARD` y opera su conocimiento.
-> **Sin RAG, sin vectores, sin servidores.**
+> **Sin RAG, sin vectores, sin servidores** — y con validadores mecánicos que un
+> auditor puede correr con cualquier Python, sin instalar nada.
 
 CEREBRO convierte la documentación de una empresa en un *cerebro vivo* hecho solo de archivos.
 Un agente de IA (Claude Code, Cursor, OpenClaw…) lo lee y lo escribe como si fuera su memoria:
@@ -22,10 +25,14 @@ cambio auditado y reversible.
   tocó el cerebro. El destilado inteligente lo hace el agente, guiado por esos hooks
   (`.claude/hooks/README.md` documenta el detalle y sus límites). Memoria por capas, como
   el cerebro humano.
-- **🔁 Reproducible y auditable** — reproducible **en estructura** (manifiesto declarativo +
-  genoma versionado), **ejecutado por un LLM** —no por un script determinista— y con
-  **registro auditable**: cada mutación queda con su fecha, su porqué y su diff en
-  `genome/events.jsonl`. Es *git para el conocimiento*.
+- **🔁 Reproducible y auditable, con prueba** — el aplicado de `ONBOARD` es un
+  **programa determinista** (`tools/cerebro.py onboard apply`): mismo manifiesto + misma
+  fecha ⇒ mismo hash de estado, y re-aplicar es no-op — probado en CI (Linux **y**
+  Windows) y verificable byte a byte en [`worked/`](worked/). Cada mutación queda con su
+  fecha, su porqué y su diff en `genome/events.jsonl` — con **hash-chain** en las líneas
+  nuevas y verificación **append-only contra la historia de git**. Es *git para el
+  conocimiento*, con validadores que lo demuestran. Las operaciones de juicio (INGEST,
+  QUERY, EVOLVE…) siguen siendo ejecutadas por el LLM bajo las reglas del genoma.
 - **🔌 Portable** — todo es markdown; corre con cualquier agente que lea archivos. `AGENTS.md`
   espeja a `CLAUDE.md`.
 - **🪶 Sin infraestructura** — son tus archivos, en tu disco. Ni servidor, ni base vectorial,
@@ -83,8 +90,14 @@ cerebro/
 │   ├── procedural/           # SOPs y procesos
 │   └── archive/              # retirado de circulación (histórico consultable a pedido)
 ├── dashboards/               # paneles Dataview + lente de grafo (visualización opcional)
-├── audit/                    # corridas de AUDIT y evaluaciones (con sus propuestas)
-├── ops/                      # runbooks de operación segura: git seguro + backup cifrado
+├── audit/                    # corridas de AUDIT, evaluaciones y corridas XRAY
+├── tools/                    # ⚙️ validadores mecánicos (Python puro, 0 deps) + CLI cerebro.py
+├── tests/                    # la suite que prueba las garantías (unittest, corre en CI)
+├── worked/                   # casos trabajados reproducibles byte a byte, con review honesto
+├── docs/                     # specs, roadmap de endurecimiento y propuestas EVOLVE pendientes
+├── ops/                      # runbooks: git seguro, backup cifrado, replay/rollback
+├── .githooks/                # pre-commit: raw/ inmutable + ledger append-only + espejo
+├── .github/                  # CI (ubuntu + windows): tests + verify en cada push
 ├── .obsidian/                # preset Obsidian (opcional, removible)
 └── .claude/                  # hooks reales del loop de memoria + permisos endurecidos
 ```
@@ -136,11 +149,33 @@ no un script determinista. En concreto:
   `genome/events.jsonl` (con fecha, señal y diff) más su commit de git (norma de la casa:
   una mutación = un commit). Puedes **reconstruir o revertir** cómo llegó el genoma a su
   estado actual. Es *git para el conocimiento*.
-- **Enforcement, honesto** — hoy los invariantes se protegen con las reglas del genoma, los
-  permisos del agente (`.claude/settings.json` **deniega** las herramientas de escritura
-  sobre `raw/` y **pide confirmación** para `genome/`) y la auditoría maker≠auditor. Los
-  validadores mecánicos (frontmatter, enlaces, integridad del ledger) están **en el
-  backlog**: todavía no existen.
+- **Enforcement, mecánico** — los invariantes tienen tres capas: las reglas del genoma,
+  los permisos del agente (`.claude/settings.json` deniega escritura sobre `raw/`, pide
+  confirmación para `genome/`) y, desde 2026-07-12, los **validadores mecánicos de
+  [`tools/`](tools/)** (Python puro, cero dependencias): 16 detectores de LINT, espejo
+  `AGENTS.md`≡`CLAUDE.md`, integridad + hash-chain + append-only del ledger, hash de
+  estado, score de salud y deriva del grafo (`XRAY`). Corren en CI en cada push y en el
+  pre-commit local (`git config core.hooksPath .githooks`). Verifícalo tú mismo:
+
+  ```bash
+  python tools/cerebro.py verify
+  ```
+
+## ⚖️ Qué está probado y qué es juicio
+
+| Probado por CI (mecánico, determinista) | Juicio del agente (LLM + compuerta) |
+|---|---|
+| `ONBOARD` aplicado: mismo manifiesto ⇒ mismo hash; idempotente | la entrevista que genera el manifiesto |
+| LINT: huérfanas, enlaces rotos, esquema, vencidos, identidad, ledger | contradicciones semánticas y redacción de arreglos |
+| ledger: esquema por línea, hash-chain, append-only vs git | el porqué de cada mutación |
+| espejo `AGENTS.md` ≡ `CLAUDE.md` | — |
+| salud: score 0–100 con componentes N/A honestas | recomendaciones |
+| XRAY: deriva declarado↔evidencia + score | interpretar la deriva y proponer |
+| casos `worked/` regenerables byte a byte | — |
+
+La integración formal de estas herramientas a los genes espera compuerta en
+[`docs/propuestas-evolve/`](docs/propuestas-evolve/) — el genoma no se muta solo, ni
+siquiera para mejorarse.
 
 Arranque reproducible: **clona → elige un blueprint → rellena tus datos → `ONBOARD`.**
 
