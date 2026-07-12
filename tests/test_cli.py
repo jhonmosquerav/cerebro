@@ -53,6 +53,21 @@ class TestCli(unittest.TestCase):
         r = correr("events", "verify")
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
 
+    def test_health_en_fixture(self):
+        r = correr("--vault", str(LIMPIO), "health", "--as-of", "2026-07-12")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertIn("score", r.stdout)
+
+    def test_consolidate_scan_en_fixture(self):
+        r = correr("--vault", str(SUCIO), "consolidate", "scan", "--as-of", "2026-07-12")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertIn("PROPONE", r.stdout)
+
+    def test_xray_en_fixture(self):
+        r = correr("--vault", str(LIMPIO), "xray", "--as-of", "2026-07-12", "--json")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertIn("drift_score", r.stdout)
+
 
 if __name__ == "__main__":
     unittest.main()

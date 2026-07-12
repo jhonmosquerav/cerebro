@@ -17,12 +17,15 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from cerebro_core import consolidate_scan as cs_mod
 from cerebro_core import events as events_mod
+from cerebro_core import health as health_mod
 from cerebro_core import lint as lint_mod
 from cerebro_core import manifest as mf
 from cerebro_core import mirror as mirror_mod
 from cerebro_core import onboard as onboard_mod
 from cerebro_core import statehash
+from cerebro_core import xray as xray_mod
 from cerebro_core.findings import has_errors
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -113,6 +116,31 @@ def cmd_onboard(args) -> int:
     return 0
 
 
+def cmd_consolidate(args) -> int:
+    report = cs_mod.run(args.vault, as_of=_as_of(args.as_of))
+    sys.stdout.write(report.render_json() if args.json else report.render_text())
+    return 0
+
+
+def cmd_health(args) -> int:
+    report = health_mod.run(args.vault, as_of=_as_of(args.as_of))
+    sys.stdout.write(report.render_json() if args.json else report.render_text())
+    if args.write:
+        path = health_mod.write_dashboard(args.vault, report)
+        print(f"tablero escrito: {Path(path).name} (dashboards/)")
+    return 0
+
+
+def cmd_xray(args) -> int:
+    report = xray_mod.run(args.vault, as_of=_as_of(args.as_of),
+                          inferred_path=args.inferred, min_co=args.min_co)
+    sys.stdout.write(report.render_json() if args.json else report.render_md())
+    if args.write:
+        destino = xray_mod.write_report(args.vault, report)
+        print(f"corrida persistida: {destino}")
+    return 0
+
+
 def cmd_verify(args) -> int:
     vault = Path(args.vault)
     ok = True
@@ -197,6 +225,31 @@ def build_parser() -> argparse.ArgumentParser:
                       help="fecha determinista YYYY-MM-DD (default: hoy; fíjala para reproducir)")
     ob_a.add_argument("--dry-run", action="store_true")
     ob_a.set_defaults(fn=cmd_onboard)
+
+    sp = sub.add_parser("consolidate", help="scanner mecánico de consolidate")
+    co = sp.add_subparsers(dest="consolidate_cmd", required=True)
+    co_s = co.add_parser("scan")
+    co_s.add_argument("--as-of", default=None)
+    co_s.add_argument("--json", action="store_true")
+    co_s.set_defaults(fn=cmd_consolidate)
+
+    sp = sub.add_parser("health", help="score de salud determinista")
+    sp.add_argument("--as-of", default=None)
+    sp.add_argument("--json", action="store_true")
+    sp.add_argument("--write", action="store_true",
+                    help="escribe dashboards/salud-mecanica.md")
+    sp.set_defaults(fn=cmd_health)
+
+    sp = sub.add_parser("xray", help="deriva declarado vs inferido (propone, no aplica)")
+    sp.add_argument("--as-of", default=None)
+    sp.add_argument("--inferred", default=None,
+                    help="graph.json externo (p. ej. de graphify) como evidencia extra")
+    sp.add_argument("--min-co", type=int, default=2,
+                    help="co-menciones mínimas para proponer arista (default 2)")
+    sp.add_argument("--json", action="store_true")
+    sp.add_argument("--write", action="store_true",
+                    help="persiste la corrida en audit/xray/<as-of>-<sha8>/")
+    sp.set_defaults(fn=cmd_xray)
 
     sp = sub.add_parser("verify", help="todos los invariantes mecánicos de una vez")
     sp.add_argument("--quick", action="store_true", help="solo espejo + ledger")
