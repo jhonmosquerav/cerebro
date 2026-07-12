@@ -1,0 +1,1 @@
+manual del agente (mini)
