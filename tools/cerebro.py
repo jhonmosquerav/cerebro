@@ -258,7 +258,19 @@ def build_parser() -> argparse.ArgumentParser:
     return p
 
 
+def _force_utf8_io() -> None:
+    """La salida de la CLI es UTF-8 en TODA plataforma. Windows canaliza en
+    cp1252 por defecto, lo que corrompe '·', '≡', '→', '✔' y los acentos
+    (y hace fallar al consumidor que lee UTF-8, p. ej. el CI o un pipe)."""
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(encoding="utf-8")
+        except (AttributeError, ValueError):
+            pass
+
+
 def main(argv: list[str] | None = None) -> int:
+    _force_utf8_io()
     args = build_parser().parse_args(argv)
     return args.fn(args)
 
