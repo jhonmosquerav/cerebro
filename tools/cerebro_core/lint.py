@@ -1,0 +1,303 @@
+"""LINT mecánico — los detectores deterministas de gen-lint v4 (a, c, d, e)
+más los invariantes de identidad, ledger, cuarentena y confidencialidad.
+
+La identidad de cada hallazgo la fija ESTE detector; el juicio (¿importa?,
+qué proponer) sigue siendo de la operación LINT del agente, bajo compuerta.
+El detector (b) — contradicciones semánticas entre páginas — NO se mecaniza:
+requiere leer significado, no estructura.
+"""
+from __future__ import annotations
+
+import datetime
+import hashlib
+import json
+from dataclasses import dataclass, field
+from pathlib import Path
+
+from . import manifest as mf
+from . import schema
+from .findings import Finding, sort_findings
+from .vault import Vault, load_vault
+
+# Ámbito del chequeo de enlaces rotos: conocimiento y genoma (no docs/ ni audit/,
+# que citan genes hipotéticos en propuestas; no CLAUDE.md, que usa [[wiki-link]]
+# como notación de ejemplo).
+_LINK_SCOPES = ("wiki/", "genome/", "index.md")
+
+
+@dataclass
+class Report:
+    as_of: datetime.date
+    findings: list[Finding] = field(default_factory=list)
+    pages_total: int = 0
+
+    def counts(self) -> dict:
+        c = {"error": 0, "aviso": 0, "info": 0}
+        for f in self.findings:
+            c[f.severity] += 1
+        return c
+
+    def exit_code(self, strict: bool = False) -> int:
+        c = self.counts()
+        if c["error"]:
+            return 1
+        if strict and (c["aviso"] or c["info"]):
+            return 1
+        return 0
+
+    def render_text(self) -> str:
+        c = self.counts()
+        out = [
+            f"LINT mecánico · as-of {self.as_of.isoformat()} · "
+            f"{self.pages_total} páginas wiki · "
+            f"{c['error']} errores · {c['aviso']} avisos · {c['info']} info",
+        ]
+        if not self.findings:
+            out.append("Sin hallazgos: el vault está estructuralmente sano.")
+        for f in self.findings:
+            out.append(f.render())
+        return "\n".join(out) + "\n"
+
+    def render_json(self) -> str:
+        return json.dumps(
+            {
+                "as_of": self.as_of.isoformat(),
+                "pages_total": self.pages_total,
+                "counts": self.counts(),
+                "findings": [
+                    {"code": f.code, "severity": f.severity, "path": f.path, "detail": f.detail}
+                    for f in self.findings
+                ],
+            },
+            ensure_ascii=False, indent=2, sort_keys=True,
+        ) + "\n"
+
+
+def git_blob_sha1(data: bytes) -> str:
+    """`git hash-object` sin git: sha1('blob <len>\\0' + bytes)."""
+    return hashlib.sha1(b"blob %d\x00" % len(data) + data).hexdigest()
+
+
+def _load_manifest(root: Path) -> mf.Manifest | None:
+    p = root / "onboard" / "company.yaml"
+    if p.is_file():
+        try:
+            return mf.load(p)
+        except Exception:
+            return None
+    return None
+
+
+def _in_link_scope(rel: str) -> bool:
+    return rel == "index.md" or rel.startswith(("wiki/", "genome/"))
+
+
+def _check_wiki_pages(v: Vault, allowed: set[str], as_of: datetime.date,
+                      ciclo: dict, findings: list[Finding]) -> None:
+    for p in v.wiki_pages:
+        if p.fm is None:
+            detail = p.fm_errors[0] if p.fm_errors else "página sin frontmatter"
+            findings.append(Finding("FM-01", "error", p.rel, detail))
+            continue
+        if p.is_meta:
+            continue
+        for msg in schema.validate_page_fm(p.fm, is_meta=False):
+            code = "FM-02" if msg.startswith("campo requerido ausente") else "FM-03"
+            findings.append(Finding(code, "error", p.rel, msg))
+        # tier declarado vs carpeta real
+        tier_path = p.tier_from_path
+        if tier_path and p.fm.get("tier") in schema.TIERS and p.fm["tier"] != tier_path:
+            findings.append(Finding(
+                "FM-03", "error", p.rel,
+                f"tier declarado '{p.fm['tier']}' ≠ carpeta 'wiki/{tier_path}/'"))
+        # campos que ningún gen declara (detector e)
+        for campo in sorted(set(p.fm) - schema.KNOWN_FIELDS):
+            findings.append(Finding(
+                "FM-04", "aviso", p.rel,
+                f"campo fuera de esquema: '{campo}' (ningún gen lo declara; "
+                "decláralo vía EVOLVE o retíralo)"))
+        # verbos fuera de la unión (detector d)
+        for verbo, _ in v.relations_of(p):
+            if verbo not in allowed:
+                findings.append(Finding(
+                    "REL-01", "error", p.rel,
+                    f"verbo de relación fuera de la unión: '{verbo}' "
+                    "(núcleo ∪ verbos de genes ∪ relation_types del manifiesto)"))
+        # vigencia dura por fecha y por evento (detector c duro)
+        vh = p.fm.get("valido_hasta")
+        if isinstance(vh, str) and schema.is_iso_date(vh) and datetime.date.fromisoformat(vh) < as_of:
+            findings.append(Finding(
+                "VIG-01", "error", p.rel,
+                f"vencida dura: valido_hasta {vh} < {as_of.isoformat()} "
+                "(prioritario si el dominio es de seguridad; QUERY debe advertirla siempre)"))
+        vig = p.fm.get("vigencia")
+        if vig in ("derogada", "no-vigente", "en-revision"):
+            findings.append(Finding(
+                "VIG-02", "error", p.rel,
+                f"vencida por evento: vigencia '{vig}' (gen-vigencia-temporal)"))
+        # vencido blando por ventanas de decaimiento (detector c blando)
+        _check_soft_decay(p, as_of, ciclo, findings)
+        # identidad de página
+        idp = p.fm.get("id_pagina")
+        if isinstance(idp, str) and p.rel.startswith("wiki/"):
+            esperado = p.rel[len("wiki/"):-len(".md")]
+            if idp != esperado:
+                findings.append(Finding(
+                    "ID-01", "error", p.rel,
+                    f"id_pagina '{idp}' ≠ ruta '{esperado}' "
+                    "(las claves históricas van en id_alias)"))
+        if p.fm.get("riesgo_inyeccion") is True:
+            findings.append(Finding(
+                "QRN-01", "info", p.rel,
+                "en cuarentena riesgo_inyeccion: no promover ni fusionar; "
+                "solo el humano la retira tras revisión"))
+
+
+def _check_soft_decay(p, as_of: datetime.date, ciclo: dict, findings: list[Finding]) -> None:
+    if p.fm.get("clase") == "evento" or p.fm.get("type") in ("hub", "meta"):
+        return
+    if p.tier_from_path == "archive":
+        return
+    lr = p.fm.get("last_reinforced")
+    rate = p.fm.get("decay_rate")
+    if not (isinstance(lr, str) and schema.is_iso_date(lr)) or rate not in schema.DECAY_RATES:
+        return
+    base = datetime.date.fromisoformat(lr)
+    da = p.fm.get("decay_aplicado")
+    if isinstance(da, str) and schema.is_iso_date(da):
+        base = max(base, datetime.date.fromisoformat(da))
+    ventana = ciclo["decay_ventana_dias"][rate]
+    ventanas = (as_of - base).days // ventana
+    if ventanas >= 1:
+        findings.append(Finding(
+            "VIG-03", "aviso", p.rel,
+            f"vencida blanda: {ventanas} ventana(s) de {ventana}d sin refuerzo "
+            f"desde {base.isoformat()} (CONSOLIDATE restará "
+            f"{ciclo['decaimiento_delta']} por ventana)"))
+
+
+def _check_links(v: Vault, findings: list[Finding]) -> None:
+    linked_in: set[str] = set()
+    for p in v.pages:
+        targets = list(p.wikilinks)
+        if p.fm:
+            targets += [t for _, t in v.relations_of(p)]
+        for t in targets:
+            resolved = v.resolve_link(t)
+            if resolved:
+                linked_in.add(resolved)
+            elif _in_link_scope(p.rel):
+                findings.append(Finding(
+                    "LNK-01", "error", p.rel, f"enlace roto: [[{t}]] no resuelve"))
+    # huérfanas (detector a): sin entrantes ni salientes; exentas las meta
+    for p in v.wiki_pages:
+        if p.fm is None or p.is_meta:
+            continue
+        tiene_salientes = bool(p.wikilinks) or bool(v.relations_of(p))
+        tiene_entrantes = p.rel in linked_in
+        if not tiene_salientes and not tiene_entrantes:
+            findings.append(Finding(
+                "LNK-02", "aviso", p.rel,
+                "huérfana: sin relaciones entrantes ni salientes ni ancla"))
+
+
+def _check_confidencial_anclada(v: Vault, findings: list[Finding]) -> None:
+    anclas: set[str] = set()
+    for p in v.pages:
+        es_indice = p.rel == "index.md"
+        es_hub = bool(p.fm) and p.fm.get("type") == "hub"
+        if not (es_indice or es_hub):
+            continue
+        for t in p.wikilinks:
+            resolved = v.resolve_link(t)
+            if resolved:
+                anclas.add((resolved, p.rel))
+    for rel, donde in sorted(anclas):
+        page = v.page_by_rel(rel)
+        if page and page.fm and page.fm.get("sensibilidad") == "confidencial":
+            findings.append(Finding(
+                "SEN-01", "error", rel,
+                f"página confidencial anclada en {donde} "
+                "(gen-confidencialidad: lo confidencial no se ancla)"))
+
+
+def _check_ledger(root: Path, findings: list[Finding]) -> None:
+    ledger = root / "ingest-ledger.jsonl"
+    if not ledger.is_file():
+        return  # sin ledger = nada ingerido aún (estado legítimo del template)
+    ultimo_por_fuente: dict[str, dict] = {}
+    text = ledger.read_text(encoding="utf-8").replace("\r\n", "\n")
+    for i, line in enumerate([l for l in text.split("\n") if l.strip()], start=1):
+        try:
+            entry = json.loads(line)
+        except json.JSONDecodeError as e:
+            findings.append(Finding(
+                "LED-02", "error", f"ingest-ledger.jsonl:{i}", f"línea inválida: {e.msg}"))
+            continue
+        faltan = [k for k in ("ts", "op", "fuente", "hash", "resultado") if k not in entry]
+        if faltan:
+            findings.append(Finding(
+                "LED-02", "error", f"ingest-ledger.jsonl:{i}",
+                f"claves ausentes: {', '.join(faltan)}"))
+            continue
+        ultimo_por_fuente[entry["fuente"]] = entry
+    for fuente, entry in sorted(ultimo_por_fuente.items()):
+        f_path = root / fuente
+        if not f_path.is_file():
+            findings.append(Finding(
+                "LED-01", "error", fuente,
+                "fuente registrada en el ledger que ya no existe en raw/ "
+                "(gen-raw-inmutable violado: nada se borra de raw/)"))
+            continue
+        data = f_path.read_bytes()
+        h_raw = git_blob_sha1(data)
+        h_lf = git_blob_sha1(data.replace(b"\r\n", b"\n"))
+        if entry["hash"] not in (h_raw, h_lf):
+            findings.append(Finding(
+                "LED-01", "error", fuente,
+                f"raw/ mutó: hash actual {h_raw[:12]}… ≠ ledger {str(entry['hash'])[:12]}… "
+                "(gen-raw-inmutable violado; no procesar, reportar)"))
+
+
+def _check_genome(v: Vault, findings: list[Finding]) -> None:
+    for p in v.genes + v.capsules:
+        if p.fm is None:
+            findings.append(Finding(
+                "GEN-01", "error", p.rel,
+                p.fm_errors[0] if p.fm_errors else "gen sin frontmatter"))
+            continue
+        gid = p.fm.get("id")
+        base = p.basename
+        if not gid:
+            findings.append(Finding("GEN-01", "error", p.rel, "gen sin campo id"))
+        elif gid not in (base, f"cap-{base}"):
+            findings.append(Finding(
+                "GEN-01", "error", p.rel, f"id '{gid}' no coincide con el archivo '{base}.md'"))
+        if p.fm.get("status") not in ("active", "deprecated"):
+            findings.append(Finding(
+                "GEN-01", "error", p.rel, f"status inválido: {p.fm.get('status')!r}"))
+        version = p.fm.get("version")
+        if not isinstance(version, int) or isinstance(version, bool) or version < 1:
+            findings.append(Finding(
+                "GEN-01", "error", p.rel, f"version inválida: {version!r}"))
+        if p.rel.startswith("genome/genes/") and not p.fm.get("trigger"):
+            findings.append(Finding("GEN-01", "error", p.rel, "gen sin trigger"))
+        if p.rel.startswith("genome/capsules/") and not isinstance(p.fm.get("composes"), list):
+            findings.append(Finding("GEN-01", "error", p.rel, "cápsula sin composes"))
+
+
+def run(root: Path | str, *, as_of: datetime.date,
+        manifest: mf.Manifest | None = None) -> Report:
+    root = Path(root)
+    v = load_vault(root)
+    m = manifest if manifest is not None else _load_manifest(root)
+    allowed = schema.allowed_verbs(m.relation_types if m else None)
+    ciclo = m.ciclo if m else schema.CICLO_DEFAULTS
+    findings: list[Finding] = []
+    _check_wiki_pages(v, allowed, as_of, ciclo, findings)
+    _check_links(v, findings)
+    _check_confidencial_anclada(v, findings)
+    _check_ledger(root, findings)
+    _check_genome(v, findings)
+    return Report(as_of=as_of, findings=sort_findings(findings),
+                  pages_total=len(v.wiki_pages))
