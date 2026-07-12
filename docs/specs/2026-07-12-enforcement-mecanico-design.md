@@ -47,7 +47,9 @@ el detector; el LLM juzga relevancia y redacta propuestas — exactamente la doc
    un auditor corre los validadores con cualquier Python, sin pip. Costo asumido: parser
    YAML propio de **subconjunto estricto** (`miniyaml`) que falla ruidosamente ante YAML
    exótico — eso es un rasgo, no una limitación: el frontmatter y el manifiesto de CEREBRO
-   quedan definidos como ese subconjunto validable.
+   quedan definidos como ese subconjunto validable. *(Ajuste durante la construcción: el
+   subconjunto incluye bloques `|`/`>` de indentación uniforme porque las reglas de los
+   blueprints reales los usan; anclas, tags, multidocumento y tabs siguen rechazados.)*
 2. **Determinismo verificable.** Salidas ordenadas y estables byte a byte; toda fecha entra
    por parámetro (`--as-of`, `--date`) y queda impresa en el reporte; normalización LF en
    todo hash/comparación (Windows CRLF ≡ Linux LF); sin aleatoriedad ni reloj implícito.
