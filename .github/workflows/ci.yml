@@ -1,0 +1,31 @@
+# CI de CEREBRO — la afirmación central del README se prueba aquí:
+# validadores mecánicos + reproducibilidad de ONBOARD, en Linux y Windows
+# (el determinismo cross-OS es parte de la garantía, no un extra).
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  verificar:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # la verificación append-only del ledger recorre TODA la historia
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Suite de tests (stdlib puro, cero dependencias)
+        run: python -m unittest discover -s tests -v
+
+      - name: Invariantes mecánicos del repo (verify)
+        run: python tools/cerebro.py verify

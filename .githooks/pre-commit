@@ -1,0 +1,46 @@
+#!/bin/sh
+# Pre-commit de CEREBRO (backlog C-05) — POSIX puro, tolerante a fallo de entorno.
+# Instalación (una vez, por clon):  git config core.hooksPath .githooks
+# Bypass consciente (queda en tu conciencia y en la auditoría): git commit --no-verify
+
+fail() {
+    echo "pre-commit CEREBRO: $1" >&2
+    exit 1
+}
+
+# 1) raw/ es inmutable: bloquear modificaciones/borrados staged (añadir es legítimo).
+viol=$(git diff --cached --name-status -- raw/ 2>/dev/null | grep -E '^[MDRT]' || true)
+if [ -n "$viol" ]; then
+    fail "raw/ es inmutable (gen-raw-inmutable). Cambios staged ilegales:
+$viol
+La única excepción es la purga por incidente documentada (ops/runbook-git-seguro.md §3)."
+fi
+
+# 2) genome/events.jsonl: solo append puro (ninguna línea existente se toca).
+if git diff --cached --name-only 2>/dev/null | grep -q '^genome/events.jsonl$'; then
+    borradas=$(git diff --cached -U0 -- genome/events.jsonl | grep -c '^-[^-]' || true)
+    if [ "${borradas:-0}" -gt 0 ]; then
+        fail "genome/events.jsonl debe ser append-only: este commit reescribe o borra $borradas línea(s)."
+    fi
+fi
+
+# 3) Espejo: si CLAUDE.md cambia, AGENTS.md staged debe ser idéntico (normalizando CRLF).
+if git diff --cached --name-only 2>/dev/null | grep -Eq '^(CLAUDE|AGENTS)\.md$'; then
+    a=$(git show :CLAUDE.md 2>/dev/null | tr -d '\r' | git hash-object --stdin 2>/dev/null)
+    b=$(git show :AGENTS.md 2>/dev/null | tr -d '\r' | git hash-object --stdin 2>/dev/null)
+    if [ -n "$a" ] && [ "$a" != "$b" ]; then
+        fail "AGENTS.md no espeja a CLAUDE.md. Corre:
+  python tools/cerebro.py mirror --fix && git add AGENTS.md"
+    fi
+fi
+
+# 4) Validación rápida mecánica (espejo + ledger), si hay python disponible.
+PY=$(command -v python 2>/dev/null || command -v python3 2>/dev/null || true)
+if [ -n "$PY" ] && [ -f tools/cerebro.py ]; then
+    "$PY" tools/cerebro.py verify --quick >/dev/null 2>&1 || {
+        "$PY" tools/cerebro.py verify --quick
+        fail "verify --quick en rojo (ver arriba)."
+    }
+fi
+
+exit 0

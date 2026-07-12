@@ -1,0 +1,13 @@
+# Normalización de saltos de línea — parte de la garantía de reproducibilidad:
+# el hash de estado y la comparación byte a byte deben dar lo mismo en
+# Windows (CRLF) y Linux (LF).
+* text=auto
+
+# Scripts y datos que exigen LF también en el árbol de trabajo:
+*.sh text eol=lf
+*.py text eol=lf
+*.jsonl text eol=lf
+.githooks/* text eol=lf
+
+# Los resultados esperados de worked/ se comparan byte a byte al regenerarse.
+worked/** text eol=lf

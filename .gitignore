@@ -14,3 +14,7 @@ graphify-out/
 
 # Estado runtime de los hooks de Claude Code (marcadores de PreCompact; no es conocimiento)
 .claude/hooks/.state/
+
+# Bytecode de Python (validadores mecánicos de tools/ y tests/)
+__pycache__/
+*.pyc
