@@ -1,0 +1,10 @@
+wiki/procedural/onboarding-cliente
+wiki/procedural/sops-ventas
+wiki/semantic/casos-exito
+wiki/semantic/clientes
+wiki/semantic/herramientas
+wiki/semantic/leads
+wiki/semantic/objeciones
+wiki/semantic/precios
+wiki/semantic/productos
+wiki/semantic/propuestas

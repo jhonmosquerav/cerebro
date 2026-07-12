@@ -1,0 +1,2 @@
+{"ts":"2026-07-12","type":"gene_added","target":"gen-accionables","signal":"ONBOARD: gen de sector sembrado desde onboard/company.yaml","diff":"∅ → v1","approved_by":"user","status":"applied"}
+{"ts":"2026-07-12","type":"gene_added","target":"gen-objecion-transversal","signal":"ONBOARD: gen de sector sembrado desde onboard/company.yaml","diff":"∅ → v1","approved_by":"user","status":"applied","prev":"43a8a7e021cef3cb269a2423d81251fc068df8714e5c1030ae29241b87bd523a"}
