@@ -97,6 +97,10 @@ ya prueba**. Antes de afirmar que el vault está sano, corre y cita su salida:
   entrevista que genera `company.yaml` (y la pregunta única de `graph_lens.backend`).
 - `events append --type … --target … --signal … --diff …` — toda línea nueva del ledger
   nace con hash-chain; jamás la escribas a mano.
+- `graph [--scope wiki|genome|all]` · `graph <origen> <destino>` — señales estructurales
+  deterministas y sin dependencias: componentes, grado, hubs contra `hub_umbral`, huérfanas,
+  páginas-puente y camino más corto. Es la mitad mecánica de GRAPH (la semántica —comunidades,
+  conexiones sorprendentes— sigue en la lente externa opcional de [[gen-graph-lens]]).
 - La integración formal de esto a los genes espera compuerta: `docs/propuestas-evolve/`.
 
 ## Reproducibilidad y portabilidad

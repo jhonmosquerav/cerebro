@@ -14,6 +14,7 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from . import graph as graph_mod
 from . import manifest as mf
 from . import schema
 from .findings import Finding, sort_findings
@@ -201,6 +202,20 @@ def _check_links(v: Vault, findings: list[Finding]) -> None:
                 "huérfana: sin relaciones entrantes ni salientes ni ancla"))
 
 
+def _check_link_suggestions(v: Vault, findings: list[Finding]) -> None:
+    """LNK-03 — mención en prosa de una página existente que no está enlazada.
+
+    Complemento PREVENTIVO de LNK-01/LNK-02: ataca la causa de las huérfanas en
+    vez de esperar a que aparezcan. Severidad `info` porque no es un defecto:
+    es una propuesta que el agente evalúa y aplica bajo criterio (nunca
+    auto-inserta; ver `graph.py`).
+    """
+    for src, dst, term in graph_mod.sugerencias(v, "wiki"):
+        findings.append(Finding(
+            "LNK-03", "info", src,
+            f"menciona «{term}» sin enlazar → [[{Path(dst).stem}]] ({dst})"))
+
+
 def _check_confidencial_anclada(v: Vault, findings: list[Finding]) -> None:
     anclas: set[str] = set()
     for p in v.pages:
@@ -296,6 +311,7 @@ def run(root: Path | str, *, as_of: datetime.date,
     findings: list[Finding] = []
     _check_wiki_pages(v, allowed, as_of, ciclo, findings)
     _check_links(v, findings)
+    _check_link_suggestions(v, findings)
     _check_confidencial_anclada(v, findings)
     _check_ledger(root, findings)
     _check_genome(v, findings)

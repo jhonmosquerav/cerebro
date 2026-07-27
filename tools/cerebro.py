@@ -4,7 +4,7 @@
     python tools/cerebro.py <comando> [opciones]
 
 Comandos: lint · mirror · events · hash · onboard · consolidate · health ·
-xray · verify. Todos aceptan --vault DIR (default: la raíz de este repo).
+xray · graph · verify. Todos aceptan --vault DIR (default: la raíz de este repo).
 Cero dependencias: cualquier Python ≥ 3.10.
 """
 from __future__ import annotations
@@ -19,6 +19,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from cerebro_core import consolidate_scan as cs_mod
 from cerebro_core import events as events_mod
+from cerebro_core import graph as graph_mod
 from cerebro_core import health as health_mod
 from cerebro_core import lint as lint_mod
 from cerebro_core import manifest as mf
@@ -27,6 +28,7 @@ from cerebro_core import onboard as onboard_mod
 from cerebro_core import statehash
 from cerebro_core import xray as xray_mod
 from cerebro_core.findings import has_errors
+from cerebro_core.vault import load_vault
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
@@ -141,6 +143,41 @@ def cmd_xray(args) -> int:
     return 0
 
 
+def cmd_graph(args) -> int:
+    vault = Path(args.vault)
+    v = load_vault(vault)
+    if getattr(args, "origen", None):
+        g = graph_mod.build(v, args.scope)
+        origen = _resolver_pagina(v, args.origen)
+        destino = _resolver_pagina(v, args.destino)
+        if origen is None or destino is None:
+            falta = args.origen if origen is None else args.destino
+            print(f"no resuelve a ninguna página: {falta!r}")
+            return 1
+        camino = graph_mod.camino_mas_corto(g, origen, destino)
+        if camino is None:
+            print(f"sin ruta entre {origen} y {destino} "
+                  f"(scope {args.scope}: están en componentes distintas)")
+            return 1
+        print(f"CAMINO ({len(camino) - 1} salto(s)):")
+        for i, rel in enumerate(camino):
+            print(f"  {'  ' * i}{'└─ ' if i else ''}{rel}")
+        return 0
+    m = lint_mod._load_manifest(vault)
+    umbral = m.hub_umbral if m else 7
+    rep = graph_mod.reporte(v, scope=args.scope, hub_umbral=umbral)
+    sys.stdout.write(json.dumps(rep, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+                     if args.json else graph_mod.render_text(rep))
+    return 0
+
+
+def _resolver_pagina(v, nombre: str) -> str | None:
+    """Acepta ruta relativa exacta o nombre de wikilink."""
+    if v.page_by_rel(nombre):
+        return nombre
+    return v.resolve_link(nombre)
+
+
 def cmd_verify(args) -> int:
     vault = Path(args.vault)
     ok = True
@@ -250,6 +287,16 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--write", action="store_true",
                     help="persiste la corrida en audit/xray/<as-of>-<sha8>/")
     sp.set_defaults(fn=cmd_xray)
+
+    sp = sub.add_parser(
+        "graph",
+        help="señales estructurales del grafo (subconjunto sin backend externo de GRAPH)")
+    sp.add_argument("--scope", choices=sorted(graph_mod.SCOPES), default="all",
+                    help="ámbito analizado (default: all = wiki + genome + index)")
+    sp.add_argument("origen", nargs="?", help="camino más corto: página de origen")
+    sp.add_argument("destino", nargs="?", help="camino más corto: página de destino")
+    sp.add_argument("--json", action="store_true")
+    sp.set_defaults(fn=cmd_graph)
 
     sp = sub.add_parser("verify", help="todos los invariantes mecánicos de una vez")
     sp.add_argument("--quick", action="store_true", help="solo espejo + ledger")

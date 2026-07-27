@@ -16,6 +16,14 @@ lleve hash-chain), 1 commit, re-sincronizar `AGENTS.md` (`mirror --fix`).
 | `prop-f0-03` | gen-auto-auditoria v4→v5 | los detectores alimentan al maker de AUDIT |
 | `prop-f0-04` | gen-xray v1 (NUEVO) + fila en CLAUDE.md | la operación XRAY: deriva declarado vs inferido |
 | `prop-f0-05` | gen-compuerta-mutacion v1→v2 | toda línea nueva del ledger lleva hash-chain (`events append`) |
+| `prop-f0-06` | gen-lint v5→v6 | LNK-03 enlace sugerido: el detector preventivo de conectividad (depende de F0-01) |
+| `prop-f0-07` | gen-graph-lens v3→v4 + gen-jerarquizacion-indice v2→v3 | la mitad estructural de GRAPH deja de necesitar backend externo (`graph`) |
 
-Orden recomendado: 01 → 02 → 05 → 03 → 04 (cada una es independiente; el
-orden solo minimiza referencias adelantadas).
+Orden recomendado: 01 → 02 → 05 → 03 → 04 → 06 → 07. Las cinco primeras son
+independientes entre sí (el orden solo minimiza referencias adelantadas); 06
+supone 01 aplicada, y 07 es independiente pero se lee mejor al final.
+
+Las dos últimas (2026-07-26) nacen del repaso de ecosistemas comparables
+—AgentCairn, Bedrock, claude-obsidian, librarian-mcp— y de una constatación
+incómoda: tres genes activos declaraban consumir señales de grafo que el camino
+por defecto no producía.
