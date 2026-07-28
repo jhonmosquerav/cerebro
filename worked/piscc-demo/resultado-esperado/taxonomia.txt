@@ -1,0 +1,12 @@
+wiki/procedural/plantillas-piscc
+wiki/procedural/protocolo-consejo-seguridad
+wiki/procedural/sops-observatorio
+wiki/semantic/actores
+wiki/semantic/delitos
+wiki/semantic/diagnostico
+wiki/semantic/focalizacion
+wiki/semantic/fuentes-de-datos
+wiki/semantic/indicadores
+wiki/semantic/normativa
+wiki/semantic/programas
+wiki/semantic/unidades-territoriales

@@ -46,6 +46,7 @@ python tools/cerebro.py hash --scope genome
 |---|---|---|---|
 | `agencia-demo` | agencia de automatización y marketing | gen-accionables, gen-objecion-transversal | onboard con taxonomía amplia (10 carpetas) y gen en tier `working` |
 | `legal-demo` | bufete legal | gen-vigencia-normativa, gen-conflicto-interes, gen-version-clausula | onboard en dominio sensible (`default_sensibilidad: confidencial`) |
+| `piscc-demo` | seguridad y convivencia ciudadana territorial (Colombia) | gen-dato-con-corte, gen-territorializacion, gen-linea-base-y-meta, gen-trazabilidad-fonset | **caso de dominio propio**: los genes codifican obligaciones legales reales (Ley 1801/2016 art. 205, Decreto 399/2011, Ley 1421/2010), no prácticas opinables |
 
 ## Límite declarado (no vender humo)
 

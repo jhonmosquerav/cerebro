@@ -1,6 +1,7 @@
 # Blueprints de sector
 
-Recetas de `ONBOARD` listas para usar, destiladas de **5 industrias validadas en simulación**.
+Recetas de `ONBOARD` listas para usar: **5 destiladas de industrias validadas en simulación** y
+**1 (`seguridad-territorial`) derivada de marco normativo real verificado en fuente primaria**.
 Un blueprint es un `company.yaml` semilla: trae los `relation_types`, `source_trust`,
 `sintesis_umbral`, taxonomía, glosario y los **genes específicos del sector** ya pensados.
 
@@ -24,6 +25,7 @@ cp onboard/blueprints/<sector>.yaml onboard/company.yaml
 | Bufete legal | `legal.yaml` | `gen-vigencia-normativa`, `gen-conflicto-interes`, `gen-version-clausula` |
 | Clínica / salud | `salud.yaml` | `gen-triada-clinica` |
 | E-commerce / retail | `ecommerce.yaml` | `gen-sku-identidad` |
+| Seguridad y convivencia territorial (CO) | `seguridad-territorial.yaml` | `gen-dato-con-corte`, `gen-territorializacion`, `gen-linea-base-y-meta`, `gen-trazabilidad-fonset` |
 
 > **Los blueprints son livianos a propósito.** Todo lo universal (vigencia, confidencialidad,
 > clase estable/evento, entidad con estado, confianza por fuente, síntesis de volumen) ya vive

@@ -52,8 +52,15 @@ juicio.
 - [x] `worked/` con contrato + 2 casos sintéticos re-corribles byte a byte
       en CI (agencia, legal), cada uno con `review.md` honesto que documenta
       fallos reales del desarrollo.
-- [ ] El caso de dominio propio (PISCC u observatorio, con fuentes
-      normativas reales) — el activo que nadie más puede producir.
+- [x] **El caso de dominio propio ✅ 2026-07-27**: `worked/piscc-demo` +
+      `onboard/blueprints/seguridad-territorial.yaml`. Cuatro genes de sector
+      que codifican obligaciones legales colombianas verificadas en fuente
+      primaria (Ley 1801/2016 art. 205 nº 4 — el alcalde DEBE elaborar y
+      ejecutar el PISCC; Decreto 399/2011 — el CTOP aprueba la destinación del
+      FONSET; Ley 1421/2010 art. 8 — informe anual al MinInterior), no
+      prácticas opinables. Regenera byte a byte en CI como los otros dos.
+      Límite declarado en su `review.md`: sin estudio de vigencia exhaustivo y
+      sin lectura de la guía DNP en su fuente (el PDF no se pudo extraer).
 - [ ] Piloto B-01…B-06 del backlog (corpus real 50–200 docs, 20 preguntas
       doradas, re-AUDIT poblado). **Salto TRL 4→5. Sin esto no hay Fase 4.**
 

@@ -81,8 +81,11 @@ class TestWorked(unittest.TestCase):
     def test_legal_demo(self):
         self._caso("legal-demo")
 
+    def test_piscc_demo(self):
+        self._caso("piscc-demo")
+
     def test_idempotencia_de_los_casos(self):
-        for caso in ("agencia-demo", "legal-demo"):
+        for caso in ("agencia-demo", "legal-demo", "piscc-demo"):
             with tempfile.TemporaryDirectory() as td:
                 root = Path(td)
                 regenerar(caso, root)

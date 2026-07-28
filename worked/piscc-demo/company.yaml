@@ -1,0 +1,118 @@
+# Sector: seguridad y convivencia ciudadana territorial (Colombia) — secretaría de gobierno,
+# observatorio del delito, oficina de planeación que formula el PISCC.
+#
+# A DIFERENCIA de los otros blueprints, este NO sale de una simulación: sale del marco
+# normativo colombiano vigente, verificado en fuente primaria (ver worked/piscc-demo/review.md).
+# Los genes de sector codifican obligaciones legales reales, no buenas prácticas opinables:
+#
+#   - Ley 1801 de 2016, art. 205 num. 4 — el alcalde debe "elaborar y ejecutar el Plan Integral
+#     de Seguridad y Convivencia"; es la primera autoridad de policía del municipio/distrito.
+#   - Ley 62 de 1993 — primer referente normativo que da vida a los PISCC.
+#   - Ley 418 de 1997, art. 119 (modificada por 548/1999, 782/2002, 1106/2006 y 1421/2010) —
+#     todo municipio y departamento debe crear su FONSET.
+#   - Ley 1421 de 2010, art. 8 — informe anual de ejecución del FONSET al Ministerio del Interior.
+#   - Decreto 399 de 2011 — organización y funcionamiento de FONSECON y FONSET; el Comité
+#     Territorial de Orden Público estudia, aprueba y hace seguimiento a la destinación de recursos.
+#   - Guía metodológica del DNP (osc.dnp.gov.co) — línea base, indicadores, metas y focalización.
+#
+# Cómo usarlo: cópialo a onboard/company.yaml, reemplaza los placeholders "<...>" y corre ONBOARD.
+
+company:
+  name: "Alcaldía Municipal de Peñas Blancas"
+  sector: "seguridad y convivencia ciudadana territorial — formulación y seguimiento del PISCC"
+  language: es
+  domains: ["penasblancas.gov.co"]
+
+# Tipos de documento que maneja la dependencia (guían la clasificación de INGEST)
+document_types: [piscc, acta-comite-orden-publico, acta-consejo-seguridad, boletin-estadistico, norma, encuesta-percepcion, plan-de-desarrollo, informe-fonset, proyecto-inversion]
+
+# Entidades clave: cada clave es una categoría -> carpeta en wiki/semantic/
+entities:
+  unidades-territoriales: []   # municipio, comuna, corregimiento, barrio, cuadrante
+  delitos: []                  # tipificación seguida (homicidio, hurto a personas, VIF…)
+  indicadores: []
+  fuentes-de-datos: []         # SIEDCO, Medicina Legal, SIVIGILA, encuesta propia
+  actores: []                  # Policía, Fiscalía, ICBF, personería, JAC, mesas ciudadanas
+  programas: []
+
+# Glosario / siglas del dominio (el agente las respeta al ingerir y consultar)
+glossary:
+  PISCC: "Plan Integral de Seguridad y Convivencia Ciudadana — instrumento de planeación obligatorio para alcaldes y gobernadores"
+  FONSET: "Fondo de Seguridad y Convivencia Ciudadana de la entidad territorial (Ley 418/1997 art. 119)"
+  FONSECON: "Fondo Nacional de Seguridad y Convivencia Ciudadana, del orden nacional"
+  CTOP: "Comité Territorial de Orden Público — aprueba y hace seguimiento a la destinación del FONSET (Decreto 399/2011)"
+  SIEDCO: "Sistema de Información Estadístico, Delincuencial, Contravencional y Operativo de la Policía Nacional"
+  tasa: "casos por cada 100.000 habitantes — NO es lo mismo que el conteo absoluto"
+  linea-base: "valor del indicador al inicio del periodo, con fuente y corte explícitos"
+  focalizacion: "priorización de territorio, población o delito sobre la que se concentra la intervención"
+  percepcion: "medición subjetiva de inseguridad por encuesta; no es medida de ocurrencia"
+
+roles:
+  contributors: ["secretaría de gobierno", "observatorio del delito", "planeación", "enlace de policía"]
+  mutation_approver: "secretario de gobierno"
+
+# Verbos de relación propios del dominio (amplían el núcleo {usa,depende_de,contradice,reemplaza}).
+# LINT valida toda relación contra la unión núcleo + estos tipos declarados.
+#   reglamenta  -> un decreto reglamenta una ley
+#   financia    -> una fuente (FONSET, SGP, regalías) financia un programa
+#   mide        -> un indicador mide un delito o fenómeno
+#   focaliza_en -> un programa se focaliza en una unidad territorial o población
+#   reporta_a   -> un informe reporta a una instancia (CTOP, MinInterior, concejo)
+relation_types: [reglamenta, financia, mide, focaliza_en, reporta_a]
+
+# Confianza inicial por tipo de fuente (gen-confianza-por-fuente).
+# El orden NO es arbitrario: refleja qué tan lejos está el dato del hecho registrado.
+source_trust:
+  oficial: 0.9      # norma publicada, SIEDCO, Medicina Legal, DANE, acta firmada del CTOP
+  interna: 0.7      # boletines y análisis propios del observatorio
+  percepcion: 0.5   # encuestas de percepción: miden opinión, no ocurrencia
+  blanda: 0.3       # prensa, redes, denuncia ciudadana sin verificar
+
+# Umbral de eventos con clave común para crear una síntesis (gen-sintesis-de-volumen).
+# Bajo a propósito: 3 hechos del mismo tipo en el mismo territorio ya es un patrón que mirar.
+sintesis_umbral: 3
+
+# Sensibilidad por defecto. 'interno' y no 'confidencial': el PISCC es un documento público y
+# la rendición de cuentas es parte del mandato. Lo reservado (inteligencia, datos de víctimas
+# identificables) se marca 'confidencial' página a página, no por defecto.
+default_sensibilidad: interno
+
+# Genes específicos del sector que ONBOARD siembra (pasan por la compuerta).
+# NOTA: vigencia por fecha, clase estable|evento, entidad-con-estado, confianza-por-fuente y
+# confidencialidad YA están en el genoma base; no se repiten aquí.
+seed_genes:
+  - id: gen-dato-con-corte
+    trigger: "se ingiere una cifra delictiva, contravencional o de percepción"
+    rule: "Ninguna cifra entra sin sus tres campos: 'fuente' (SIEDCO, Medicina Legal, DANE, encuesta propia…), 'periodo' (rango exacto) y 'fecha_corte'. Una cifra sin corte no es un dato, es un rumor con números. PROHIBIDO construir una serie o una variación porcentual mezclando fuentes distintas: SIEDCO mide denuncia registrada y Medicina Legal mide lesión peritada — no son la misma población y compararlas produce conclusiones falsas. Si dos fuentes miden lo mismo y difieren, se crean AMBAS páginas y se enlazan con 'contradice'; nunca se promedia ni se elige la conveniente. Toda cifra absoluta que se use para comparar territorios o años se acompaña de su tasa por 100.000 habitantes con el denominador poblacional declarado."
+    target_tier: semantic
+
+  - id: gen-territorializacion
+    trigger: "se ingiere un hecho, cifra, programa o intervención"
+    rule: "Toda página de este tier declara 'unidad_territorial' al mayor nivel de desagregación disponible (municipio > comuna/corregimiento > barrio > cuadrante) y se enlaza con 'focaliza_en' a la entidad territorial correspondiente. El PISCC se evalúa por focalización: un dato sin territorio no prioriza nada. Si la fuente solo trae el agregado municipal, se declara así explícitamente ('unidad_territorial: municipio') en vez de dejar el campo vacío — la ausencia de desagregación es información, el silencio no."
+    target_tier: semantic
+
+  - id: gen-linea-base-y-meta
+    trigger: "se formula o actualiza un objetivo, estrategia o programa del PISCC"
+    rule: "Un objetivo sin línea base, indicador, meta y fuente de verificación NO es un objetivo: es una intención, y así se marca ('estado: intencion', confidence<=0.4). Para pasar a 'estado: formulado' necesita los cuatro campos, y la línea base debe apuntar con 'usa' a una página de dato que cumpla gen-dato-con-corte. En el seguimiento, cada medición nueva se enlaza con 'mide' al indicador y NUNCA sobrescribe la línea base: la serie histórica es la evidencia de la gestión."
+    target_tier: semantic
+
+  - id: gen-trazabilidad-fonset
+    trigger: "se ingiere o actualiza una acción, proyecto o rubro financiado con FONSET"
+    rule: "Toda acción con cargo al FONSET se enlaza con 'financia' a su fuente y con 'reporta_a' al acta del Comité Territorial de Orden Público que aprobó la destinación (Decreto 399 de 2011: el CTOP estudia, aprueba y hace seguimiento a los recursos). Sin acta referenciada la página queda 'estado: sin-respaldo' y QUERY lo advierte SIEMPRE, porque el gasto sin aprobación del comité es un hallazgo de control fiscal, no un detalle administrativo. El informe anual de ejecución al Ministerio del Interior (Ley 1421 de 2010, art. 8) se arma navegando estas relaciones."
+    target_tier: semantic
+
+# Taxonomía inicial de carpetas a crear por tier
+taxonomy:
+  semantic: [unidades-territoriales, delitos, indicadores, fuentes-de-datos, actores, programas, normativa, diagnostico, focalizacion]
+  procedural: [sops-observatorio, plantillas-piscc, protocolo-consejo-seguridad]
+
+# Lente de grafo interactiva (gen-graph-lens, OPCIONAL). CEREBRO funciona sin esto.
+# Guardrail FIJO: las páginas 'confidencial' nunca entran a la lente (sea cual sea el backend).
+# Aquí importa: los datos de víctimas identificables y la información reservada se marcan
+# 'confidencial' y quedan fuera de la lente por diseño.
+graph_lens:
+  enable: false                  # opcional; requiere graphify instalado fuera del repo
+  backend:                       # VACÍO a propósito: ONBOARD lo pregunta 1 vez y lo registra aquí
+                                 #   claude = Claude Code (API) | local = Ollama | structural = sin LLM
+  exclude_sensibilidad: [confidencial]
+  out_dir: graphify-out          # derivado, gitignored
