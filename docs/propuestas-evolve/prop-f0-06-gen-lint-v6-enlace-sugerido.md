@@ -1,7 +1,7 @@
 ---
 tipo: propuesta-evolve
 tarea: F0-06
-status: pending
+status: approved
 fecha: 2026-07-26
 genes_afectados: [gen-lint]
 depende_de: [F0-01]

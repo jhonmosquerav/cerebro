@@ -1,7 +1,7 @@
 ---
 tipo: propuesta-evolve
 tarea: F0-07
-status: pending
+status: approved
 fecha: 2026-07-26
 genes_afectados: [gen-graph-lens, gen-jerarquizacion-indice]
 ---

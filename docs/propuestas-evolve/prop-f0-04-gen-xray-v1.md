@@ -2,6 +2,7 @@
 tipo: propuesta-evolve
 tarea: F0-04
 status: pending
+gate: aplazada-hasta-fase-b
 fecha: 2026-07-12
 genes_afectados: [gen-xray (nuevo), CLAUDE.md (fila de operación)]
 ---
@@ -9,6 +10,14 @@ genes_afectados: [gen-xray (nuevo), CLAUDE.md (fila de operación)]
 # Propuesta EVOLVE F0-04 — `gen-xray` v1 (nuevo) + operación `XRAY`
 
 > **Bajo compuerta**: este archivo solo PROPONE. Nada se aplica sin tu OK.
+
+> **APLAZADA en el gate del 2026-07-27** (decisión del operador). Es la única de
+> las siete que no se aplicó. Motivo: sería el único gen NUEVO del lote (25 → 26)
+> y su componente de salud sale hoy `N/A` porque XRAY nunca corrió sobre un vault
+> poblado — se estaría aprobando una operación cuyo valor real no se ha visto.
+> Se re-presenta cuando la Fase B (B-01…B-06) dé corpus real sobre el que la
+> deriva declarado↔evidencia se pueda medir de verdad. Mientras tanto
+> `cerebro xray` sigue disponible como infra, sin gen que la gobierne.
 
 ## Motivación
 
