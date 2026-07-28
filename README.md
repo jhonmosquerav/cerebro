@@ -101,7 +101,7 @@ cerebro/
 ├── worked/                   # casos trabajados reproducibles byte a byte, con review honesto
 ├── docs/                     # specs, roadmap de endurecimiento y propuestas EVOLVE pendientes
 ├── ops/                      # runbooks: git seguro, backup cifrado, replay/rollback
-├── .githooks/                # pre-commit: raw/ inmutable + ledger append-only + espejo
+├── .githooks/                # pre-commit: raw/ inmutable + ledger append-only + espejo + lint estructural
 ├── .github/                  # CI (ubuntu + windows): tests + verify en cada push
 ├── .obsidian/                # preset Obsidian (opcional, removible)
 └── .claude/                  # hooks reales del loop de memoria + permisos endurecidos

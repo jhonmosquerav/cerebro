@@ -34,12 +34,18 @@ if git diff --cached --name-only 2>/dev/null | grep -Eq '^(CLAUDE|AGENTS)\.md$';
     fi
 fi
 
-# 4) Validación rápida mecánica (espejo + ledger), si hay python disponible.
+# 4) Validación mecánica (espejo + ledger + lint estructural), si hay python.
+#    Se excluyen los códigos TEMPORALES (VIG-01/02/03): dependen del calendario,
+#    no de lo que estás commiteando — una página vence sola y bloquearía commits
+#    ajenos, incluso los que solo tocan tools/. El vencimiento lo atiende la
+#    operación LINT bajo compuerta, que es donde hay juicio humano.
+#    Coste medido: el lint añade ~120 ms sobre --quick (2.5 s → 2.6 s); el grueso
+#    del tiempo es el chequeo append-only contra la historia de git.
 PY=$(command -v python 2>/dev/null || command -v python3 2>/dev/null || true)
 if [ -n "$PY" ] && [ -f tools/cerebro.py ]; then
-    "$PY" tools/cerebro.py verify --quick >/dev/null 2>&1 || {
-        "$PY" tools/cerebro.py verify --quick
-        fail "verify --quick en rojo (ver arriba)."
+    "$PY" tools/cerebro.py verify --exclude temporales >/dev/null 2>&1 || {
+        "$PY" tools/cerebro.py verify --exclude temporales
+        fail "verify en rojo (ver arriba)."
     }
 fi
 

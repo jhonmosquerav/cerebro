@@ -92,6 +92,39 @@ class TestVaultSucio(unittest.TestCase):
         self.assertEqual(self.report.exit_code(strict=False), 1)
 
 
+class TestExclusionDeCodigos(unittest.TestCase):
+    """`--exclude` separa lo que causa el commit de lo que causa el calendario."""
+
+    def test_temporales_desaparecen_del_reporte(self):
+        r = lint.run(SUCIO, as_of=AS_OF, exclude=lint.CODIGOS_TEMPORALES)
+        codigos = {f.code for f in r.findings}
+        self.assertFalse(codigos & lint.CODIGOS_TEMPORALES, f"quedaron temporales: {codigos}")
+        self.assertEqual(r.excluded, ["VIG-01", "VIG-02", "VIG-03"])
+
+    def test_los_estructurales_siguen_fallando(self):
+        """Excluir vencimientos NO debe volver verde un vault con enlaces rotos."""
+        r = lint.run(SUCIO, as_of=AS_OF, exclude=lint.CODIGOS_TEMPORALES)
+        self.assertIn("LNK-01", {f.code for f in r.findings})
+        self.assertEqual(r.exit_code(strict=False), 1)
+
+    def test_excluir_solo_lo_pedido(self):
+        r = lint.run(SUCIO, as_of=AS_OF, exclude={"LNK-01"})
+        codigos = {f.code for f in r.findings}
+        self.assertNotIn("LNK-01", codigos)
+        self.assertIn("VIG-01", codigos)
+
+    def test_sin_exclude_no_cambia_nada(self):
+        base = lint.run(SUCIO, as_of=AS_OF)
+        igual = lint.run(SUCIO, as_of=AS_OF, exclude=set())
+        self.assertEqual(base.render_text(), igual.render_text())
+        self.assertEqual(base.excluded, [])
+
+    def test_el_json_declara_lo_excluido(self):
+        r = lint.run(SUCIO, as_of=AS_OF, exclude=lint.CODIGOS_TEMPORALES)
+        self.assertIn('"excluded"', r.render_json())
+        self.assertIn("VIG-01", r.render_json())   # visible aunque no haya hallazgos
+
+
 class TestVaultLimpio(unittest.TestCase):
     def test_cero_hallazgos(self):
         report = lint.run(LIMPIO, as_of=AS_OF)

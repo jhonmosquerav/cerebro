@@ -90,7 +90,9 @@ del genoma** con implementaciones intercambiables que cumplen las mismas postcon
 El núcleo mecánico existe desde 2026-07-12: **nunca re-derives a mano lo que un script
 ya prueba**. Antes de afirmar que el vault está sano, corre y cita su salida:
 - `python tools/cerebro.py verify` — todos los invariantes (espejo, ledger, lint, genes).
-- `lint --as-of <hoy>` · `consolidate scan` · `health` · `xray` — detectores y scores
+- `lint --as-of <hoy>` (con `--exclude temporales` para separar lo que causa el commit de lo
+  que causa el calendario: así corre el lint completo en pre-commit sin que un vencimiento
+  bloquee commits ajenos) · `consolidate scan` · `health` · `xray` — detectores y scores
   deterministas; tu juicio empieza donde su salida termina (contradicciones semánticas,
   priorización, redacción de propuestas siguen siendo tuyos, bajo compuerta).
 - `onboard apply --date <hoy>` — el aplicado del manifiesto es mecánico; tu parte es la

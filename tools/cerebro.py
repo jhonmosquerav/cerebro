@@ -42,8 +42,17 @@ def _as_of(value: str | None) -> datetime.date:
         raise SystemExit(f"--as-of inválido (YYYY-MM-DD): {value!r}")
 
 
+def _exclude_set(value: str | None) -> set[str]:
+    if not value:
+        return set()
+    if value == "temporales":
+        return set(lint_mod.CODIGOS_TEMPORALES)
+    return {c.strip().upper() for c in value.split(",") if c.strip()}
+
+
 def cmd_lint(args) -> int:
-    report = lint_mod.run(args.vault, as_of=_as_of(args.as_of))
+    report = lint_mod.run(args.vault, as_of=_as_of(args.as_of),
+                          exclude=_exclude_set(args.exclude))
     sys.stdout.write(report.render_json() if args.json else report.render_text())
     return report.exit_code(strict=args.strict)
 
@@ -206,8 +215,12 @@ def cmd_verify(args) -> int:
     paso("events.jsonl (append-only vs git)",
          events_mod.verify_append_only(vault, "genome/events.jsonl"))
     if not args.quick:
-        report = lint_mod.run(vault, as_of=_as_of(args.as_of))
-        paso(f"lint mecánico ({report.pages_total} páginas)", report.findings)
+        excl = _exclude_set(getattr(args, "exclude", None))
+        report = lint_mod.run(vault, as_of=_as_of(args.as_of), exclude=excl)
+        etiqueta = f"lint mecánico ({report.pages_total} páginas)"
+        if excl:
+            etiqueta += f" [sin {', '.join(sorted(excl))}]"
+        paso(etiqueta, report.findings)
         ejemplo = vault / "onboard" / "company.example.yaml"
         if ejemplo.is_file():
             try:
@@ -228,6 +241,9 @@ def build_parser() -> argparse.ArgumentParser:
     sp = sub.add_parser("lint", help="detectores mecánicos de gen-lint")
     sp.add_argument("--as-of", default=None, help="fecha de corte YYYY-MM-DD (default: hoy)")
     sp.add_argument("--strict", action="store_true", help="avisos también fallan")
+    sp.add_argument("--exclude", default=None, metavar="CODIGOS",
+                    help="códigos a silenciar, separados por coma (p. ej. VIG-01,VIG-02); "
+                         "'temporales' = los que dependen del calendario, no del commit")
     sp.add_argument("--json", action="store_true")
     sp.set_defaults(fn=cmd_lint)
 
@@ -300,6 +316,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     sp = sub.add_parser("verify", help="todos los invariantes mecánicos de una vez")
     sp.add_argument("--quick", action="store_true", help="solo espejo + ledger")
+    sp.add_argument("--exclude", default=None, metavar="CODIGOS",
+                    help="códigos de lint a silenciar; 'temporales' excluye los que "
+                         "dependen del calendario (uso típico: pre-commit)")
     sp.add_argument("--as-of", default=None)
     sp.set_defaults(fn=cmd_verify)
     return p

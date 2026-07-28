@@ -31,6 +31,7 @@ class Report:
     as_of: datetime.date
     findings: list[Finding] = field(default_factory=list)
     pages_total: int = 0
+    excluded: list[str] = field(default_factory=list)  # códigos silenciados a propósito
 
     def counts(self) -> dict:
         c = {"error": 0, "aviso": 0, "info": 0}
@@ -53,6 +54,8 @@ class Report:
             f"{self.pages_total} páginas wiki · "
             f"{c['error']} errores · {c['aviso']} avisos · {c['info']} info",
         ]
+        if self.excluded:
+            out.append(f"  (excluidos a propósito: {', '.join(self.excluded)})")
         if not self.findings:
             out.append("Sin hallazgos: el vault está estructuralmente sano.")
         for f in self.findings:
@@ -65,6 +68,7 @@ class Report:
                 "as_of": self.as_of.isoformat(),
                 "pages_total": self.pages_total,
                 "counts": self.counts(),
+                "excluded": self.excluded,
                 "findings": [
                     {"code": f.code, "severity": f.severity, "path": f.path, "detail": f.detail}
                     for f in self.findings
@@ -301,8 +305,16 @@ def _check_genome(v: Vault, findings: list[Finding]) -> None:
             findings.append(Finding("GEN-01", "error", p.rel, "cápsula sin composes"))
 
 
+# Códigos que dependen del CALENDARIO, no del contenido del commit: una página
+# vence sola, sin que nadie la toque. Excluirlos es lo que permite correr el lint
+# completo en el pre-commit sin que un vencimiento bloquee commits ajenos (el
+# vencimiento lo atiende la operación LINT, bajo compuerta, no un hook).
+CODIGOS_TEMPORALES = frozenset({"VIG-01", "VIG-02", "VIG-03"})
+
+
 def run(root: Path | str, *, as_of: datetime.date,
-        manifest: mf.Manifest | None = None) -> Report:
+        manifest: mf.Manifest | None = None,
+        exclude: set[str] | frozenset[str] | None = None) -> Report:
     root = Path(root)
     v = load_vault(root)
     m = manifest if manifest is not None else _load_manifest(root)
@@ -315,5 +327,7 @@ def run(root: Path | str, *, as_of: datetime.date,
     _check_confidencial_anclada(v, findings)
     _check_ledger(root, findings)
     _check_genome(v, findings)
+    if exclude:
+        findings = [f for f in findings if f.code not in exclude]
     return Report(as_of=as_of, findings=sort_findings(findings),
-                  pages_total=len(v.wiki_pages))
+                  pages_total=len(v.wiki_pages), excluded=sorted(exclude or ()))

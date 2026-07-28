@@ -56,7 +56,7 @@ python tools/cerebro.py events append \
 
 # 3. si la propuesta vino de AUDIT: marcar status: reverted en su 30-proposals.md
 # 4. verificar y commitear (1 revert = 1 commit) + re-sync del espejo si aplica
-python tools/cerebro.py verify --quick
+python tools/cerebro.py verify --exclude temporales
 git add genome/ && git commit -m "revert(genome): <gen> vN → vN-1 (<motivo>)"
 ```
 
