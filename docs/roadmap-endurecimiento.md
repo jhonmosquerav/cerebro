@@ -21,7 +21,7 @@ distribución**.
 **Regla de oro**: ninguna fase avanza sin su criterio de salida. Un sistema
 que no se somete a sus propias compuertas no puede pedir confianza.
 
-## Fase 0 — Verdad (bloqueante) ✅ construida 2026-07-12
+## Fase 0 — Verdad (bloqueante) ✅ construida 2026-07-12 · **cerrada 2026-07-27**
 
 El LLM nunca decide lo que un script puede decidir; el script nunca redacta
 juicio.
@@ -35,8 +35,17 @@ juicio.
 - [x] Pre-commit que bloquea mutación de raw/, reescritura del ledger y
       espejo roto (C-05).
 - [x] README sin afirmaciones que el CI no pruebe (tabla probado vs juicio).
-- [ ] **Compuerta pendiente**: propuestas EVOLVE `docs/propuestas-evolve/`
-      para que los genes consuman el núcleo mecánico (decisión del operador).
+- [x] **Compuerta resuelta 2026-07-27**: el operador revisó las 7 propuestas
+      EVOLVE una por una y aprobó 6 → **7 mutaciones aplicadas** (gen-lint
+      recibió dos: v4→v5→v6; más gen-onboard v5, gen-compuerta-mutacion v2,
+      gen-auto-auditoria v5, gen-graph-lens v4, gen-jerarquizacion-indice v3),
+      cada una con evento encadenado y commit. **Los genes ya consumen el
+      núcleo mecánico.** Única excluida: `prop-f0-04` (gen-xray), aplazada
+      hasta Fase B — ver Fase 2.
+- [x] Agujero cerrado el 2026-07-27: el pre-commit corría `verify --quick` y
+      se saltaba el lint entero (se podía commitear un enlace roto). Ahora
+      corre `verify --exclude temporales`: lint estructural completo, sin que
+      un vencimiento por calendario bloquee commits ajenos.
 
 ## Fase 1 — Evidencia 🟡 iniciada
 
@@ -54,7 +63,12 @@ juicio.
       contradicciones · score de deriva. Propone, jamás aplica. graphify es
       evidencia OPCIONAL (`--inferred graph.json`); sin él funciona.
 - [x] Corridas persistentes en `audit/xray/<fecha>-<sha8>/`.
-- [ ] Gen + operación por compuerta (`prop-f0-04`).
+- [ ] Gen + operación por compuerta (`prop-f0-04`) — **presentada en el gate
+      del 2026-07-27 y APLAZADA a propósito**: es la única que crea un gen
+      nuevo (25 → 26) y su componente `deriva` de `health` sale `N/A` porque
+      XRAY nunca corrió sobre un vault poblado. Aprobar una operación cuyo
+      valor no se ha visto contradice la regla de oro de este roadmap. Se
+      re-presenta con la Fase B.
 - [ ] Primera deriva real confirmada por humano sobre un vault poblado
       (requiere Fase B).
 
