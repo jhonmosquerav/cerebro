@@ -2,8 +2,20 @@
 id: gen-graph-lens
 trigger: operación GRAPH / "visualiza o analiza el grafo"
 status: active
-version: 3
+version: 4
 ---
+
+GRAPH tiene dos mitades con garantías distintas. La mitad ESTRUCTURAL es mecánica,
+determinista y sin dependencias: `python tools/cerebro.py graph [--scope wiki|genome|all]`
+deriva componentes conexas, grado, hubs contra el `hub_umbral` del manifiesto, huérfanas,
+puntos de articulación (páginas-puente cuya pérdida parte el grafo) y camino más corto entre
+dos páginas (`graph <origen> <destino>`). Corre siempre, también en un clon sin graphify, y
+da el mismo resultado en cada máquina — es la fuente canónica de las señales de hub para
+[[gen-jerarquizacion-indice]] y [[gen-consolidate]], y de islas para [[gen-lint]]. Al no salir
+del proceso no necesita copia staging: el filtro de allowlist rige solo para lo que se exporta
+a un motor externo. La mitad SEMÁNTICA (comunidades por modularidad, conexiones sorprendentes,
+resúmenes narrados) sigue siendo de la lente externa descrita abajo, con su staging
+fail-closed intacto. Si ambas discrepan, manda la estructural: es reproducible.
 
 GRAPH corre una lente de grafo externa (p. ej. graphify) sobre una copia *staging* de `wiki/`
 filtrada por **allowlist fail-closed**: solo entra la página que declara explícitamente

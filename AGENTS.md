@@ -30,7 +30,7 @@ correr `ONBOARD` y operar su conocimiento.
 | `CONSOLIDATE` | mantenimiento | Promueve conocimiento confirmado de tier (working→semantic), fusiona duplicados, baja confidence de lo no reforzado — con los umbrales numéricos de [[gen-ciclo-de-vida]]; parte secciones del índice que superen `hub_umbral` en páginas-hub ([[gen-jerarquizacion-indice]]). |
 | `EVOLVE` | patrón repetido detectado | PROPONE mutación de genoma (nuevo/editar/deprecar gen). Aplica solo con OK + línea en events.jsonl. |
 | `AUDIT` | "auto-audítate / audita el cerebro" | Audita la base y PROPONE ≤3 mejoras de mayor impacto (contradicciones, vacíos, reglas obsoletas/redundantes), reproducible, con maker≠auditor y gate. Estado en `audit/runs/`. |
-| `GRAPH` | "visualiza / analiza el grafo" | Corre una lente de grafo externa (local, opcional) sobre copia *staging* no-confidencial de `wiki/`; deriva señales (hubs, comunidades, caminos, islas) y las PROPONE a CONSOLIDATE/QUERY/LINT/EVOLVE. Salida derivada en `graphify-out/` (no versionada). Regla: [[gen-graph-lens]]. |
+| `GRAPH` | "visualiza / analiza el grafo" | Deriva señales estructurales de forma mecánica y sin dependencias (`graph`: componentes, grado, hubs, huérfanas, puentes, camino), y opcionalmente corre una lente externa para lo semántico sobre copia *staging* no-confidencial de `wiki/`; deriva señales (hubs, comunidades, caminos, islas) y las PROPONE a CONSOLIDATE/QUERY/LINT/EVOLVE. Salida derivada en `graphify-out/` (no versionada). Regla: [[gen-graph-lens]]. |
 
 ## Índice de genes activos
 Las reglas completas viven en `genome/genes/`. Resumen:
