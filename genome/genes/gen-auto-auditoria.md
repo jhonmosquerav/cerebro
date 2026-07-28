@@ -2,7 +2,7 @@
 id: gen-auto-auditoria
 trigger: operación AUDIT (auto-auditoría de la base)
 status: active
-version: 4
+version: 5
 ---
 
 AUDIT audita la propia base CEREBRO y PROPONE las **≤3 mejoras de mayor impacto**
@@ -20,6 +20,12 @@ Disparador: invocación manual `AUDIT`. La corrida TERMINA solo cuando existe
 2. **Drill-down:** abre el contenido completo SOLO de las páginas que un detector marcó.
 
 ## Detección (reusa LINT + CONSOLIDATE; no la reimplementa)
+- El orquestador ejecuta ANTES del maker: `python tools/cerebro.py lint --as-of <hoy> --json`,
+  `consolidate scan --json`, `health --json` y (si hay corrida) el último
+  `audit/xray/*/reporte.json`, y guarda las salidas en `00-snapshot` junto al SHA. El maker
+  toma ESOS candidatos como universo de partida para huérfanos, vencidos, verbos/campos fuera
+  de esquema, duplicados y deriva; el LLM añade solo lo no mecanizable (contradicciones
+  semánticas, redundancia de genoma por solape de triggers) y juzga/redacta.
 - Huérfanos, contradicciones (`contradice`), vencidos (`valido_hasta < hoy` o `vigencia` por
   evento: derogada/en-revision/no-vigente), verbos/campos fuera de esquema → [[gen-lint]].
 - Duplicados / near-duplicados → [[gen-consolidate]] (pares con `deriva_de`/`reemplaza`/`agregado_en`
@@ -83,6 +89,8 @@ está sucio, registra `HEAD + dirty` + lista de modificados. (El `-C <raíz>` da
 AUDIT se corra desde un subdirectorio o sandbox.) `run-id = <YYYY-MM-DD>-<short-SHA>`. El orquestador crea `audit/runs/<run-id>/` si no existe.
 Idempotente por SHA: si ya existe `runs/` para ese SHA, no se duplica. Todo insumo, criterio (esta `version`)
 y salida queda en disco → la corrida se reconstruye y reaudita sin re-correr el LLM.
+El snapshot incluye el hash de estado (`cerebro hash --scope genome` y `--scope knowledge`):
+re-auditar la corrida exige por definición el mismo hash de partida.
 
 ## Confidencialidad (hereda [[gen-confidencialidad]])
 Los artefactos de auditoría se persisten y commitean: para páginas `sensibilidad: confidencial`
