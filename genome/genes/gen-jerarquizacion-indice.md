@@ -2,7 +2,7 @@
 id: gen-jerarquizacion-indice
 trigger: anclar una página nueva / una sección de index.md supera el umbral de anclas
 status: active
-version: 2
+version: 3
 ---
 
 El índice crece con política, no con fe en la curación. `index.md` se mantiene corto
@@ -32,7 +32,8 @@ página vive en exactamente UN punto de la jerarquía (index o su hub, nunca amb
 ## Umbral y partición en hubs (parte CONSOLIDATE, nunca INGEST)
 Cuando una sección/área acumula más de **`hub_umbral`** anclas (configurable en
 `onboard/company.yaml`; default **7** — más de ~7 ítems ya no se escanean de un vistazo),
-CONSOLIDATE la parte:
+CONSOLIDATE la parte. El grado se mide con `python tools/cerebro.py graph --scope all`
+(columna `hubs`), no a ojo:
 1. crea `wiki/<tier>/hub-<área>.md` con TODAS las anclas del área (agrupadas por
    subcarpeta o `type` cuando son muchas);
 2. sustituye la sección del área en `index.md` por una sola línea:
