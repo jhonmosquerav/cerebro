@@ -1,7 +1,7 @@
 ---
 tipo: propuesta-evolve
 tarea: F0-10
-status: pending
+status: approved
 fecha: 2026-07-29
 genes_afectados: [cap-ingesta-de-fuente, gen-ingest]
 origen: piloto Fase B, hallazgo H-06

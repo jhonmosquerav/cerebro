@@ -1,7 +1,7 @@
 ---
 tipo: propuesta-evolve
 tarea: F0-09
-status: pending
+status: approved
 fecha: 2026-07-29
 genes_afectados: [gen-identidad-de-pagina]
 origen: piloto Fase B, hallazgo H-09
