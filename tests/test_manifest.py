@@ -105,5 +105,37 @@ class TestCorpusBlueprints(unittest.TestCase):
         self.assertFalse(mf.has_placeholders(m))
 
 
+class TestAvisosDeTaxonomia(unittest.TestCase):
+    """gen-onboard v6: avisar si la taxonomía no cubre los tipos que el genoma declara.
+
+    Regresión de H-07 del piloto: se aplicó un manifiesto sin destino para `sintesis`
+    teniendo `sintesis_umbral: 3`, y nada lo dijo.
+    """
+
+    def _m(self, taxonomy: dict, **extra):
+        return mf.Manifest(raw={"company": {"name": "x"}, "taxonomy": taxonomy, **extra},
+                                 path=Path("m.yaml"))
+
+    def test_sin_carpeta_para_sintesis_avisa(self):
+        avisos = mf.avisos(self._m({"semantic": ["clientes"], "procedural": ["sops"]}))
+        self.assertTrue(any("síntesis" in a for a in avisos), avisos)
+
+    def test_con_carpeta_para_sintesis_no_avisa_de_eso(self):
+        avisos = mf.avisos(self._m({"semantic": ["clientes", "sintesis"],
+                                          "procedural": ["sops"]}))
+        self.assertFalse(any("síntesis" in a for a in avisos), avisos)
+
+    def test_tier_vacio_avisa_por_cada_tipo(self):
+        avisos = mf.avisos(self._m({"semantic": ["conceptos", "sintesis"],
+                                          "procedural": []}))
+        self.assertTrue(any("'sop'" in a for a in avisos), avisos)
+
+    def test_los_avisos_no_son_errores(self):
+        """Un aviso no puede abortar `onboard apply`."""
+        m = self._m({"semantic": ["clientes"], "procedural": ["sops"]})
+        self.assertTrue(mf.avisos(m))
+        self.assertEqual([e for e in mf.validate(m) if "taxonom" in e], [])
+
+
 if __name__ == "__main__":
     unittest.main()

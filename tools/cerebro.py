@@ -121,6 +121,8 @@ def cmd_onboard(args) -> int:
         print("sin acciones: el vault ya refleja este manifiesto (idempotencia)")
     for a in res.actions:
         print(f"  - {a}")
+    for av in res.avisos:
+        print(f"  [AVISO] {av}")
     if res.state_hash:
         print(f"hash de estado (all): {res.state_hash}")
         print("recuerda: 1 commit por esta corrida + línea ya registrada en events.jsonl")

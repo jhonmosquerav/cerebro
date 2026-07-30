@@ -222,3 +222,30 @@ def validate(m: Manifest) -> list[str]:
         if backend is not None and backend not in ("claude", "local", "structural"):
             errs.append(f"graph_lens.backend inválido: {backend!r} (claude|local|structural)")
     return errs
+
+
+def avisos(m: Manifest) -> list[str]:
+    """Cosas que NO invalidan el manifiesto pero conviene ver antes de aplicarlo.
+
+    Canal separado de `validate` a propósito: un aviso no debe abortar `onboard apply`.
+    Una empresa puede decidir legítimamente no usar un tipo de página; lo que no puede es
+    descubrirlo a mitad de un CONSOLIDATE, cuando cambiar la taxonomía ya rompería la
+    reproducibilidad desde el manifiesto (gen-onboard v6).
+    """
+    out: list[str] = []
+    if not isinstance(m.taxonomy, dict):
+        return out
+    for tipo, tier in sorted(schema.TIPOS_CON_CARPETA.items()):
+        if not (m.taxonomy.get(tier) or []):
+            out.append(
+                f"taxonomy.{tier} está vacío: el tipo de página '{tipo}' que el genoma "
+                f"declara no tendría dónde aterrizar")
+    # `sintesis` merece mención propia: el manifiesto se COMPROMETE a producirlas al fijar
+    # `sintesis_umbral`, así que quedarse sin destino no es una omisión neutra.
+    semantic = [str(f) for f in (m.taxonomy.get("semantic") or [])]
+    if semantic and not any("sintesis" in f or "síntesis" in f for f in semantic):
+        out.append(
+            f"taxonomy.semantic no tiene carpeta para síntesis y el manifiesto declara "
+            f"sintesis_umbral: {m.sintesis_umbral} — gen-sintesis-de-volumen las creará "
+            f"y no habrá destino")
+    return out

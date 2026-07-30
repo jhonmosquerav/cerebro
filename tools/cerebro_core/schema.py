@@ -54,6 +54,17 @@ VIGENCIAS = {"vigente", "derogada", "no-vigente", "en-revision"}  # gen-vigencia
 TYPES = {"concepto", "entidad", "fuente", "sintesis", "sop",
          "observacion", "sesion", "hub", "meta"}
 
+# gen-onboard v6: tipos de página que la `taxonomy` del manifiesto debería poder alojar,
+# con el tier donde aterrizan. Se excluyen los que NO viven en una carpeta de taxonomía:
+# `observacion` (working/), `sesion` (episodic/), `hub` (raíz del tier) y `meta` (index).
+TIPOS_CON_CARPETA = {
+    "concepto": "semantic",
+    "entidad": "semantic",
+    "fuente": "semantic",
+    "sintesis": "semantic",
+    "sop": "procedural",
+}
+
 # ── verbos de relación ────────────────────────────────────────────────────────
 RELATION_CORE = {"usa", "depende_de", "contradice", "reemplaza"}  # núcleo reservado
 GENE_VERBS = {          # declarados por genes activos (gen-frontmatter-obligatorio v6)

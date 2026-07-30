@@ -29,6 +29,9 @@ class ApplyResult:
     actions: list[str] = field(default_factory=list)
     state_hash: str | None = None
     seeded_genes: list[str] = field(default_factory=list)
+    # Avisos que NO abortan (gen-onboard v6): p. ej. la taxonomía no cubre un tipo de
+    # página que el genoma declara. Se ven al aplicar, cuando corregirlo es gratis.
+    avisos: list[str] = field(default_factory=list)
 
 
 def _yaml_quote(text: str, campo: str) -> str:
@@ -226,7 +229,7 @@ def apply(manifest_path: Path | str, vault_root: Path | str, *,
     ]
 
     # 2) ESCRIBIR (solo si no es dry-run) ────────────────────────────────────
-    resultado = ApplyResult(actions=acciones, seeded_genes=seeded)
+    resultado = ApplyResult(actions=acciones, seeded_genes=seeded, avisos=mf.avisos(m))
     if dry_run:
         return resultado
     for keep, _ in carpetas:

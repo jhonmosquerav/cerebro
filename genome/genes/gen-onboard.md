@@ -2,7 +2,7 @@
 id: gen-onboard
 trigger: operación ONBOARD (primera vez o cambio de empresa)
 status: active
-version: 5
+version: 6
 ---
 
 ONBOARD adapta el cerebro a una empresa de forma **REPRODUCIBLE**. Fuente de verdad: el
@@ -23,5 +23,13 @@ Siguen siendo del agente: la entrevista que escribe el manifiesto, la
 pregunta única de `graph_lens.backend` cuando la lente está activa sin
 backend (la herramienta aborta a propósito en ese caso), las
 recomendaciones de vistas ([[gen-visualizacion]]) y el commit de la corrida.
+
+La herramienta **AVISA** (no aborta) cuando la `taxonomy` del manifiesto no ofrece destino
+para alguno de los tipos de página que el genoma declara —en particular `sintesis`, que el
+propio manifiesto se compromete a producir al fijar `sintesis_umbral`—. Es aviso y no error
+porque una empresa puede decidir legítimamente no usar un tipo; lo que no puede es
+descubrirlo a mitad de un CONSOLIDATE. Cambiar la taxonomía **después** de aplicar rompe la
+reproducibilidad desde el manifiesto (mismo manifiesto → mismo genoma), así que el aviso
+llega en el único momento en que corregirlo es gratis.
 
 No ingiere contenido: ONBOARD solo configura.
