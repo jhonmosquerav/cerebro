@@ -97,7 +97,8 @@ def _in_link_scope(rel: str) -> bool:
     return rel == "index.md" or rel.startswith(("wiki/", "genome/"))
 
 
-def _check_wiki_pages(v: Vault, allowed: set[str], as_of: datetime.date,
+def _check_wiki_pages(v: Vault, allowed: set[str], campos_ok: set[str],
+                      as_of: datetime.date,
                       ciclo: dict, findings: list[Finding]) -> None:
     for p in v.wiki_pages:
         if p.fm is None:
@@ -116,7 +117,7 @@ def _check_wiki_pages(v: Vault, allowed: set[str], as_of: datetime.date,
                 "FM-03", "error", p.rel,
                 f"tier declarado '{p.fm['tier']}' ≠ carpeta 'wiki/{tier_path}/'"))
         # campos que ningún gen declara (detector e)
-        for campo in sorted(set(p.fm) - schema.KNOWN_FIELDS):
+        for campo in sorted(set(p.fm) - campos_ok):
             findings.append(Finding(
                 "FM-04", "aviso", p.rel,
                 f"campo fuera de esquema: '{campo}' (ningún gen lo declara; "
@@ -328,9 +329,10 @@ def run(root: Path | str, *, as_of: datetime.date,
     v = load_vault(root)
     m = manifest if manifest is not None else _load_manifest(root)
     allowed = schema.allowed_verbs(m.relation_types if m else None)
+    campos_ok = schema.allowed_fields(m.campos_extra if m else None)
     ciclo = m.ciclo if m else schema.CICLO_DEFAULTS
     findings: list[Finding] = []
-    _check_wiki_pages(v, allowed, as_of, ciclo, findings)
+    _check_wiki_pages(v, allowed, campos_ok, as_of, ciclo, findings)
     _check_links(v, findings)
     _check_link_suggestions(v, findings)
     _check_confidencial_anclada(v, findings)

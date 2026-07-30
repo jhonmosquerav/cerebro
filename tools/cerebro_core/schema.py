@@ -136,6 +136,22 @@ def allowed_verbs(relation_types) -> set[str]:
     return verbs
 
 
+def allowed_fields(campos_extra) -> set[str]:
+    """Unión: obligatorios ∪ opcionales de genes base ∪ `campos_extra` del manifiesto.
+
+    Simétrico a `allowed_verbs` (gen-frontmatter-obligatorio v7). Existía la asimetría
+    contraria: los verbos se extendían por manifiesto y los campos comparaban contra un
+    `KNOWN_FIELDS` fijo. Consecuencia real, vista en el piloto de Fase B: un gen de sector
+    sembrado por ONBOARD —o sea aprobado por compuerta— exigía el campo `dimension`, y LINT
+    lo rechazaba con "ningún gen lo declara". El mensaje era falso y el vault arrancaba con
+    avisos FM-04 permanentes por cumplir su propio genoma.
+    """
+    campos = set(KNOWN_FIELDS)
+    if campos_extra:
+        campos |= {str(c) for c in campos_extra}
+    return campos
+
+
 def validate_page_fm(fm: dict, *, is_meta: bool) -> list[str]:
     """Valida el frontmatter de una página de wiki/ contra el esquema.
 

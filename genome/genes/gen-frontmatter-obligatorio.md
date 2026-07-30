@@ -2,7 +2,7 @@
 id: gen-frontmatter-obligatorio
 trigger: crear o actualizar una página en wiki/
 status: active
-version: 6
+version: 7
 ---
 
 Toda página de `wiki/` nace y se mantiene con frontmatter YAML válido:
@@ -23,6 +23,15 @@ que la empresa declare en `onboard/company.yaml` (ej. `producido_en`, `cita`, `t
 `sobre_sku`). `supersede` no es verbo aparte: se unifica con el núcleo `reemplaza`.
 LINT valida cada relación contra esa **unión** (núcleo ∪ verbos de genes activos ∪
 `relation_types`) y marca verbos no declarados.
+
+Los **CAMPOS** siguen la misma regla que los verbos: el núcleo es el listado de arriba
+(obligatorios + opcionales), ampliable con (a) los campos que los genes activos declaren
+como esquema y (b) los `campos_extra` que la empresa declare en `onboard/company.yaml`.
+LINT valida cada campo contra esa unión y solo marca `FM-04` lo que no aparezca en ninguna
+de las tres fuentes. Un gen sembrado que **exige** un campo lo está declarando: pedirlo y
+que el validador lo rechace sería incoherente — y dejaría al vault con avisos permanentes
+por cumplir su propio genoma. Quien siembre un gen con campo propio declara el campo en el
+mismo manifiesto: gen y campo pasan por la misma compuerta.
 
 Sin frontmatter no se considera conocimiento. Al actualizar una página existente por una
 fuente que la confirma, sube `last_reinforced` a hoy y ajusta `confidence`; no dupliques.

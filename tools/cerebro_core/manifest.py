@@ -93,6 +93,16 @@ class Manifest:
         return self.raw.get("default_sensibilidad") or "interno"
 
     @property
+    def campos_extra(self) -> list:
+        """Campos de frontmatter que la empresa declara además del núcleo.
+
+        Simétrico a `relation_types` (gen-frontmatter-obligatorio v7). Un blueprint que
+        siembra un gen exigiendo un campo propio declara aquí ese campo: así el validador
+        lo conoce y no lo marca FM-04.
+        """
+        return self.raw.get("campos_extra") or []
+
+    @property
     def seed_genes(self) -> list:
         return self.raw.get("seed_genes") or []
 
@@ -148,6 +158,11 @@ def validate(m: Manifest) -> list[str]:
     for verb in m.relation_types:
         if not isinstance(verb, str) or not _VERB_RE.match(verb):
             errs.append(f"relation_types: verbo inválido {verb!r} (minúsculas/guion_bajo)")
+    for campo in m.campos_extra:
+        if not isinstance(campo, str) or not _VERB_RE.match(campo):
+            errs.append(f"campos_extra: campo inválido {campo!r} (minúsculas/guion_bajo)")
+        elif campo in schema.KNOWN_FIELDS:
+            errs.append(f"campos_extra: {campo!r} ya está en el núcleo — retíralo del manifiesto")
     for tipo, valor in m.source_trust.items():
         if not isinstance(valor, (int, float)) or isinstance(valor, bool) or not 0.0 <= float(valor) <= 1.0:
             errs.append(f"source_trust.{tipo} fuera de rango [0,1]: {valor!r}")

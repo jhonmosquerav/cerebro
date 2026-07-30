@@ -7,6 +7,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "tools"))
 
 from cerebro_core import lint
+from cerebro_core import manifest
 from cerebro_core import schema
 
 REPO = Path(__file__).resolve().parent.parent
@@ -91,6 +92,64 @@ class TestVaultSucio(unittest.TestCase):
 
     def test_exit_code(self):
         self.assertEqual(self.report.exit_code(strict=False), 1)
+
+
+class TestCamposExtensibles(unittest.TestCase):
+    """gen-frontmatter-obligatorio v7: los campos se extienden como los verbos.
+
+    Regresión de H-08 del piloto: `gen-comparacion-declarada`, sembrado por ONBOARD y
+    aprobado por compuerta, exigía el campo `dimension` y LINT lo rechazaba diciendo
+    «ningún gen lo declara».
+    """
+
+    PAGINA = """---
+title: comparacion
+type: concepto
+tier: semantic
+tags: [t]
+confidence: 0.8
+created: 2026-07-01
+last_reinforced: 2026-07-10
+decay_rate: medium
+sources: []
+relations: {}
+dimension: determinismo
+---
+Cuerpo con [[otra]].
+"""
+
+    def _correr(self, td: str, campos_extra: list[str] | None):
+        root = Path(td)
+        (root / "wiki" / "semantic").mkdir(parents=True)
+        (root / "wiki" / "semantic" / "comparacion.md").write_text(
+            self.PAGINA, encoding="utf-8", newline="\n")
+        m = None
+        if campos_extra is not None:
+            m = manifest.Manifest(raw={"campos_extra": campos_extra}, path=root / "m.yaml")
+        return lint.run(root, as_of=AS_OF, manifest=m)
+
+    def test_sin_declarar_sigue_avisando(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as td:
+            fm04 = [f for f in self._correr(td, None).findings if f.code == "FM-04"]
+            self.assertEqual(len(fm04), 1)
+            self.assertIn("dimension", fm04[0].detail)
+
+    def test_declarado_en_el_manifiesto_no_avisa(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as td:
+            fm04 = [f for f in self._correr(td, ["dimension"]).findings if f.code == "FM-04"]
+            self.assertEqual(fm04, [], "un campo declarado no puede ser 'fuera de esquema'")
+
+    def test_declarar_un_campo_del_nucleo_es_error_de_manifiesto(self):
+        m = manifest.Manifest(raw={"company": {"name": "x"}, "campos_extra": ["title"]},
+                              path=Path("m.yaml"))
+        errs = manifest.validate(m)
+        self.assertTrue(any("ya está en el núcleo" in e for e in errs), errs)
+
+    def test_union_simetrica_a_los_verbos(self):
+        self.assertTrue(schema.KNOWN_FIELDS <= schema.allowed_fields(None))
+        self.assertIn("dimension", schema.allowed_fields(["dimension"]))
 
 
 class TestVocabularioDelLedger(unittest.TestCase):
