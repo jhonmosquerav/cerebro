@@ -20,8 +20,21 @@ falsa.
 - `lint.py` (`_check_ledger`) valida que existan las 5 claves
   (`ts, op, fuente, hash, resultado`) y **no mira qué valor toma `resultado`**.
 - `health.py` (`_cobertura`) solo cuenta una fuente como ingerida si
-  `resultado ∈ {creada, actualizada, omitida}`. Ese vocabulario **no está documentado en
-  ningún gen** ni validado en ninguna parte.
+  `resultado ∈ {creada, actualizada, omitida}`, con esos valores **incrustados como tupla
+  literal** dentro de la función.
+
+> **Corrección al redactar esta propuesta (2026-07-29).** La primera versión de este
+> archivo afirmaba que el vocabulario "no está documentado en ningún gen". **Es falso**:
+> `gen-identidad-de-pagina` v2 ya lo declara —línea del formato de línea del ledger,
+> `"resultado":"creada|actualizada|omitida|detenida"`— y su regla de salto le da semántica
+> a cada valor. También propuse `error` como cuarto valor cuando el gen ya tenía
+> `detenida`, que significa "pendiente de decisión humana, reintentar". Introducir `error`
+> habría contradicho la regla de salto.
+>
+> El hallazgo real es **más estrecho y más interesante**: el gen declaraba el vocabulario y
+> **ninguna herramienta lo hacía cumplir**. No es un hueco de documentación, es un hueco de
+> *enforcement* — exactamente la brecha que la evaluación `810f24e` llamó "enforcement 100 %
+> por convención". El gen decía la verdad y el validador no la comprobaba.
 
 Reproducido en el piloto con 4 fuentes realmente ingeridas y sus 4 líneas en el ledger:
 
@@ -44,18 +57,17 @@ sale más caro: es el número que uno mira para decidir si avanza.
 
 ## Diff propuesto (v2 → v3)
 
-Donde el gen describe el ledger de ingesta, fijar el vocabulario:
+El vocabulario ya está en el gen. Lo que falta es declarar que **se hace cumplir** y qué
+depende de él. Añadir a la lista de viñetas del ledger:
 
 ```
-Cada línea del ledger lleva `ts, op, fuente, hash, resultado`. El campo `resultado`
-es VOCABULARIO CERRADO: `creada` (nació una página), `actualizada` (se reforzó una
-existente), `omitida` (salto por hash idéntico, regla de idempotencia) o `error`
-(la ingesta no completó; la fuente sigue pendiente). Solo los tres primeros cuentan
-como fuente procesada para la cobertura de `health`. Un valor fuera del vocabulario
-es un hallazgo de LINT (LED-02), no un detalle de estilo: la cobertura se calcula
-sobre este campo y un valor libre la falsea en silencio. Claves ADICIONALES sí son
-libres y se recomiendan para trazar la procedencia cuando la fuente no es legible
-directamente (ver [[gen-ingest]]).
+- `resultado` es **vocabulario cerrado** y LINT lo valida (`LED-02`): un valor fuera de
+  `creada|actualizada|omitida|detenida` es error, no un detalle de estilo. La cobertura
+  de `health` se calcula sobre este campo contando solo `creada|actualizada|omitida`
+  (`detenida` sigue pendiente por definición), así que un valor libre **la falsea en
+  silencio**: el ledger dice que procesaste y la métrica dice que no. Las claves
+  ADICIONALES sí son libres y se recomiendan para trazar procedencia cuando la fuente no
+  es legible directamente (ver [[gen-ingest]]).
 ```
 
 ## Cambio de infraestructura que lo acompaña

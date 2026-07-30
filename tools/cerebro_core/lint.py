@@ -259,6 +259,15 @@ def _check_ledger(root: Path, findings: list[Finding]) -> None:
                 "LED-02", "error", f"ingest-ledger.jsonl:{i}",
                 f"claves ausentes: {', '.join(faltan)}"))
             continue
+        # `resultado` es vocabulario cerrado (gen-identidad-de-pagina v3): la cobertura de
+        # health se calcula sobre este campo, así que un valor libre la falsea sin avisar.
+        if entry["resultado"] not in schema.LEDGER_RESULTADOS:
+            findings.append(Finding(
+                "LED-02", "error", f"ingest-ledger.jsonl:{i}",
+                f"resultado fuera de vocabulario: {entry['resultado']!r} "
+                f"(∈ {sorted(schema.LEDGER_RESULTADOS)}); la cobertura de health "
+                "se calcula sobre este campo"))
+            continue
         ultimo_por_fuente[entry["fuente"]] = entry
     for fuente, entry in sorted(ultimo_por_fuente.items()):
         f_path = root / fuente

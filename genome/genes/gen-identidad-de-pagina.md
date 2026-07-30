@@ -2,7 +2,7 @@
 id: gen-identidad-de-pagina
 trigger: operaciones INGEST/BULK INGEST — decidir qué fuente se procesa y en qué página aterriza
 status: active
-version: 2
+version: 3
 ---
 
 La idempotencia (principio 2) se ejecuta con dos identidades distintas: la **identidad de
@@ -54,6 +54,13 @@ existe, nada se ha procesado aún). Una línea JSON por fuente procesada:
 - `paginas`: la página principal + las creadas por extracción. `resultado: detenida` = quedó
   pendiente de decisión humana (ej. PII-halt). `nota`: breve, referencia rutas/ids, **jamás**
   contenido de la fuente ([[gen-confidencialidad]]).
+- `resultado` es **vocabulario cerrado y LINT lo valida** (`LED-02`): un valor fuera de
+  `creada|actualizada|omitida|detenida` es error, no un detalle de estilo. La componente
+  `cobertura` de `health` se calcula sobre este campo contando solo
+  `creada|actualizada|omitida` (`detenida` sigue pendiente por definición), así que un valor
+  libre **la falsea en silencio**: el ledger diría que procesaste y la métrica que no. Las
+  claves ADICIONALES sí son libres y se recomiendan para trazar la procedencia cuando la
+  fuente no es legible directamente ([[gen-ingest]]).
 - **Regla de salto** (la consultan INGEST y, sobre todo, BULK INGEST) — mirar la ÚLTIMA
   línea de cada fuente:
   - sin línea → procesar;

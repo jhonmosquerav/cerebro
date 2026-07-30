@@ -16,6 +16,7 @@ from . import events as events_mod
 from . import lint as lint_mod
 from . import manifest as mf
 from . import mirror as mirror_mod
+from . import schema
 
 PESOS = {
     "higiene": 0.25,
@@ -83,7 +84,7 @@ def _cobertura(root: Path) -> tuple[int | None, str]:
                 e = json.loads(line)
             except json.JSONDecodeError:
                 continue
-            if e.get("resultado") in ("creada", "actualizada", "omitida"):
+            if e.get("resultado") in schema.LEDGER_RESULTADOS_PROCESADA:
                 procesadas.add(e.get("fuente", ""))
         n = sum(1 for f in fuentes if f.relative_to(root).as_posix() in procesadas)
     else:

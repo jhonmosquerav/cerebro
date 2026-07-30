@@ -38,6 +38,18 @@ TIERS = {"working", "episodic", "semantic", "procedural", "archive"}
 DECAY_RATES = {"high", "medium", "low"}
 SENSIBILIDADES = {"publico", "interno", "confidencial"}          # gen-confidencialidad v3
 CLASES = {"estable", "evento"}                                    # gen-clase-temporal v2
+
+# gen-identidad-de-pagina: vocabulario CERRADO del `resultado` del ledger de ingesta.
+# El gen ya lo declaraba desde v2 — el hueco era de ENFORCEMENT: lint solo comprobaba que
+# la clave existiera, y health llevaba los valores incrustados como tupla literal. Con
+# `resultado: "ok"` el lint pasaba en verde y la cobertura contaba 0 fuentes procesadas
+# teniendo el ledger 4 líneas válidas: métrica falsa, en silencio, y en la dirección que
+# parece normal ("aún no has ingerido"). Un solo sitio para las dos herramientas.
+LEDGER_RESULTADOS = {"creada", "actualizada", "omitida", "detenida"}
+# Solo estos tres significan "la fuente quedó procesada" y cuentan para la cobertura.
+# `detenida` NO cuenta: quedó pendiente de decisión humana (p. ej. PII-halt) y la regla de
+# salto del gen manda reintentarla.
+LEDGER_RESULTADOS_PROCESADA = {"creada", "actualizada", "omitida"}
 VIGENCIAS = {"vigente", "derogada", "no-vigente", "en-revision"}  # gen-vigencia-temporal v2
 TYPES = {"concepto", "entidad", "fuente", "sintesis", "sop",
          "observacion", "sesion", "hub", "meta"}

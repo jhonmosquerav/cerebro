@@ -7,6 +7,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "tools"))
 
 from cerebro_core import lint
+from cerebro_core import schema
 
 REPO = Path(__file__).resolve().parent.parent
 SUCIO = REPO / "tests" / "fixtures" / "vault-sucio"
@@ -90,6 +91,53 @@ class TestVaultSucio(unittest.TestCase):
 
     def test_exit_code(self):
         self.assertEqual(self.report.exit_code(strict=False), 1)
+
+
+class TestVocabularioDelLedger(unittest.TestCase):
+    """gen-identidad-de-pagina v3: `resultado` es vocabulario cerrado.
+
+    Regresión del hallazgo H-09 del piloto: `resultado: "ok"` pasaba el lint y la
+    cobertura de health lo contaba como 0 — métrica falsa, en silencio.
+    """
+
+    LINEA = ('{{"ts":"2026-07-01","op":"INGEST","fuente":"raw/fuente.md",'
+             '"hash":"{h}","resultado":"{r}"}}\n')
+
+    def _vault(self, td: str, resultado: str):
+        root = Path(td)
+        (root / "raw").mkdir(parents=True)
+        (root / "wiki").mkdir()
+        datos = b"contenido\n"
+        (root / "raw" / "fuente.md").write_bytes(datos)
+        h = lint.git_blob_sha1(datos)
+        (root / "ingest-ledger.jsonl").write_text(
+            self.LINEA.format(h=h, r=resultado), encoding="utf-8", newline="\n")
+        return lint.run(root, as_of=AS_OF)
+
+    def test_valores_validos_no_producen_hallazgo(self):
+        import tempfile
+        for r in sorted(schema.LEDGER_RESULTADOS):
+            with tempfile.TemporaryDirectory() as td, self.subTest(resultado=r):
+                led = [f for f in self._vault(td, r).findings if f.code.startswith("LED")]
+                self.assertEqual(led, [], f"{r} debería ser válido: {[f.render() for f in led]}")
+
+    def test_valor_libre_es_error(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as td:
+            report = self._vault(td, "ok")
+            led02 = [f for f in report.findings if f.code == "LED-02"]
+            self.assertEqual(len(led02), 1)
+            self.assertEqual(led02[0].severity, "error")
+            self.assertIn("fuera de vocabulario", led02[0].detail)
+
+    def test_health_y_lint_comparten_el_vocabulario(self):
+        """La tupla incrustada en health._cobertura era la causa raíz de H-09."""
+        self.assertTrue(schema.LEDGER_RESULTADOS_PROCESADA <= schema.LEDGER_RESULTADOS)
+
+    def test_detenida_es_valida_pero_no_cuenta_como_procesada(self):
+        """La regla de salto del gen manda reintentar lo `detenida`: no está hecha."""
+        self.assertIn("detenida", schema.LEDGER_RESULTADOS)
+        self.assertNotIn("detenida", schema.LEDGER_RESULTADOS_PROCESADA)
 
 
 class TestExclusionDeCodigos(unittest.TestCase):
