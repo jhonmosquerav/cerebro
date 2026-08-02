@@ -37,3 +37,14 @@
   la instala.
 - **Contenido**: cero expedientes ingeridos. El piloto con corpus real y sus
   20 preguntas doradas (B-01…B-06) sigue pendiente — este caso NO lo sustituye.
+
+## Regeneración de la salida esperada (2026-07-29)
+
+`taxonomia.txt` se regeneró porque la ENTRADA cambió: `company.yaml` ganó la carpeta
+`wiki/semantic/sintesis`. El motivo viene del aviso que introdujo `gen-onboard` v6
+(F0-11): el manifiesto declaraba `sintesis_umbral: 3` y no tenía destino para las
+síntesis que se compromete a producir. El hueco estaba en **9 de los 10 manifiestos** del
+repo.
+
+**El `state-hash` NO cambió**: el genoma resultante es byte-idéntico y solo crece la
+taxonomía de `wiki/`. Regenerado con la herramienta, como manda `worked/README.md`.

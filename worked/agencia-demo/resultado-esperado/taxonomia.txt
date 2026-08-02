@@ -8,3 +8,4 @@ wiki/semantic/objeciones
 wiki/semantic/precios
 wiki/semantic/productos
 wiki/semantic/propuestas
+wiki/semantic/sintesis

@@ -90,7 +90,7 @@ seed_genes:
 
 # Taxonomía inicial de carpetas a crear por tier
 taxonomy:
-  semantic:   [productos, lineas, maquinas, lotes, calidad, proveedores]
+  semantic:   [productos, lineas, maquinas, lotes, calidad, proveedores, sintesis]
   procedural: [sops-calidad, sops-mantenimiento]
 
 # Lente de grafo interactiva (gen-graph-lens, OPCIONAL). CEREBRO funciona sin esto.

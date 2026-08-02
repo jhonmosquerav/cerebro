@@ -9,3 +9,4 @@ wiki/semantic/dictamenes
 wiki/semantic/jurisprudencia
 wiki/semantic/juzgados
 wiki/semantic/normativa
+wiki/semantic/sintesis

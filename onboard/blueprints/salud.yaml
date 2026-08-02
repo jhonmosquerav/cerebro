@@ -95,7 +95,7 @@ seed_genes:
 
 # Taxonomía inicial de carpetas a crear por tier
 taxonomy:
-  semantic:   [pacientes, profesionales, protocolos, farmacos, patologias, incidentes]
+  semantic:   [pacientes, profesionales, protocolos, farmacos, patologias, incidentes, sintesis]
   procedural: [sops-asistenciales, protocolos-clinicos]
 
 # Lente de grafo interactiva (gen-graph-lens, OPCIONAL). CEREBRO funciona sin esto.

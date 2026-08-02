@@ -83,3 +83,15 @@ alcaldía real:
 - **No es el piloto.** B-01…B-06 —corpus real de 50–200 documentos, 20
   preguntas doradas, medición de idempotencia y recall— sigue pendiente. Este
   caso **no** lo sustituye y no marca la Fase B como cumplida.
+
+## Regeneración de la salida esperada (2026-07-29)
+
+`taxonomia.txt` se regeneró porque la ENTRADA cambió: `company.yaml` ganó la carpeta
+`wiki/semantic/sintesis`. El motivo viene del aviso que introdujo `gen-onboard` v6
+(F0-11): este manifiesto declaraba `sintesis_umbral: 3` —con el comentario "3 hechos del
+mismo tipo en el mismo territorio ya es un patrón que mirar"— y no tenía dónde poner esas
+síntesis. El hueco estaba en **9 de los 10 manifiestos** del repo, así que no fue un
+descuido de este caso.
+
+**El `state-hash` NO cambió**: el genoma resultante es byte-idéntico y solo crece la
+taxonomía de `wiki/`. Regenerado con la herramienta, como manda `worked/README.md`.

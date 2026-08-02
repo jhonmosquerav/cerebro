@@ -103,7 +103,7 @@ seed_genes:
 
 # Taxonomía inicial de carpetas a crear por tier
 taxonomy:
-  semantic: [unidades-territoriales, delitos, indicadores, fuentes-de-datos, actores, programas, normativa, diagnostico, focalizacion]
+  semantic: [unidades-territoriales, delitos, indicadores, fuentes-de-datos, actores, programas, normativa, diagnostico, focalizacion, sintesis]
   procedural: [sops-observatorio, plantillas-piscc, protocolo-consejo-seguridad]
 
 # Lente de grafo interactiva (gen-graph-lens, OPCIONAL). CEREBRO funciona sin esto.

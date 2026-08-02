@@ -9,4 +9,5 @@ wiki/semantic/fuentes-de-datos
 wiki/semantic/indicadores
 wiki/semantic/normativa
 wiki/semantic/programas
+wiki/semantic/sintesis
 wiki/semantic/unidades-territoriales

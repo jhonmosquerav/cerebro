@@ -19,7 +19,7 @@ python tools/cerebro.py hash --scope genome
 
 ## Salida esperada
 
-21 acciones: perfil renderizado, 12 carpetas de taxonomía/entidades, 4 genes
+22 acciones: perfil renderizado, 13 carpetas de taxonomía/entidades, 4 genes
 sembrados (`gen-dato-con-corte`, `gen-territorializacion`, `gen-linea-base-y-meta`,
 `gen-trazabilidad-fonset`, todos v1 en `semantic`), 4 líneas `gene_added`
 encadenadas por hash en `genome/events.jsonl`, bloque `## Estado` configurado.

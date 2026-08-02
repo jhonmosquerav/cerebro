@@ -36,3 +36,15 @@
   correcto del núcleo mecánico.
 - **Contenido**: cero ingesta. Este caso valida estructura (Fase 0), no el
   ciclo de conocimiento con datos reales (Fase B del backlog, pendiente).
+
+## Regeneración de la salida esperada (2026-07-29)
+
+`taxonomia.txt` se regeneró porque la ENTRADA cambió: `company.yaml` ganó la carpeta
+`wiki/semantic/sintesis`. El motivo viene del aviso que introdujo `gen-onboard` v6
+(F0-11): el manifiesto declaraba `sintesis_umbral: 3` —o sea, se comprometía a producir
+síntesis— y no tenía dónde ponerlas. El hueco estaba en **9 de los 10 manifiestos** que el
+repo distribuye, no solo aquí.
+
+**El `state-hash` NO cambió.** El genoma resultante es byte-idéntico; lo único que crece
+es la taxonomía de `wiki/`. Regenerado con la herramienta, nunca a mano, como manda
+`worked/README.md`.
