@@ -145,6 +145,10 @@ def run(root: Path | str, *, as_of: datetime.date,
             for b in presentes[i + 1:]:
                 co_menciones.setdefault(frozenset((a, b)), []).append(doc_rel)
     for p in v.pages:
+        # las páginas de navegación no son evidencia: un hub con 30 anclas
+        # fabricaría C(30,2) pares "co-enlazados" sin decir nada del dominio
+        if p.is_meta or (p.fm or {}).get("type") == "hub":
+            continue
         destinos = {v.resolve_link(t) for t in p.wikilinks}
         destinos = sorted(d for d in destinos if d and d in por_rel and d != p.rel)
         for i, a in enumerate(destinos):

@@ -101,6 +101,36 @@ class TestBuckets(unittest.TestCase):
             self.assertIsNone(r.drift_score)
 
 
+class TestNavegacionNoEsEvidencia(unittest.TestCase):
+    """index.md y los hubs co-enlazan por oficio: no fabrican pares evidenciados."""
+
+    def _vault(self, td: str, tercera_es_hub: bool) -> Path:
+        root = Path(td)
+        pagina(root, "concepto-x")
+        pagina(root, "concepto-y")
+        if tercera_es_hub:
+            hub = root / "wiki" / "semantic" / "hub-conceptos.md"
+            hub.write_text(PLANTILLA.format(title="Hub", sources="[]", relations="{}",
+                                            body="[[concepto-x]] · [[concepto-y]]")
+                           .replace("type: concepto", "type: hub"), encoding="utf-8")
+        else:
+            pagina(root, "concepto-z", body="Comparo [[concepto-x]] con [[concepto-y]].")
+        (root / "raw").mkdir()
+        return root
+
+    def test_hub_no_fabrica_par(self):
+        with tempfile.TemporaryDirectory() as td:
+            r = xray.run(self._vault(td, tercera_es_hub=True), as_of=AS_OF, min_co=1)
+            self.assertEqual(r.sin_declarar, [])
+
+    def test_pagina_normal_si_es_evidencia(self):
+        with tempfile.TemporaryDirectory() as td:
+            r = xray.run(self._vault(td, tercera_es_hub=False), as_of=AS_OF, min_co=1)
+            pares = [(p["a"], p["b"]) for p in r.sin_declarar]
+            self.assertTrue(any("concepto-x" in a + b and "concepto-y" in a + b
+                                for a, b in pares), f"co-enlace x↔y no detectado: {pares}")
+
+
 class TestResolucionAcotadaAlVault(unittest.TestCase):
     """M-05 (regresión del piloto): un archivo homónimo fuera de wiki/ robaba la
     resolución del wikilink y la arista declarada salía "sin evidencia"."""
