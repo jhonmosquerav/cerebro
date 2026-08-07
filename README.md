@@ -70,8 +70,9 @@ bufete legal, clínica y e-commerce) con agentes en paralelo. Las fricciones que
 varios sectores a la vez se convirtieron en **mutaciones del genoma base** —cada una
 propuesta, aprobada y **registrada paso a paso en `genome/events.jsonl`**—, endureciendo las
 reglas corrida a corrida. Lo probado en vivo hasta hoy es el meta-sistema (EVOLVE y AUDIT
-operando sobre el propio genoma); el piloto con datos reales de una empresa es el siguiente
-paso del backlog.
+operando sobre el propio genoma); el piloto con datos reales **ya arrancó en un clon**
+(ONBOARD real + corpus de 73 fuentes) y sus primeros hallazgos volvieron al genoma como
+mutaciones aprobadas por compuerta (F0-08…F0-11, gate 2026-07-29).
 
 ---
 
@@ -99,7 +100,7 @@ cerebro/
 ├── tools/                    # ⚙️ validadores mecánicos (Python puro, 0 deps) + CLI cerebro.py
 ├── tests/                    # la suite que prueba las garantías (unittest, corre en CI)
 ├── worked/                   # casos trabajados reproducibles byte a byte, con review honesto
-├── docs/                     # specs, roadmap de endurecimiento y propuestas EVOLVE pendientes
+├── docs/                     # specs, roadmap de endurecimiento y propuestas EVOLVE (histórico + pendientes)
 ├── ops/                      # runbooks: git seguro, backup cifrado, replay/rollback
 ├── .githooks/                # pre-commit: raw/ inmutable + ledger append-only + espejo + lint estructural
 ├── .github/                  # CI (ubuntu + windows): tests + verify en cada push
@@ -178,9 +179,10 @@ no un script determinista. En concreto:
 | XRAY: deriva declarado↔evidencia + score | interpretar la deriva y proponer |
 | casos `worked/` regenerables byte a byte | — |
 
-La integración formal de estas herramientas a los genes espera compuerta en
-[`docs/propuestas-evolve/`](docs/propuestas-evolve/) — el genoma no se muta solo, ni
-siquiera para mejorarse.
+La integración de estas herramientas a los genes **se aprobó y aplicó por compuerta**
+(gates 2026-07-27 y 2026-07-29; solo `prop-f0-04`/gen-xray sigue pendiente, aplazada hasta
+la Fase B) — ver [`docs/propuestas-evolve/`](docs/propuestas-evolve/): el genoma no se muta
+solo, ni siquiera para mejorarse.
 
 Arranque reproducible: **clona → elige un blueprint → rellena tus datos → `ONBOARD`.**
 

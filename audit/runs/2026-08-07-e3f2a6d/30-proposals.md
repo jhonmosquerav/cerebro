@@ -23,7 +23,7 @@ A-05 (impacto 21, marginal) queda registrado en `20-auditor.md` sin propuesta.
 
 ## P1 (M-03) — Sincronizar `60-backlog.md` con la Fase C ejecutada y el arranque real de la Fase B
 
-- **id**: P1 · **fecha**: 2026-08-07 · **score**: 33 (sev 3 × 10 + alcance 3) · **status**: pending
+- **id**: P1 · **fecha**: 2026-08-07 · **score**: 33 (sev 3 × 10 + alcance 3) · **status**: applied (2026-08-07)
 - **motivo**: el backlog marca `[ ]`/"diferida" la Fase C construida el 2026-07-12 y no
   registra B-01 hecho ni B-02 en curso en el piloto; viola su propia regla ("al completar:
   marcar `[x]`"). El único pendiente genuino de Fase C (C-04) queda indistinguible de lo hecho.
@@ -36,7 +36,7 @@ A-05 (impacto 21, marginal) queda registrado en `20-auditor.md` sin propuesta.
 
 ## P2 (M-02) — `CLAUDE.md`/`AGENTS.md` afirman que la integración del núcleo mecánico "espera compuerta"
 
-- **id**: P2 · **fecha**: 2026-08-07 · **score**: 32 (sev 3 × 10 + alcance 2) · **status**: pending
+- **id**: P2 · **fecha**: 2026-08-07 · **score**: 32 (sev 3 × 10 + alcance 2) · **status**: applied (2026-08-07)
 - **motivo**: la línea contradice el gate resuelto (2026-07-27/29, 10 de 11 aplicadas) y
   al propio manual, que tres bullets antes describe los genes que ya consumen el núcleo.
 - **evidencia**: `CLAUDE.md:106` ≡ `AGENTS.md:106` vs `docs/propuestas-evolve/README.md`
@@ -46,7 +46,7 @@ A-05 (impacto 21, marginal) queda registrado en `20-auditor.md` sin propuesta.
 
 ## P3 (M-04) — README del producto desactualizado tras el gate y el arranque del piloto
 
-- **id**: P3 · **fecha**: 2026-08-07 · **score**: 31 (sev 3 × 10 + alcance 1) · **status**: pending
+- **id**: P3 · **fecha**: 2026-08-07 · **score**: 31 (sev 3 × 10 + alcance 1) · **status**: applied (2026-08-07)
 - **motivo**: el escaparate público afirma que el piloto "es el siguiente paso" (ya arrancó
   y devolvió 4 mutaciones al genoma) y repite la falsedad de P2.
 - **evidencia**: `README.md:72-74,102,181-183` vs `log.md` 2026-07-29 y
