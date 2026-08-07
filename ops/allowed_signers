@@ -3,5 +3,5 @@
 # Ejemplo:
 #   operador@empresa.com namespaces="git" ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI...
 # Añadir un firmante = commit propio (evento auditable). Ver ops/runbook-firma-aprobaciones.md.
-# (vacío a propósito: la clave la registra el operador; un agente no la genera por él)
+# Primer firmante registrado el 2026-08-07 con aprobación explícita del operador en sesión.
 mosquera.abg@gmail.com namespaces="git" ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINsRtdUq2aaM4BE0JBzVtJuD7o/wdbsVVIisHvE+vcLB klonus-vps-jhon
