@@ -84,9 +84,11 @@ verificada. La "versión mejorada" queda operando sobre datos propios.
 
 *Objetivo: el caso público reproducible. Arranca solo con todos los 🔒 de Fase A completos.*
 
-- [ ] **B-01 [operación]** **ONBOARD real** — manifiesto `onboard/company.yaml` de una
+- [x] **B-01 [operación]** **ONBOARD real** — manifiesto `onboard/company.yaml` de una
   empresa real (la del propio autor sirve), versionado.
+  ⇒ hecho en el clon del piloto (`C:\cerebro-piloto`), manifiesto versionado allí; ver `log.md` 2026-07-29.
 - [ ] **B-02 [operación]** **BULK INGEST** de corpus real (50–200 documentos).
+  ⇒ en curso en el piloto: corpus de 73 fuentes, primer lote 4/73 (`C:\cerebro-piloto\piloto\`).
 - [ ] **B-03 [medición]** **Re-corrida de INGEST** sobre el mismo corpus → medir idempotencia
   real (con A-04 operativo, duplicados esperados = 0).
 - [ ] **B-04 [medición]** **20 preguntas doradas** → recall de QUERY (meta inicial revisable:
@@ -101,17 +103,28 @@ EVOLVE (con compuerta) y este backlog.
 
 ---
 
-## Fase C — Enforcement mecánico (validadores) — **diferida por decisión del operador**
+## Fase C — Enforcement mecánico (validadores) — **ejecutada 2026-07-12 como Fase 0 del roadmap de endurecimiento, salvo C-04**
 
 *Objetivo: convertir "auditable" de narrado a verificable por terceros. Se activa cuando el
 operador lo decida o si un tripwire del plan 50 lo exige (p. ej., primer cliente que audite).*
 
-- [ ] **C-01 [infra]** Validador de frontmatter + resolución de `[[wiki-links]]`.
-- [ ] **C-02 [infra]** Verificador de sincronía `AGENTS.md` ≡ `CLAUDE.md`.
-- [ ] **C-03 [infra]** Integridad + **hash-chain** de `genome/events.jsonl`.
+> Nota (2026-08-07): la advertencia de "Riesgo aceptado al diferir la Fase C" del encabezado
+> quedó **históricamente cerrada** el 2026-07-12 — el gate ya no es autorrelatado (`verify`),
+> la integridad de `events.jsonl` es hash-chain + append-only contra git, y la deriva la mide
+> `xray`. El único diferido que sigue vivo es C-04.
+
+- [x] **C-01 [infra]** Validador de frontmatter + resolución de `[[wiki-links]]`.
+  ⇒ 2026-07-12: ejecutada como Fase 0 del roadmap (`tools/cerebro.py lint`, 16 detectores; ver `log.md` y `docs/roadmap-endurecimiento.md`).
+- [x] **C-02 [infra]** Verificador de sincronía `AGENTS.md` ≡ `CLAUDE.md`.
+  ⇒ 2026-07-12: `cerebro mirror` (SHA-256), en `verify`, pre-commit y CI.
+- [x] **C-03 [infra]** Integridad + **hash-chain** de `genome/events.jsonl`.
+  ⇒ 2026-07-12: `cerebro events verify` (esquema + cadena + append-only contra git); escritura sancionada solo vía `events append` (gen-compuerta-mutacion v2, gate 2026-07-27).
 - [ ] **C-04 [genoma·gate]** **Firma/atribución de aprobaciones humanas** del gate.
-- [ ] **C-05 [infra]** Pre-commit local: bloqueo de escrituras a `raw/` + validadores en verde.
-- [ ] **C-06 [ops]** Runbook de **replay/rollback ejercitado** — un ensayo real documentado.
+  ⇒ sigue **diferida: espera decisión de diseño del operador** (GPG/allowed_signers; motivo documentado en `docs/roadmap-endurecimiento.md`).
+- [x] **C-05 [infra]** Pre-commit local: bloqueo de escrituras a `raw/` + validadores en verde.
+  ⇒ 2026-07-12: `.githooks/pre-commit` probado; endurecido 2026-07-27 (`verify --exclude temporales`).
+- [x] **C-06 [ops]** Runbook de **replay/rollback ejercitado** — un ensayo real documentado.
+  ⇒ 2026-07-12: `ops/runbook-replay.md`, ensayado de verdad (ver `log.md`).
 
 ---
 
