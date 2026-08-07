@@ -24,6 +24,7 @@ lleve hash-chain), 1 commit, re-sincronizar `AGENTS.md` (`mirror --fix`).
 | `prop-f0-09` | gen-identidad-de-pagina v2→v3 | el `resultado` del ledger es vocabulario cerrado y validado — cierra H-09 | ✅ aplicada 2026-07-29 |
 | `prop-f0-10` | cap-ingesta-de-fuente v5→v6 + gen-ingest v3→v4 | el eslabón del derivado para fuentes no legibles — cierra H-06 | ✅ aplicada 2026-07-29 |
 | `prop-f0-11` | gen-onboard v5→v6 | avisar si la taxonomía no cubre los tipos declarados — cierra H-07 | ✅ aplicada 2026-07-29 |
+| `prop-f0-12` | gen-migracion-genoma v1→v2 + gen-compuerta-mutacion v2→v3 | doctrina de distribución: cadena por vault + evento `genome_adopted` — cierra H-10 | ✅ aplicada 2026-08-07 |
 
 Orden en que se aplicaron: 01 → 02 → 05 → 03 → 06 → 07a → 07b (06 supone 01,
 porque muta el mismo gen encima de la versión que 01 crea).
