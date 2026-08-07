@@ -87,16 +87,20 @@ verificada. La "versión mejorada" queda operando sobre datos propios.
 - [x] **B-01 [operación]** **ONBOARD real** — manifiesto `onboard/company.yaml` de una
   empresa real (la del propio autor sirve), versionado.
   ⇒ hecho en el clon del piloto (`C:\cerebro-piloto`), manifiesto versionado allí; ver `log.md` 2026-07-29.
-- [ ] **B-02 [operación]** **BULK INGEST** de corpus real (50–200 documentos).
-  ⇒ en curso en el piloto: corpus de 73 fuentes, primer lote 4/73 (`C:\cerebro-piloto\piloto\`).
-- [ ] **B-03 [medición]** **Re-corrida de INGEST** sobre el mismo corpus → medir idempotencia
+- [x] **B-02 [operación]** **BULK INGEST** de corpus real (50–200 documentos).
+  ⇒ 2026-08-07: **72/73** en 11 lotes (lint 0 errores en todos; `nist-ai-rmf` fuera: PDF sin extractor, declarado).
+- [x] **B-03 [medición]** **Re-corrida de INGEST** sobre el mismo corpus → medir idempotencia
   real (con A-04 operativo, duplicados esperados = 0).
-- [ ] **B-04 [medición]** **20 preguntas doradas** → recall de QUERY (meta inicial revisable:
+  ⇒ 2026-08-07: re-corrida salta 72/72 por ledger, **0 duplicados**; ver `docs/caso-fase-b.md`.
+- [x] **B-04 [medición]** **20 preguntas doradas** → recall de QUERY (meta inicial revisable:
   ≥16/20) + comportamiento del índice al crecer (con A-06).
-- [ ] **B-05 [operación]** **Re-AUDIT sobre el estado poblado** — primera auditoría con wiki
+  ⇒ 2026-08-07: **20/20 por navegación pura**, 0 fallback; 3 secciones sobre `hub_umbral` sin degradar recall.
+- [x] **B-05 [operación]** **Re-AUDIT sobre el estado poblado** — primera auditoría con wiki
   viva; desviaciones documentadas.
-- [ ] **B-06 [docs]** **Publicar el caso anonimizado + métricas versionadas** en el repo —
+  ⇒ 2026-08-07: corrida `2026-08-07-a09385e` en el piloto — 10 confirmados, top-3 aplicado, rúbrica y desempates con huecos documentados (van a EVOLVE).
+- [x] **B-06 [docs]** **Publicar el caso anonimizado + métricas versionadas** en el repo —
   sustituye la narrativa de la simulación borrada; deja de pedirse fe. **⇒ salto TRL 4→5.**
+  ⇒ 2026-08-07: `docs/caso-fase-b.md` con claims anclados a hashes/commits verificables del piloto.
 
 **Cierre de Fase B:** métricas publicadas y reproducibles; hallazgos del piloto alimentan
 EVOLVE (con compuerta) y este backlog.

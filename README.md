@@ -69,10 +69,13 @@ Y luego se **puso a prueba en simulación multi-sector** (producción, agencia d
 bufete legal, clínica y e-commerce) con agentes en paralelo. Las fricciones que aparecían en
 varios sectores a la vez se convirtieron en **mutaciones del genoma base** —cada una
 propuesta, aprobada y **registrada paso a paso en `genome/events.jsonl`**—, endureciendo las
-reglas corrida a corrida. Lo probado en vivo hasta hoy es el meta-sistema (EVOLVE y AUDIT
-operando sobre el propio genoma); el piloto con datos reales **ya arrancó en un clon**
-(ONBOARD real + corpus de 73 fuentes) y sus primeros hallazgos volvieron al genoma como
-mutaciones aprobadas por compuerta (F0-08…F0-11, gate 2026-07-29).
+reglas corrida a corrida. Lo probado en vivo: el meta-sistema (EVOLVE y AUDIT operando sobre el propio genoma) y,
+desde el 2026-08-07, **la Fase B completa en un clon con corpus real** — 72/73 fuentes
+ingeridas, idempotencia medida (0 duplicados), recall 20/20 por navegación pura, primer
+`genome_adopted` de la doctrina de distribución y primera auditoría sobre wiki viva.
+Caso con métricas verificables: [`docs/caso-fase-b.md`](docs/caso-fase-b.md). Los
+hallazgos del piloto ya volvieron al genoma por compuerta (F0-08…F0-12) y los nuevos
+esperan su gate.
 
 ---
 
