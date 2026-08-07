@@ -248,6 +248,16 @@ class TestSugerencias(unittest.TestCase):
             pagina(root, "wiki/semantic/fuente-clave.md")
             self.assertEqual([s[2] for s in self._sug(root)], ["fuente-clave"])
 
+    def test_termino_como_extension_no_dispara(self):
+        """«events.jsonl» tampoco es mención de la página `jsonl` (hallazgo del piloto)."""
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            pagina(root, "wiki/semantic/origen.md",
+                   body="Todo queda en events.jsonl, y ademas jsonl es un formato de lineas.")
+            pagina(root, "wiki/semantic/jsonl.md")
+            # la mencion en prosa («ademas jsonl es…») SI dispara; la de filename no
+            self.assertEqual([s[2] for s in self._sug(root)], ["jsonl"])
+
     def test_extension_de_mas_de_seis_chars_no_es_archivo(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)

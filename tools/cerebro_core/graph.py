@@ -255,9 +255,11 @@ def _menciona(texto_bajo: str, term: str) -> bool:
     `(?!\\.[a-z0-9]{1,6}(?![\\w-]))` evita disparar sobre nombres de archivo
     aunque no vayan entre backticks: «events.jsonl» no es una mención de la
     página `events` (el punto de fin de oración —«… events. Y»— sí dispara,
-    porque no le sigue una extensión pegada).
+    porque no le sigue una extensión pegada). `(?<!\\.)` cubre el caso
+    simétrico término-como-extensión: «events.jsonl» tampoco es una mención
+    de la página `jsonl` (hallazgo del piloto, 2026-08-07).
     """
-    pat = re.compile(r"(?<![\w-])" + re.escape(term.lower())
+    pat = re.compile(r"(?<![\w-])(?<!\.)" + re.escape(term.lower())
                      + r"(?![\w-])(?!\.[a-z0-9]{1,6}(?![\w-]))")
     return bool(pat.search(texto_bajo))
 
