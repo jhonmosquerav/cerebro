@@ -230,6 +230,32 @@ class TestSugerencias(unittest.TestCase):
             pagina(root, "wiki/semantic/gen-lint.md")
             self.assertEqual(self._sug(root), [])
 
+    def test_nombre_de_archivo_no_dispara(self):
+        """«events.jsonl» o «ai-act.md» sin backticks no son menciones de página."""
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            pagina(root, "wiki/semantic/origen.md",
+                   body="Todo queda en events.jsonl y el acta vive en ai-act.md, sin backticks.")
+            pagina(root, "wiki/semantic/events.md")
+            pagina(root, "wiki/semantic/ai-act.md")
+            self.assertEqual(self._sug(root), [])
+
+    def test_punto_de_fin_de_oracion_si_dispara(self):
+        """El veto es solo para `termino.ext`: el punto de fin de oración no lo activa."""
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            pagina(root, "wiki/semantic/origen.md", body="Hablo de fuente-clave. Y sigo.")
+            pagina(root, "wiki/semantic/fuente-clave.md")
+            self.assertEqual([s[2] for s in self._sug(root)], ["fuente-clave"])
+
+    def test_extension_de_mas_de_seis_chars_no_es_archivo(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            pagina(root, "wiki/semantic/origen.md",
+                   body="El paquete events.jsonlines corre solo.")
+            pagina(root, "wiki/semantic/events.md")
+            self.assertEqual([s[2] for s in self._sug(root)], ["events"])
+
     def test_no_se_sugiere_a_si_misma(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)

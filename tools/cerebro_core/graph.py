@@ -252,8 +252,13 @@ def _menciona(texto_bajo: str, term: str) -> bool:
     """Coincidencia por palabra completa, sin cortar tokens con guion.
 
     `(?![\\w-])` evita que «gen-lint» dispare dentro de «gen-lint-v5».
+    `(?!\\.[a-z0-9]{1,6}(?![\\w-]))` evita disparar sobre nombres de archivo
+    aunque no vayan entre backticks: «events.jsonl» no es una mención de la
+    página `events` (el punto de fin de oración —«… events. Y»— sí dispara,
+    porque no le sigue una extensión pegada).
     """
-    pat = re.compile(r"(?<![\w-])" + re.escape(term.lower()) + r"(?![\w-])")
+    pat = re.compile(r"(?<![\w-])" + re.escape(term.lower())
+                     + r"(?![\w-])(?!\.[a-z0-9]{1,6}(?![\w-]))")
     return bool(pat.search(texto_bajo))
 
 

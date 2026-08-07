@@ -27,6 +27,7 @@ class Report:
     findings: list[Finding] = field(default_factory=list)
     pages_total: int = 0
     excluded: list[str] = field(default_factory=list)  # códigos silenciados a propósito
+    omitidas_por_descarte: int = 0  # sugerencias LNK-03 calladas por lint-descartes.jsonl
 
     def counts(self) -> dict:
         c = {"error": 0, "aviso": 0, "info": 0}
@@ -51,6 +52,9 @@ class Report:
         ]
         if self.excluded:
             out.append(f"  (excluidos a propósito: {', '.join(self.excluded)})")
+        if self.omitidas_por_descarte:
+            out.append(f"  ({self.omitidas_por_descarte} sugerencia(s) LNK-03 "
+                       "omitida(s) por descartes en lint-descartes.jsonl)")
         if not self.findings:
             out.append("Sin hallazgos: el vault está estructuralmente sano.")
         for f in self.findings:
@@ -64,6 +68,7 @@ class Report:
                 "pages_total": self.pages_total,
                 "counts": self.counts(),
                 "excluded": self.excluded,
+                "omitidas_por_descarte": self.omitidas_por_descarte,
                 "findings": [
                     {"code": f.code, "severity": f.severity, "path": f.path, "detail": f.detail}
                     for f in self.findings
@@ -206,18 +211,64 @@ def _check_links(v: Vault, findings: list[Finding]) -> None:
                 "huérfana: sin relaciones entrantes ni salientes ni ancla"))
 
 
-def _check_link_suggestions(v: Vault, findings: list[Finding]) -> None:
+def _cargar_descartes(root: Path, findings: list[Finding]) -> set[tuple[str, str]]:
+    """Descartes persistentes de LNK-03: `lint-descartes.jsonl` en la raíz.
+
+    Archivo OPCIONAL y append-only; una línea JSON por descarte con claves
+    {ts, pagina, termino, motivo}. El par (pagina, termino) descartado deja de
+    sugerirse en corridas futuras — así una sugerencia evaluada y rechazada bajo
+    criterio no vuelve a aparecer en cada lint. Validación tolerante: una línea
+    malformada produce aviso (DSC-01), no crash, y no invalida a las demás.
+    """
+    descartes: set[tuple[str, str]] = set()
+    path = root / "lint-descartes.jsonl"
+    if not path.is_file():
+        return descartes
+    text = path.read_text(encoding="utf-8").replace("\r\n", "\n")
+    for i, line in enumerate([l for l in text.split("\n") if l.strip()], start=1):
+        try:
+            entry = json.loads(line)
+        except json.JSONDecodeError as e:
+            findings.append(Finding(
+                "DSC-01", "aviso", f"lint-descartes.jsonl:{i}",
+                f"línea inválida: {e.msg} (se ignora; el resto sigue aplicando)"))
+            continue
+        if not isinstance(entry, dict):
+            findings.append(Finding(
+                "DSC-01", "aviso", f"lint-descartes.jsonl:{i}",
+                "el descarte debe ser un objeto JSON {ts, pagina, termino, motivo}"))
+            continue
+        faltan = [k for k in ("ts", "pagina", "termino", "motivo")
+                  if not (isinstance(entry.get(k), str) and entry[k].strip())]
+        if faltan:
+            findings.append(Finding(
+                "DSC-01", "aviso", f"lint-descartes.jsonl:{i}",
+                f"claves ausentes o vacías: {', '.join(faltan)} "
+                "(esquema: ts, pagina, termino, motivo)"))
+            continue
+        descartes.add((entry["pagina"], entry["termino"]))
+    return descartes
+
+
+def _check_link_suggestions(v: Vault, findings: list[Finding],
+                            descartes: set[tuple[str, str]]) -> int:
     """LNK-03 — mención en prosa de una página existente que no está enlazada.
 
     Complemento PREVENTIVO de LNK-01/LNK-02: ataca la causa de las huérfanas en
     vez de esperar a que aparezcan. Severidad `info` porque no es un defecto:
     es una propuesta que el agente evalúa y aplica bajo criterio (nunca
-    auto-inserta; ver `graph.py`).
+    auto-inserta; ver `graph.py`). Devuelve cuántas sugerencias calló el
+    archivo de descartes (el reporte lo muestra en una sola línea).
     """
+    omitidas = 0
     for src, dst, term in graph_mod.sugerencias(v, "wiki"):
+        if (src, term) in descartes:
+            omitidas += 1
+            continue
         findings.append(Finding(
             "LNK-03", "info", src,
             f"menciona «{term}» sin enlazar → [[{Path(dst).stem}]] ({dst})"))
+    return omitidas
 
 
 def _check_confidencial_anclada(v: Vault, findings: list[Finding]) -> None:
@@ -333,11 +384,13 @@ def run(root: Path | str, *, as_of: datetime.date,
     findings: list[Finding] = []
     _check_wiki_pages(v, allowed, campos_ok, as_of, ciclo, findings)
     _check_links(v, findings)
-    _check_link_suggestions(v, findings)
+    descartes = _cargar_descartes(root, findings)
+    omitidas = _check_link_suggestions(v, findings, descartes)
     _check_confidencial_anclada(v, findings)
     _check_ledger(root, findings)
     _check_genome(v, findings)
     if exclude:
         findings = [f for f in findings if f.code not in exclude]
     return Report(as_of=as_of, findings=sort_findings(findings),
-                  pages_total=len(v.wiki_pages), excluded=sorted(exclude or ()))
+                  pages_total=len(v.wiki_pages), excluded=sorted(exclude or ()),
+                  omitidas_por_descarte=omitidas)

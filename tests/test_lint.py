@@ -152,6 +152,102 @@ Cuerpo con [[otra]].
         self.assertIn("dimension", schema.allowed_fields(["dimension"]))
 
 
+class TestDescartesLnk03(unittest.TestCase):
+    """LNK-03: descartes persistentes en `lint-descartes.jsonl` (raíz del vault).
+
+    Una sugerencia evaluada y rechazada bajo criterio no debe reaparecer en cada
+    corrida. El archivo es opcional, append-only, una línea JSON por descarte
+    con claves {ts, pagina, termino, motivo}; línea malformada → aviso, no crash.
+    """
+
+    PAGINA = """---
+title: {title}
+type: concepto
+tier: semantic
+tags: [t]
+confidence: 0.8
+created: 2026-07-01
+last_reinforced: 2026-07-10
+decay_rate: medium
+sources: []
+relations: {{}}
+---
+{body}
+"""
+
+    DESCARTE = ('{"ts": "2026-07-12", "pagina": "wiki/semantic/origen.md", '
+                '"termino": "fuente-clave", "motivo": "falso positivo evaluado"}\n')
+
+    def _correr(self, td: str, descartes: str | None):
+        root = Path(td)
+        (root / "wiki" / "semantic").mkdir(parents=True)
+        (root / "wiki" / "semantic" / "origen.md").write_text(
+            self.PAGINA.format(title="origen", body="Hablo de fuente-clave y de [[destino-b]]."),
+            encoding="utf-8", newline="\n")
+        (root / "wiki" / "semantic" / "fuente-clave.md").write_text(
+            self.PAGINA.format(title="fuente-clave", body="Cuerpo con [[origen]]."),
+            encoding="utf-8", newline="\n")
+        (root / "wiki" / "semantic" / "destino-b.md").write_text(
+            self.PAGINA.format(title="destino-b", body="Cuerpo con [[origen]]."),
+            encoding="utf-8", newline="\n")
+        if descartes is not None:
+            (root / "lint-descartes.jsonl").write_text(
+                descartes, encoding="utf-8", newline="\n")
+        return lint.run(root, as_of=AS_OF)
+
+    def test_sin_archivo_la_sugerencia_aparece(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as td:
+            rep = self._correr(td, None)
+            lnk03 = [f for f in rep.findings if f.code == "LNK-03"]
+            self.assertEqual(len(lnk03), 1)
+            self.assertEqual(rep.omitidas_por_descarte, 0)
+            self.assertNotIn("omitida", rep.render_text())
+
+    def test_descarte_omite_y_el_reporte_lo_cuenta_en_una_linea(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as td:
+            rep = self._correr(td, self.DESCARTE)
+            self.assertEqual([f for f in rep.findings if f.code == "LNK-03"], [])
+            self.assertEqual(rep.omitidas_por_descarte, 1)
+            texto = rep.render_text()
+            lineas = [l for l in texto.split("\n") if "omitida" in l]
+            self.assertEqual(len(lineas), 1, texto)
+            self.assertIn("1 sugerencia(s) LNK-03 omitida(s)", lineas[0])
+            self.assertIn('"omitidas_por_descarte": 1', rep.render_json())
+
+    def test_descarte_de_otro_par_no_omite(self):
+        import tempfile
+        otro = self.DESCARTE.replace("wiki/semantic/origen.md", "wiki/semantic/otra.md")
+        with tempfile.TemporaryDirectory() as td:
+            rep = self._correr(td, otro)
+            self.assertEqual(len([f for f in rep.findings if f.code == "LNK-03"]), 1)
+            self.assertEqual(rep.omitidas_por_descarte, 0)
+
+    def test_linea_malformada_avisa_sin_crash_y_las_validas_aplican(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as td:
+            rep = self._correr(td, "esto no es json\n" + self.DESCARTE)
+            dsc = [f for f in rep.findings if f.code == "DSC-01"]
+            self.assertEqual(len(dsc), 1)
+            self.assertEqual(dsc[0].severity, "aviso")
+            self.assertIn("lint-descartes.jsonl:1", dsc[0].path)
+            # la línea válida sigue aplicando
+            self.assertEqual([f for f in rep.findings if f.code == "LNK-03"], [])
+            self.assertEqual(rep.omitidas_por_descarte, 1)
+
+    def test_claves_ausentes_avisa_y_no_descarta(self):
+        import tempfile
+        sin_motivo = ('{"ts": "2026-07-12", "pagina": "wiki/semantic/origen.md", '
+                      '"termino": "fuente-clave"}\n')
+        with tempfile.TemporaryDirectory() as td:
+            rep = self._correr(td, sin_motivo)
+            dsc = [f for f in rep.findings if f.code == "DSC-01"]
+            self.assertEqual(len(dsc), 1)
+            self.assertIn("motivo", dsc[0].detail)
+            self.assertEqual(len([f for f in rep.findings if f.code == "LNK-03"]), 1)
+
+
 class TestVocabularioDelLedger(unittest.TestCase):
     """gen-identidad-de-pagina v3: `resultado` es vocabulario cerrado.
 
