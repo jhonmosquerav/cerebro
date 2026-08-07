@@ -76,6 +76,18 @@ class TestValidacion(unittest.TestCase):
         )
         self.assertTrue(any("id" in e for e in errs))
 
+    def test_tipos_extra_validos_pasan(self):
+        errs = self._con("tipos_extra: [spec, norma]\n")
+        self.assertEqual(errs, [])
+
+    def test_tipos_extra_malformado(self):
+        errs = self._con('tipos_extra: ["Spec Legal"]\n')
+        self.assertTrue(any("tipos_extra" in e for e in errs))
+
+    def test_tipos_extra_no_duplica_el_nucleo(self):
+        errs = self._con("tipos_extra: [concepto]\n")
+        self.assertTrue(any("ya está en el núcleo" in e for e in errs))
+
     def test_source_trust_fuera_de_rango(self):
         errs = self._con("source_trust:\n  oficial: 1.5\n")
         self.assertTrue(any("source_trust" in e for e in errs))

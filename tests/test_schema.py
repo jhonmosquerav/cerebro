@@ -50,6 +50,14 @@ class TestValidacion(unittest.TestCase):
         self.assertIn("decay_rate", joined)
         self.assertIn("created", joined)
 
+    def test_type_extra_solo_con_tipos_ok(self):
+        """`tipos_extra` del manifiesto extiende el vocabulario de `type`."""
+        errs = schema.validate_page_fm(fm_valido(type="spec"), is_meta=False)
+        self.assertTrue(any("type inválido" in e for e in errs))
+        ok = schema.validate_page_fm(fm_valido(type="spec"), is_meta=False,
+                                     tipos_ok=schema.allowed_types(["spec"]))
+        self.assertEqual(ok, [])
+
     def test_evento_exige_fecha(self):
         errs = schema.validate_page_fm(fm_valido(clase="evento"), is_meta=False)
         self.assertTrue(any("fecha_evento" in e for e in errs))

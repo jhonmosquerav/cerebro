@@ -147,6 +147,20 @@ def allowed_verbs(relation_types) -> set[str]:
     return verbs
 
 
+def allowed_types(tipos_extra) -> set[str]:
+    """Unión: TYPES del núcleo ∪ `tipos_extra` del manifiesto.
+
+    Cierra para `type` la misma asimetría código/manifiesto que `allowed_fields`
+    cerró para los campos: en el piloto de Fase B, `type: spec` y `type: norma`
+    estaban declarados en el manifiesto y FM-03 los rechazaba igual, porque la
+    validación comparaba contra un TYPES fijo.
+    """
+    tipos = set(TYPES)
+    if tipos_extra:
+        tipos |= {str(t) for t in tipos_extra}
+    return tipos
+
+
 def allowed_fields(campos_extra) -> set[str]:
     """Unión: obligatorios ∪ opcionales de genes base ∪ `campos_extra` del manifiesto.
 
@@ -163,22 +177,26 @@ def allowed_fields(campos_extra) -> set[str]:
     return campos
 
 
-def validate_page_fm(fm: dict, *, is_meta: bool) -> list[str]:
+def validate_page_fm(fm: dict, *, is_meta: bool,
+                     tipos_ok: set[str] | None = None) -> list[str]:
     """Valida el frontmatter de una página de wiki/ contra el esquema.
 
     Devuelve mensajes de error (sin ruta; el llamador la antepone).
     Las páginas `type: meta` quedan exentas (gen-frontmatter-obligatorio v6).
+    `tipos_ok` es la unión de `allowed_types` cuando hay manifiesto; sin él,
+    vale el TYPES del núcleo.
     """
     if is_meta or fm.get("type") == "meta":
         return []
+    tipos = tipos_ok if tipos_ok is not None else TYPES
     errs: list[str] = []
     for field in REQUIRED_FIELDS:
         if field not in fm or fm[field] is None:
             errs.append(f"campo requerido ausente: {field}")
     if "title" in fm and not (isinstance(fm["title"], str) and fm["title"].strip()):
         errs.append("title debe ser texto no vacío")
-    if "type" in fm and fm["type"] not in TYPES:
-        errs.append(f"type inválido: {fm['type']!r} (∈ {sorted(TYPES)})")
+    if "type" in fm and fm["type"] not in tipos:
+        errs.append(f"type inválido: {fm['type']!r} (∈ {sorted(tipos)})")
     if "tier" in fm and fm["tier"] not in TIERS:
         errs.append(f"tier inválido: {fm['tier']!r} (∈ {sorted(TIERS)})")
     if "tags" in fm and not isinstance(fm["tags"], list):

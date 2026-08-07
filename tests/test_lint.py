@@ -152,6 +152,73 @@ Cuerpo con [[otra]].
         self.assertIn("dimension", schema.allowed_fields(["dimension"]))
 
 
+class TestTiposExtensibles(unittest.TestCase):
+    """El vocabulario de `type` se extiende por manifiesto (`tipos_extra`),
+    simétrico a `campos_extra`.
+
+    Regresión del piloto: `type: spec` y `type: norma` venían declarados en la
+    taxonomía del manifiesto y FM-03 los rechazaba igual.
+    """
+
+    PAGINA = """---
+title: articulo doce
+type: spec
+tier: semantic
+tags: [t]
+confidence: 0.8
+created: 2026-07-01
+last_reinforced: 2026-07-10
+decay_rate: medium
+sources: []
+relations: {}
+---
+Cuerpo con [[otra]].
+"""
+
+    def _correr(self, td: str, tipos_extra: list[str] | None):
+        root = Path(td)
+        (root / "wiki" / "semantic").mkdir(parents=True)
+        (root / "wiki" / "semantic" / "articulo-doce.md").write_text(
+            self.PAGINA, encoding="utf-8", newline="\n")
+        m = None
+        if tipos_extra is not None:
+            m = manifest.Manifest(raw={"tipos_extra": tipos_extra}, path=root / "m.yaml")
+        return lint.run(root, as_of=AS_OF, manifest=m)
+
+    def test_sin_declarar_sigue_siendo_fm03(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as td:
+            fm03 = [f for f in self._correr(td, None).findings
+                    if f.code == "FM-03" and "type inválido" in f.detail]
+            self.assertEqual(len(fm03), 1)
+            self.assertIn("spec", fm03[0].detail)
+
+    def test_declarado_en_el_manifiesto_se_acepta(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as td:
+            fm03 = [f for f in self._correr(td, ["spec", "norma"]).findings
+                    if f.code == "FM-03" and "type inválido" in f.detail]
+            self.assertEqual(fm03, [], "un type declarado no puede ser inválido")
+
+    def test_declarar_un_type_del_nucleo_es_error_de_manifiesto(self):
+        m = manifest.Manifest(raw={"company": {"name": "x"}, "tipos_extra": ["concepto"]},
+                              path=Path("m.yaml"))
+        errs = manifest.validate(m)
+        self.assertTrue(any("tipos_extra" in e and "ya está en el núcleo" in e
+                            for e in errs), errs)
+
+    def test_tipo_malformado_es_error_de_manifiesto(self):
+        m = manifest.Manifest(raw={"company": {"name": "x"}, "tipos_extra": ["Spec Legal"]},
+                              path=Path("m.yaml"))
+        errs = manifest.validate(m)
+        self.assertTrue(any("tipos_extra" in e and "inválido" in e for e in errs), errs)
+
+    def test_union_simetrica_a_campos_y_verbos(self):
+        self.assertTrue(schema.TYPES <= schema.allowed_types(None))
+        self.assertIn("spec", schema.allowed_types(["spec"]))
+        self.assertNotIn("spec", schema.allowed_types(None))
+
+
 class TestDescartesLnk03(unittest.TestCase):
     """LNK-03: descartes persistentes en `lint-descartes.jsonl` (raíz del vault).
 

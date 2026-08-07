@@ -103,6 +103,16 @@ class Manifest:
         return self.raw.get("campos_extra") or []
 
     @property
+    def tipos_extra(self) -> list:
+        """Tipos de página (`type`) que la empresa declara además del núcleo.
+
+        Simétrico a `campos_extra`: en el piloto, `type: spec` y `type: norma`
+        venían de la taxonomía del manifiesto y FM-03 los rechazaba porque el
+        vocabulario de `type` era fijo en el código.
+        """
+        return self.raw.get("tipos_extra") or []
+
+    @property
     def seed_genes(self) -> list:
         return self.raw.get("seed_genes") or []
 
@@ -163,6 +173,11 @@ def validate(m: Manifest) -> list[str]:
             errs.append(f"campos_extra: campo inválido {campo!r} (minúsculas/guion_bajo)")
         elif campo in schema.KNOWN_FIELDS:
             errs.append(f"campos_extra: {campo!r} ya está en el núcleo — retíralo del manifiesto")
+    for tipo in m.tipos_extra:
+        if not isinstance(tipo, str) or not _VERB_RE.match(tipo):
+            errs.append(f"tipos_extra: tipo inválido {tipo!r} (minúsculas/guion_bajo)")
+        elif tipo in schema.TYPES:
+            errs.append(f"tipos_extra: {tipo!r} ya está en el núcleo — retíralo del manifiesto")
     for tipo, valor in m.source_trust.items():
         if not isinstance(valor, (int, float)) or isinstance(valor, bool) or not 0.0 <= float(valor) <= 1.0:
             errs.append(f"source_trust.{tipo} fuera de rango [0,1]: {valor!r}")

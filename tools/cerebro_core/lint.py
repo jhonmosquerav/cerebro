@@ -102,7 +102,7 @@ def _in_link_scope(rel: str) -> bool:
 
 
 def _check_wiki_pages(v: Vault, allowed: set[str], campos_ok: set[str],
-                      as_of: datetime.date,
+                      tipos_ok: set[str], as_of: datetime.date,
                       ciclo: dict, findings: list[Finding]) -> None:
     for p in v.wiki_pages:
         if p.fm is None:
@@ -111,7 +111,7 @@ def _check_wiki_pages(v: Vault, allowed: set[str], campos_ok: set[str],
             continue
         if p.is_meta:
             continue
-        for msg in schema.validate_page_fm(p.fm, is_meta=False):
+        for msg in schema.validate_page_fm(p.fm, is_meta=False, tipos_ok=tipos_ok):
             code = "FM-02" if msg.startswith("campo requerido ausente") else "FM-03"
             findings.append(Finding(code, "error", p.rel, msg))
         # tier declarado vs carpeta real
@@ -380,9 +380,10 @@ def run(root: Path | str, *, as_of: datetime.date,
     m = manifest if manifest is not None else _load_manifest(root)
     allowed = schema.allowed_verbs(m.relation_types if m else None)
     campos_ok = schema.allowed_fields(m.campos_extra if m else None)
+    tipos_ok = schema.allowed_types(m.tipos_extra if m else None)
     ciclo = m.ciclo if m else schema.CICLO_DEFAULTS
     findings: list[Finding] = []
-    _check_wiki_pages(v, allowed, campos_ok, as_of, ciclo, findings)
+    _check_wiki_pages(v, allowed, campos_ok, tipos_ok, as_of, ciclo, findings)
     _check_links(v, findings)
     descartes = _cargar_descartes(root, findings)
     omitidas = _check_link_suggestions(v, findings, descartes)
