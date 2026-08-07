@@ -2,7 +2,7 @@
 id: gen-frontmatter-obligatorio
 trigger: crear o actualizar una página en wiki/
 status: active
-version: 7
+version: 8
 ---
 
 Toda página de `wiki/` nace y se mantiene con frontmatter YAML válido:
@@ -32,6 +32,13 @@ de las tres fuentes. Un gen sembrado que **exige** un campo lo está declarando:
 que el validador lo rechace sería incoherente — y dejaría al vault con avisos permanentes
 por cumplir su propio genoma. Quien siembre un gen con campo propio declara el campo en el
 mismo manifiesto: gen y campo pasan por la misma compuerta.
+
+El **TYPE** sigue la misma regla que verbos y campos: el núcleo es el vocabulario del
+código (`concepto, entidad, fuente, sintesis, sop, hub, meta, observacion, sesion`),
+ampliable con los `tipos_extra` que la empresa declare en `onboard/company.yaml`
+(minúsculas/guion_bajo, sin duplicar el núcleo); FM-03 valida contra la unión. Quien
+declare una categoría taxonómica que implique un tipo nuevo (p. ej. `specs` → `spec`),
+declara el tipo en el mismo manifiesto: categoría y tipo pasan por la misma compuerta.
 
 Sin frontmatter no se considera conocimiento. Al actualizar una página existente por una
 fuente que la confirma, sube `last_reinforced` a hoy y ajusta `confidence`; no dupliques.
