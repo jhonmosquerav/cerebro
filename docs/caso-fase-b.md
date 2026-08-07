@@ -63,6 +63,24 @@ commit `574adb0` · hash genome `9b9d69e1…` · hash knowledge `b93b8845…` ·
 5. El piloto corrió entero en un día por un solo operador+agente; no mide colaboración
    multi-operador ni deriva de largo plazo.
 
+## Addendum (2026-08-07, mismo día, segunda tanda con gate por opciones)
+
+El operador abrió el gate del siguiente ciclo la misma tarde. Resultado:
+
+- **Firma C-04 ACTIVA**: clave del operador registrada en `ops/allowed_signers`; desde
+  entonces los commits de ambos vaults van firmados (`git verify-commit` con git puro).
+- **Tanda F0-13…F0-18 aplicada** (6 mutaciones firmadas): rúbrica de AUDIT que no
+  aplana, LNK-03 con memoria de descartes, `tipos_extra`, reglas de agrupación de
+  INGEST, confianza por captura, anti-inyección para dominios con usuarios-agente —
+  todas nacidas de los límites listados arriba. Infra acompañante: fix M-05 del
+  resolutor + detector de filenames (215 tests).
+- **El piloto cerró los límites 2, 3 y 4**: extractor de PDF stdlib (v5, determinismo
+  verificado sobre los 72 derivados previos) → `nist-ai-rmf` ingerida y **cobertura
+  73/73**; deriva 99 (xray 0.991) tras el fix M-05; los falsos positivos LNK-03
+  descartados con motivo en `lint-descartes.jsonl` → lint **0 · 0 · 0**.
+- **Estado final del piloto: salud 100/100** — tercera adopción `genome_adopted`
+  registrada (la doctrina de distribución quedó ejercitada 3 veces en un día).
+
 ## Lo que alimenta el siguiente ciclo (EVOLVE con compuerta)
 
 ~20 candidatos a EVOLVE anotados lote a lote en el `log.md` del piloto, agrupables en:
