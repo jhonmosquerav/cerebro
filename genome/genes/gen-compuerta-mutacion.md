@@ -2,7 +2,7 @@
 id: gen-compuerta-mutacion
 trigger: cualquier cambio dentro de genome/
 status: active
-version: 3
+version: 4
 ---
 
 Ninguna mutación del genoma (crear, editar o deprecar un gen o cápsula) se aplica sola.
@@ -20,6 +20,13 @@ template) se registra como UNA mutación `genome_adopted` según el camino decla
 en [[gen-migracion-genoma]]; importar, intercalar o re-encadenar líneas de la cadena
 de otro vault está prohibido — el append-only protege la historia local, y la del
 origen viaja con el origen.
+
+Atribución de la aprobación (C-04): `approved_by` lleva la identidad del aprobador —
+la de `ops/allowed_signers` cuando exista; nunca un genérico sin dueño — y el contexto
+registrado debe permitir localizar dónde se dio la aprobación (fecha + canal). Desde que
+el operador registra su clave en `ops/allowed_signers`, los commits que tocan `genome/`
+se firman (SSH, `git verify-commit`); un commit de mutación sin firma válida es hallazgo
+de AUDIT. Runbook: `ops/runbook-firma-aprobaciones.md`.
 
 Verificación mecánica del ledger: `python tools/cerebro.py events verify` (esquema por línea
 + cadena + append-only contra la historia de git). El pre-commit (`.githooks/pre-commit`)

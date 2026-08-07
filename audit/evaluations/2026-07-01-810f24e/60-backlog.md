@@ -123,8 +123,8 @@ operador lo decida o si un tripwire del plan 50 lo exige (p. ej., primer cliente
   ⇒ 2026-07-12: `cerebro mirror` (SHA-256), en `verify`, pre-commit y CI.
 - [x] **C-03 [infra]** Integridad + **hash-chain** de `genome/events.jsonl`.
   ⇒ 2026-07-12: `cerebro events verify` (esquema + cadena + append-only contra git); escritura sancionada solo vía `events append` (gen-compuerta-mutacion v2, gate 2026-07-27).
-- [ ] **C-04 [genoma·gate]** **Firma/atribución de aprobaciones humanas** del gate.
-  ⇒ sigue **diferida: espera decisión de diseño del operador** (GPG/allowed_signers; motivo documentado en `docs/roadmap-endurecimiento.md`).
+- [x] **C-04 [genoma·gate]** **Firma/atribución de aprobaciones humanas** del gate.
+  ⇒ 2026-08-07: **aplicada por compuerta** (aprobación end-to-end del operador) — gen-compuerta-mutacion v4: atribución obligatoria + firma SSH con `ops/allowed_signers` (runbook `ops/runbook-firma-aprobaciones.md`). Estado honesto: la firma criptográfica se activa cuando el operador registre su clave; hasta entonces, identidad git + hash-chain.
 - [x] **C-05 [infra]** Pre-commit local: bloqueo de escrituras a `raw/` + validadores en verde.
   ⇒ 2026-07-12: `.githooks/pre-commit` probado; endurecido 2026-07-27 (`verify --exclude temporales`).
 - [x] **C-06 [ops]** Runbook de **replay/rollback ejercitado** — un ensayo real documentado.

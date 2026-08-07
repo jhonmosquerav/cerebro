@@ -1,0 +1,6 @@
+# ops/allowed_signers — firmantes autorizados del gate (C-04)
+# Formato por línea:  <email> namespaces="git" <tipo> <clave-publica>
+# Ejemplo:
+#   operador@empresa.com namespaces="git" ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI...
+# Añadir un firmante = commit propio (evento auditable). Ver ops/runbook-firma-aprobaciones.md.
+# (vacío a propósito: la clave la registra el operador; un agente no la genera por él)
