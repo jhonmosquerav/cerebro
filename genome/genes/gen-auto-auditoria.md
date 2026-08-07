@@ -2,7 +2,7 @@
 id: gen-auto-auditoria
 trigger: operación AUDIT (auto-auditoría de la base)
 status: active
-version: 5
+version: 6
 ---
 
 AUDIT audita la propia base CEREBRO y PROPONE las **≤3 mejoras de mayor impacto**
@@ -21,8 +21,9 @@ Disparador: invocación manual `AUDIT`. La corrida TERMINA solo cuando existe
 
 ## Detección (reusa LINT + CONSOLIDATE; no la reimplementa)
 - El orquestador ejecuta ANTES del maker: `python tools/cerebro.py lint --as-of <hoy> --json`,
-  `consolidate scan --json`, `health --json` y (si hay corrida) el último
-  `audit/xray/*/reporte.json`, y guarda las salidas en `00-snapshot` junto al SHA. El maker
+  `consolidate scan --json`, `xray --write` y DESPUÉS `health --json` (en ese orden: si
+  health corre antes que xray, el snapshot queda autocontradictorio con `deriva: null`
+  junto al reporte de deriva), y guarda las salidas en `00-snapshot` junto al SHA. El maker
   toma ESOS candidatos como universo de partida para huérfanos, vencidos, verbos/campos fuera
   de esquema, duplicados y deriva; el LLM añade solo lo no mecanizable (contradicciones
   semánticas, redundancia de genoma por solape de triggers) y juzga/redacta.
@@ -52,7 +53,9 @@ Cada defecto produce UN solo candidato: si dos detectores marcan el mismo defect
 - contradicción / redundancia: TODAS las páginas/genes en conflicto o duplicados.
 - vencido / supersedido: la página/gen vencido + las páginas que lo CITAN operativamente (relación
   tipada de primer nivel); para obsolescencia de **genoma**, AMBOS genes del solape.
-- vacío / verbo-o-campo fuera de esquema: 1 (la página/categoría/campo afectado).
+- vacío / verbo-o-campo fuera de esquema: el conteo de objetos afectados por el MISMO
+  defecto (páginas, secciones o campos; 1 si el objeto es único). Un vacío que deja 9
+  páginas sin enlace NO puntúa igual que uno de una página.
 - entidad con estado inconsistente / violación de invariante: la entidad + las páginas/eventos de
   respaldo implicados.
 - Las páginas `sensibilidad: confidencial` SÍ cuentan en el número (su evidencia se cita solo por
@@ -77,7 +80,8 @@ cumplimiento regulatorio con consecuencia legal. Fuera de esos dominios, la cadu
 sev 5 (cae en la clase que corresponda: obsolescencia, supersedido, o vacío).
 Desempate, en orden: (1) mayor `impacto`; (2) si empatan, prioridad de clase = el orden de
 filas de la tabla de arriba a abajo (ese orden ES la prioridad canónica de clase); (3) si aún
-empatan, ruta de archivo alfabética. Cada defecto pertenece a UNA sola clase: la de mayor
+empatan, ruta de archivo alfabética; (4) si comparten archivo, menor número de línea del
+defecto. Cada defecto pertenece a UNA sola clase: la de mayor
 severidad que le aplique; **si varias clases de IGUAL severidad aplican, gana la que aparece
 primero en la tabla** (orden de filas = prioridad de clase) — la elección de clase es determinista.
 Top-N = las N de mayor impacto tras el desempate, con N = min(3, confirmadas por auditor).
