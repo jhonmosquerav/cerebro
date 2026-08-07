@@ -103,7 +103,9 @@ ya prueba**. Antes de afirmar que el vault está sano, corre y cita su salida:
   deterministas y sin dependencias: componentes, grado, hubs contra `hub_umbral`, huérfanas,
   páginas-puente y camino más corto. Es la mitad mecánica de GRAPH (la semántica —comunidades,
   conexiones sorprendentes— sigue en la lente externa opcional de [[gen-graph-lens]]).
-- La integración formal de esto a los genes espera compuerta: `docs/propuestas-evolve/`.
+- La integración de estas herramientas a los genes se aprobó y aplicó por compuerta
+  (gates 2026-07-27 y 2026-07-29); solo `prop-f0-04` (gen-xray) sigue pendiente, aplazada
+  hasta la Fase B: `docs/propuestas-evolve/`.
 
 ## Reproducibilidad y portabilidad
 - Git inicializado: cada mutación = 1 commit + 1 línea en `genome/events.jsonl` → permite replay/rollback (`ops/runbook-replay.md`, ensayado).
