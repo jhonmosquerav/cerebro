@@ -1,0 +1,28 @@
+{
+  "as_of": "2026-08-07",
+  "componentes": {
+    "cobertura": null,
+    "conectividad": 100,
+    "deriva": null,
+    "genoma": 100,
+    "higiene": 100,
+    "vigencia": 100
+  },
+  "detalle": {
+    "cobertura": "raw/ vacío: nada que ingerir aún",
+    "conectividad": "0 de 4 páginas huérfanas o con enlaces rotos",
+    "deriva": "sin corrida XRAY (corre `cerebro xray --write`)",
+    "genoma": "espejo + ledger + genes en verde",
+    "higiene": "0 de 4 páginas con defectos de esquema",
+    "vigencia": "0 de 4 páginas vencidas (duro o blando)"
+  },
+  "pesos": {
+    "cobertura": 0.15,
+    "conectividad": 0.2,
+    "deriva": 0.1,
+    "genoma": 0.1,
+    "higiene": 0.25,
+    "vigencia": 0.2
+  },
+  "score": 100
+}

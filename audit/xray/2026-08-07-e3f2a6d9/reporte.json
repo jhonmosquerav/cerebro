@@ -1,0 +1,35 @@
+{
+  "as_of": "2026-08-07",
+  "contradicciones": [],
+  "declaradas": [
+    {
+      "a": "wiki/episodic/2026-07-02-f1fc904c.md",
+      "de": "wiki/episodic/2026-07-02-86919843.md",
+      "evidencia": [
+        "fuente compartida en sources",
+        "co-mención en 1 documento(s)"
+      ],
+      "verbo": "sucede_a"
+    },
+    {
+      "a": "wiki/episodic/2026-07-02-86919843.md",
+      "de": "wiki/episodic/2026-07-26-30246132.md",
+      "evidencia": [
+        "wikilink en el cuerpo",
+        "fuente compartida en sources"
+      ],
+      "verbo": "sucede_a"
+    },
+    {
+      "a": "wiki/episodic/2026-07-26-30246132.md",
+      "de": "wiki/episodic/2026-07-29-30246132.md",
+      "evidencia": [
+        "fuente compartida en sources"
+      ],
+      "verbo": "sucede_a"
+    }
+  ],
+  "drift_score": 1.0,
+  "lente_externa": null,
+  "sin_declarar": []
+}
