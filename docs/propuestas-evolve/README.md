@@ -25,6 +25,12 @@ lleve hash-chain), 1 commit, re-sincronizar `AGENTS.md` (`mirror --fix`).
 | `prop-f0-10` | cap-ingesta-de-fuente v5→v6 + gen-ingest v3→v4 | el eslabón del derivado para fuentes no legibles — cierra H-06 | ✅ aplicada 2026-07-29 |
 | `prop-f0-11` | gen-onboard v5→v6 | avisar si la taxonomía no cubre los tipos declarados — cierra H-07 | ✅ aplicada 2026-07-29 |
 | `prop-f0-12` | gen-migracion-genoma v1→v2 + gen-compuerta-mutacion v2→v3 | doctrina de distribución: cadena por vault + evento `genome_adopted` — cierra H-10 | ✅ aplicada 2026-08-07 |
+| `prop-f0-13` | gen-auto-auditoria v5→v6 | rúbrica que no aplana vacíos + 4º desempate + orden xray→health | ✅ aplicada 2026-08-07 |
+| `prop-f0-14` | gen-lint v6→v7 | LNK-03 con memoria de descartes (`lint-descartes.jsonl`) y sin filenames | ✅ aplicada 2026-08-07 |
+| `prop-f0-15` | gen-frontmatter-obligatorio v7→v8 | el `type` se extiende por manifiesto (`tipos_extra`) | ✅ aplicada 2026-08-07 |
+| `prop-f0-16` | gen-ingest v4→v5 | reglas de agrupación destiladas del piloto (5 criterios) | ✅ aplicada 2026-08-07 |
+| `prop-f0-17` | gen-confianza-por-fuente v2→v3 | la confianza se ancla a la captura, no solo al emisor | ✅ aplicada 2026-08-07 |
+| `prop-f0-18` | gen-anti-inyeccion v1→v2 | señal 1 precisada para dominios con usuarios-agente | ✅ aplicada 2026-08-07 |
 
 Orden en que se aplicaron: 01 → 02 → 05 → 03 → 06 → 07a → 07b (06 supone 01,
 porque muta el mismo gen encima de la versión que 01 crea).
