@@ -16,7 +16,7 @@ lleve hash-chain), 1 commit, re-sincronizar `AGENTS.md` (`mirror --fix`).
 | `prop-f0-01` | gen-lint v4→v5 | los detectores mecánicos como fuente de candidatos de LINT | ✅ aplicada 2026-07-27 |
 | `prop-f0-02` | gen-onboard v4→v5 | el aplicado del manifiesto pasa a ser `onboard apply` (mecánico) | ✅ aplicada 2026-07-27 |
 | `prop-f0-03` | gen-auto-auditoria v4→v5 | los detectores alimentan al maker de AUDIT | ✅ aplicada 2026-07-27 |
-| `prop-f0-04` | gen-xray v1 (NUEVO) + fila en CLAUDE.md | la operación XRAY: deriva declarado vs inferido | ⏸ **aplazada hasta Fase B** |
+| `prop-f0-04` | gen-xray v1 (NUEVO) + fila en CLAUDE.md | la operación XRAY: deriva declarado vs inferido | ✅ aplicada 2026-08-07 (Fase B cerrada: condición cumplida) |
 | `prop-f0-05` | gen-compuerta-mutacion v1→v2 | toda línea nueva del ledger lleva hash-chain (`events append`) | ✅ aplicada 2026-07-27 |
 | `prop-f0-06` | gen-lint v5→v6 | LNK-03 enlace sugerido: el detector preventivo de conectividad | ✅ aplicada 2026-07-27 |
 | `prop-f0-07` | gen-graph-lens v3→v4 + gen-jerarquizacion-indice v2→v3 | la mitad estructural de GRAPH deja de necesitar backend externo (`graph`) | ✅ aplicada 2026-07-27 |

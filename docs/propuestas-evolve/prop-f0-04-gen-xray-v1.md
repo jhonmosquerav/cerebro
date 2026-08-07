@@ -1,8 +1,8 @@
 ---
 tipo: propuesta-evolve
 tarea: F0-04
-status: pending
-gate: aplazada-hasta-fase-b
+status: approved
+gate: aplicada-2026-08-07-tras-fase-b
 fecha: 2026-07-12
 genes_afectados: [gen-xray (nuevo), CLAUDE.md (fila de operación)]
 ---
