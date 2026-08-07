@@ -2,7 +2,7 @@
 id: gen-ingest
 trigger: operación INGEST sobre una fuente
 status: active
-version: 4
+version: 5
 ---
 
 INGEST convierte una fuente en conocimiento enlazado siguiendo la cápsula
@@ -18,3 +18,12 @@ o en el `hub-<área>` si el área ya se partió; si los criterios dicen que no, 
 + línea en `log.md` + línea en `ingest-ledger.jsonl`.
 Idempotente **por algoritmo**, no por prosa: misma `id_pagina` (o `id_alias`) → se actualiza
 y refuerza esa página, nunca se crea otra. No inventa datos que no estén en la fuente.
+
+Reglas de agrupación (destiladas del piloto; la idempotencia semántica exige que la
+clasificación no dependa de la sesión): (1) N documentos cortos del mismo emisor sobre
+features de un mismo objeto → una **entidad agregadora + conceptos satélite**, no una
+página por documento; (2) un benchmark se ancla con `mide` a una **página-capacidad**
+(se crea si falta); (3) `cita` apunta a la página que el trabajo citado **sostiene** (no
+existen páginas-fuente); (4) concepto vs entidad se decide por lo que la fuente sostiene,
+jamás por el nombre propio; (5) renombre declarado ("X, formerly Y") → página nueva con
+`reemplaza` documentando el renombre, sin degradar la anterior si su fuente sigue válida.
