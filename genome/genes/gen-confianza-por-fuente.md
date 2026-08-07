@@ -2,7 +2,7 @@
 id: gen-confianza-por-fuente
 trigger: asignar confidence inicial al ingerir una fuente
 status: active
-version: 2
+version: 3
 ---
 
 La `confidence` inicial no es arbitraria: se ancla al tipo/credibilidad de la fuente. Fuentes
@@ -14,4 +14,10 @@ hecho primario. El mapeo fuente→confianza puede declararse por empresa en `onb
 pero no sustituyen a una fuente primaria: el **refuerzo también se ancla a la fuente** —
 los deltas de subida por tipo y el techo anclado a `source_trust` viven en
 [[gen-ciclo-de-vida]]; con los valores de ejemplo, una página solo-blanda topa en 0.5.
+La confianza se ancla a **la captura concreta**, no solo al tipo del emisor: una landing
+o resumen del propio autor no hereda el rango de su documentación técnica — se asimila al
+escalón que la captura sostiene, y se declara. Página con fuentes de tipos mixtos: toma el
+**piso** de las fuentes que la sostienen y declara la frontera de cada una por sección.
+Cobertura parcial de un conjunto (una familia de specs capturada por su documento raíz):
+sección de frontera obligatoria y la `confidence` califica solo lo capturado.
 Complementa [[gen-ingest]] y [[gen-ciclo-de-vida]].
