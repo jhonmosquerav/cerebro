@@ -13,6 +13,18 @@ EXCLUDED_DIRS = {
     "tests", "worked", "tools", "graphify-out", "node_modules", "__pycache__",
 }
 
+# Solo las PÁGINAS del vault resuelven [[wikilinks]]: el conocimiento (wiki/),
+# el genoma (genome/) y el índice. Los demás .md se cargan como dato (docs/,
+# ops/, corpus/ de un despliegue, raíz) pero jamás capturan un slug: en el
+# piloto, [[ai-act-art72-postmercado]] resolvía a corpus/texto/… —un archivo
+# homónimo fuera de la wiki— y la arista declarada salía "sin evidencia" (M-05).
+LINK_SCOPES = ("wiki/", "genome/")
+
+
+def is_linkable(rel: str) -> bool:
+    """True si `rel` es una página que puede ser destino de un [[wikilink]]."""
+    return rel == "index.md" or rel.startswith(LINK_SCOPES)
+
 
 @dataclass
 class Page:
@@ -94,13 +106,16 @@ def load_vault(root: Path | str) -> Vault:
         v._by_rel[rel] = page
     # Índice de resolución: basename > title > alias (el primero en orden de
     # ruta gana; los empates de basename son colisiones que LINT puede señalar).
-    for page in v.pages:
+    # Solo indexan las páginas del vault (is_linkable): un archivo homónimo en
+    # corpus/, docs/ u ops/ no puede robarle el slug a una página wiki (M-05).
+    resolubles = [p for p in v.pages if is_linkable(p.rel)]
+    for page in resolubles:
         key = page.basename.lower()
         v._resolve.setdefault(key, page.rel)
-    for page in v.pages:
+    for page in resolubles:
         if page.fm and isinstance(page.fm.get("title"), str):
             v._resolve.setdefault(page.fm["title"].strip().lower(), page.rel)
-    for page in v.pages:
+    for page in resolubles:
         if page.fm and isinstance(page.fm.get("id_alias"), list):
             for alias in page.fm["id_alias"]:
                 alias = str(alias).strip().lower()

@@ -92,6 +92,39 @@ class TestCarga(unittest.TestCase):
             self.assertEqual(v.resolve_link("vieja-clave"), "wiki/semantic/nueva.md")
 
 
+class TestResolucionAcotada(unittest.TestCase):
+    """M-05: solo las páginas del vault (wiki/ + genome/ + index.md) resuelven.
+
+    Regresión del piloto: [[ai-act-art72-postmercado]] resolvía a
+    corpus/texto/ai-act-art72-postmercado.md —un archivo homónimo fuera de la
+    wiki que gana por orden de ruta— y la arista declarada salía "sin evidencia".
+    """
+
+    def test_homonimo_fuera_de_la_wiki_no_captura_el_slug(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = mini_vault(td)
+            # `corpus/` ordena antes que `wiki/`: sin la cota, ganaría el slug.
+            escribir(root, "corpus/texto/entidad-b.md", "Copia literal de la fuente.")
+            v = vlt.load_vault(root)
+            self.assertEqual(v.resolve_link("entidad-b"), "wiki/semantic/entidad-b.md")
+
+    def test_archivo_ajeno_no_resuelve_ni_por_nombre_ni_por_title(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = mini_vault(td)
+            escribir(root, "docs/nota-suelta.md",
+                     "---\ntitle: Nota Ajena\n---\nNo soy página del vault.\n")
+            v = vlt.load_vault(root)
+            self.assertIsNone(v.resolve_link("nota-suelta"))
+            self.assertIsNone(v.resolve_link("Nota Ajena"))
+
+    def test_wiki_genome_e_index_siguen_resolviendo(self):
+        with tempfile.TemporaryDirectory() as td:
+            v = vlt.load_vault(mini_vault(td))
+            self.assertEqual(v.resolve_link("entidad-b"), "wiki/semantic/entidad-b.md")
+            self.assertEqual(v.resolve_link("gen-demo"), "genome/genes/gen-demo.md")
+            self.assertEqual(v.resolve_link("index"), "index.md")
+
+
 class TestCorpusReal(unittest.TestCase):
     def test_repo_carga(self):
         v = vlt.load_vault(REPO)

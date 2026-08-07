@@ -101,6 +101,47 @@ class TestBuckets(unittest.TestCase):
             self.assertIsNone(r.drift_score)
 
 
+class TestResolucionAcotadaAlVault(unittest.TestCase):
+    """M-05 (regresión del piloto): un archivo homónimo fuera de wiki/ robaba la
+    resolución del wikilink y la arista declarada salía "sin evidencia"."""
+
+    def _vault(self, td: str) -> Path:
+        root = Path(td)
+        pagina(root, "ai-act-art12-registros",
+               relations='{ usa: "[[ai-act-art72-postmercado]]" }',
+               body="Los registros alimentan a [[ai-act-art72-postmercado]].")
+        pagina(root, "ai-act-art72-postmercado")
+        # homónimo fuera de la wiki, en carpeta que ordena ANTES que wiki/
+        ajeno = root / "corpus" / "texto" / "ai-act-art72-postmercado.md"
+        ajeno.parent.mkdir(parents=True)
+        ajeno.write_text("Texto literal del artículo 72.", encoding="utf-8")
+        return root
+
+    def test_la_evidencia_apunta_a_la_pagina_wiki(self):
+        with tempfile.TemporaryDirectory() as td:
+            r = xray.run(self._vault(td), as_of=AS_OF)
+            arista = [e for e in r.declaradas
+                      if e["de"].endswith("ai-act-art12-registros.md")][0]
+            self.assertEqual(arista["a"], "wiki/semantic/ai-act-art72-postmercado.md")
+            self.assertIn("wikilink en el cuerpo", arista["evidencia"])
+
+    def test_el_archivo_ajeno_no_entra_al_reporte(self):
+        with tempfile.TemporaryDirectory() as td:
+            r = xray.run(self._vault(td), as_of=AS_OF)
+            self.assertNotIn("corpus/", r.render_json())
+
+    def test_el_archivo_ajeno_no_entra_al_grafo(self):
+        from cerebro_core import graph
+        from cerebro_core.vault import load_vault
+        with tempfile.TemporaryDirectory() as td:
+            v = load_vault(self._vault(td))
+            g = graph.build(v, "wiki")
+            self.assertEqual(g.edges, 1)
+            self.assertIn("wiki/semantic/ai-act-art72-postmercado.md",
+                          g.out["wiki/semantic/ai-act-art12-registros.md"])
+            self.assertNotIn("corpus/texto/ai-act-art72-postmercado.md", g.nodes)
+
+
 class TestReporte(unittest.TestCase):
     def test_determinista_y_write(self):
         with tempfile.TemporaryDirectory() as td:

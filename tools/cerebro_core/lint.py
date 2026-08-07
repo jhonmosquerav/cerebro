@@ -18,12 +18,7 @@ from . import graph as graph_mod
 from . import manifest as mf
 from . import schema
 from .findings import Finding, sort_findings
-from .vault import Vault, load_vault
-
-# Ámbito del chequeo de enlaces rotos: conocimiento y genoma (no docs/ ni audit/,
-# que citan genes hipotéticos en propuestas; no CLAUDE.md, que usa [[wiki-link]]
-# como notación de ejemplo).
-_LINK_SCOPES = ("wiki/", "genome/", "index.md")
+from .vault import Vault, is_linkable, load_vault
 
 
 @dataclass
@@ -94,7 +89,11 @@ def _load_manifest(root: Path) -> mf.Manifest | None:
 
 
 def _in_link_scope(rel: str) -> bool:
-    return rel == "index.md" or rel.startswith(("wiki/", "genome/"))
+    """Ámbito del chequeo de enlaces rotos: conocimiento, genoma e índice —el
+    mismo conjunto que resuelve wikilinks (vault.is_linkable). Quedan fuera
+    docs/ y audit/, que citan genes hipotéticos en propuestas, y CLAUDE.md,
+    que usa [[wiki-link]] como notación de ejemplo."""
+    return is_linkable(rel)
 
 
 def _check_wiki_pages(v: Vault, allowed: set[str], campos_ok: set[str],
