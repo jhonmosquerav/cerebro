@@ -61,8 +61,11 @@ juicio.
       prácticas opinables. Regenera byte a byte en CI como los otros dos.
       Límite declarado en su `review.md`: sin estudio de vigencia exhaustivo y
       sin lectura de la guía DNP en su fuente (el PDF no se pudo extraer).
-- [ ] Piloto B-01…B-06 del backlog (corpus real 50–200 docs, 20 preguntas
+- [x] Piloto B-01…B-06 del backlog (corpus real 50–200 docs, 20 preguntas
       doradas, re-AUDIT poblado). **Salto TRL 4→5. Sin esto no hay Fase 4.**
+      ⇒ 2026-08-07: **cerrado** — corpus 73/73 (extractor PDF stdlib v5),
+      idempotencia 0 duplicados, recall 20/20, AUDIT poblado `2026-08-07-a09385e`,
+      salud 100/100. Caso público: `docs/caso-fase-b.md`.
 
 ## Fase 2 — XRAY (el foso) ✅ herramienta construida
 
@@ -70,12 +73,15 @@ juicio.
       contradicciones · score de deriva. Propone, jamás aplica. graphify es
       evidencia OPCIONAL (`--inferred graph.json`); sin él funciona.
 - [x] Corridas persistentes en `audit/xray/<fecha>-<sha8>/`.
-- [ ] Gen + operación por compuerta (`prop-f0-04`) — **presentada en el gate
+- [x] Gen + operación por compuerta (`prop-f0-04`) — **presentada en el gate
       del 2026-07-27 y APLAZADA a propósito**: es la única que crea un gen
       nuevo (25 → 26) y su componente `deriva` de `health` sale `N/A` porque
       XRAY nunca corrió sobre un vault poblado. Aprobar una operación cuyo
       valor no se ha visto contradice la regla de oro de este roadmap. Se
       re-presenta con la Fase B.
+      ⇒ 2026-08-07: **aplicada** — la condición se cumplió de verdad: XRAY corrió
+      sobre el vault poblado del piloto (deriva medida, hallazgo M-05 incluido)
+      ANTES de entrar al genoma. gen-xray v1, genoma 25 → 26.
 - [ ] Primera deriva real confirmada por humano sobre un vault poblado
       (requiere Fase B).
 
@@ -102,8 +108,12 @@ blueprints, el artículo del caso público colombiano.)
 
 ## Mapa a C-04 y siguientes
 
-- C-04 (firma/atribución criptográfica de aprobaciones del gate) queda
-  DIFERIDA: exige decisión de diseño del operador (¿GPG? ¿allowed_signers?).
-  El hash-chain de C-03 ya da tamper-evidence; C-04 añadiría autoría fuerte.
+- C-04 (firma/atribución criptográfica de aprobaciones del gate) quedaba
+  DIFERIDA: exigía decisión de diseño del operador (¿GPG? ¿allowed_signers?).
+  El hash-chain de C-03 ya da tamper-evidence; C-04 añade autoría fuerte.
+  ⇒ 2026-08-07: **resuelta y ACTIVA** — diseño elegido `allowed_signers` (SSH,
+  verificable con git puro), gen-compuerta-mutacion v4, clave del operador
+  registrada, commits de ambos vaults firmados. Runbook:
+  `ops/runbook-firma-aprobaciones.md`.
 - D-03 (paquete de cumplimiento ISO 27001 / AI Act) se apoya directamente
   en events.jsonl + audit/runs/ + este enforcement: madura tras Fase B.

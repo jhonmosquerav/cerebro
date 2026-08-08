@@ -48,8 +48,8 @@ mutaciones de `raw/`, reescrituras del ledger y espejo roto.
 constante cita el gen que la origina. Si una mutación de genoma cambia el
 esquema (campo, verbo, enum), ese MISMO cambio debe tocar `schema.py` —
 los tests de corpus (`tests/`) delatan la deriva si se olvida. La
-integración formal de estas herramientas a los genes está propuesta en
-`docs/propuestas-evolve/` (pendiente de compuerta: el genoma no se tocó).
+integración formal de estas herramientas a los genes **se aplicó por compuerta**
+(18/18 propuestas en los gates 2026-07-27/29 y 2026-08-07): `docs/propuestas-evolve/`.
 
 ## Verdades incómodas que este código no oculta
 

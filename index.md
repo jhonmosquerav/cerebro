@@ -1,7 +1,7 @@
 ---
 title: CEREBRO — índice
 type: meta
-updated: 2026-07-02
+updated: 2026-08-07
 ---
 
 # 🧠 CEREBRO — mapa principal
@@ -22,6 +22,7 @@ si una sección supera `hub_umbral` anclas, se parte en página-hub y aquí qued
 - Auditoría de mutaciones: `genome/events.jsonl`.
 - Auto-auditoría: operación `AUDIT` → corridas en `audit/runs/`. Regla: [[gen-auto-auditoria]].
 - Lente de grafo: operación `GRAPH` → salida derivada en `graphify-out/` (no versionada). Regla: [[gen-graph-lens]].
+- Deriva declarado↔evidencia: operación `XRAY` → corridas en `audit/xray/`. Regla: [[gen-xray]].
 
 ## Visualización (opcional, removible)
 - Paneles Dataview: `dashboards/00-leeme.md`. Lente de grafo interactiva: `dashboards/graph/00-leeme.md`. Regla: [[gen-visualizacion]].

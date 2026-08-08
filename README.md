@@ -182,10 +182,12 @@ no un script determinista. En concreto:
 | XRAY: deriva declarado↔evidencia + score | interpretar la deriva y proponer |
 | casos `worked/` regenerables byte a byte | — |
 
-La integración de estas herramientas a los genes **se aprobó y aplicó por compuerta**
-(gates 2026-07-27 y 2026-07-29; solo `prop-f0-04`/gen-xray sigue pendiente, aplazada hasta
-la Fase B) — ver [`docs/propuestas-evolve/`](docs/propuestas-evolve/): el genoma no se muta
-solo, ni siquiera para mejorarse.
+La integración de estas herramientas a los genes **se aprobó y aplicó por compuerta
+completa** (gates 2026-07-27, 2026-07-29 y 2026-08-07: **18/18 propuestas**, incluida
+`prop-f0-04`/gen-xray tras verse su valor en la Fase B) — ver
+[`docs/propuestas-evolve/`](docs/propuestas-evolve/): el genoma no se muta solo, ni
+siquiera para mejorarse. Desde el 2026-08-07 las aprobaciones del gate van además
+**firmadas** (SSH + `ops/allowed_signers`, ver `ops/runbook-firma-aprobaciones.md`).
 
 Arranque reproducible: **clona → elige un blueprint → rellena tus datos → `ONBOARD`.**
 
