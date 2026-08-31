@@ -2,7 +2,7 @@
 id: gen-onboard
 trigger: operación ONBOARD (primera vez o cambio de empresa)
 status: active
-version: 6
+version: 7
 ---
 
 ONBOARD adapta el cerebro a una empresa de forma **REPRODUCIBLE**. Fuente de verdad: el
@@ -31,5 +31,13 @@ porque una empresa puede decidir legítimamente no usar un tipo; lo que no puede
 descubrirlo a mitad de un CONSOLIDATE. Cambiar la taxonomía **después** de aplicar rompe la
 reproducibilidad desde el manifiesto (mismo manifiesto → mismo genoma), así que el aviso
 llega en el único momento en que corregirlo es gratis.
+
+**Replay sobre un vault vivo (v7).** Re-aplicar el manifiesto sobre un vault que ya operó
+no aborta por evolución legítima: un seed cuyo gen es idéntico módulo la fecha del pie de
+siembra es no-op (se compara contenido, no calendario), y un gen que difiere del seed pero
+tiene su mutación registrada como `applied` en `events.jsonl` se respeta sin tocarlo —
+ONBOARD jamás pisa un gen y la verdad del gen evolucionado es el ledger, no el seed. Solo
+aborta el caso ilegítimo: un gen distinto **sin** mutación registrada (deriva fuera de
+compuerta). Probado en `tests/test_onboard.py::TestSeedsEvolucionados`.
 
 No ingiere contenido: ONBOARD solo configura.

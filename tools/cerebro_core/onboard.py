@@ -8,6 +8,7 @@ rellenar, gen en conflicto, lente sin backend), NADA se escribe.
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -60,6 +61,37 @@ def _render_gene(g: dict, date: str) -> str:
         f"> Gen de sector sembrado mecánicamente por ONBOARD desde `onboard/company.yaml` ({date}).\n"
         "> Mutarlo pasa por [[gen-compuerta-mutacion]] como cualquier gen.\n"
     )
+
+
+_PIE_SIEMBRA_RE = re.compile(
+    r"(> Gen de sector sembrado mecánicamente por ONBOARD desde "
+    r"`onboard/company\.yaml` )\(\d{4}-\d{2}-\d{2}\)")
+
+
+def _sin_fecha_de_siembra(text: str) -> str:
+    """Normaliza la fecha del pie de siembra: se compara contenido, no calendario."""
+    return _PIE_SIEMBRA_RE.sub(r"\1(FECHA)", text)
+
+
+def _gen_evolucionado(root: Path, gen_id: str) -> bool:
+    """True si el ledger registra una mutación aplicada del gen posterior a su siembra."""
+    ledger = root / "genome" / "events.jsonl"
+    if not ledger.is_file():
+        return False
+    for linea in ledger.read_text(encoding="utf-8").splitlines():
+        linea = linea.strip()
+        if not linea:
+            continue
+        try:
+            ev = json.loads(linea)
+        except ValueError:
+            continue
+        if not isinstance(ev, dict):
+            continue
+        if (ev.get("target") == gen_id and ev.get("status") == "applied"
+                and ev.get("type") != "gene_added"):
+            return True
+    return False
 
 
 def _render_profile(m: mf.Manifest, date: str) -> str:
@@ -197,17 +229,26 @@ def apply(manifest_path: Path | str, vault_root: Path | str, *,
         if not keep.is_file():
             carpetas.append((keep, f"carpeta: {keep.relative_to(root).as_posix()}"))
 
-    # seed genes: idéntico ⇒ no-op · distinto ⇒ error · nuevo ⇒ sembrar
+    # seed genes (gen-onboard v7): idéntico módulo fecha de siembra ⇒ no-op ·
+    # evolucionado con mutación applied en el ledger ⇒ aviso, no se toca ·
+    # distinto sin registro ⇒ error · nuevo ⇒ sembrar
+    avisos_seeds: list[str] = []
     for g in m.seed_genes:
         gen_path = root / "genome" / "genes" / f"{g['id']}.md"
         contenido = _render_gene(g, date)
         if gen_path.is_file():
             actual = gen_path.read_text(encoding="utf-8").replace("\r\n", "\n")
-            if actual == contenido:
+            if _sin_fecha_de_siembra(actual) == _sin_fecha_de_siembra(contenido):
+                continue
+            if _gen_evolucionado(root, g["id"]):
+                avisos_seeds.append(
+                    f"seed {g['id']}: el gen evolucionó tras la siembra (mutación "
+                    "applied en genome/events.jsonl); ONBOARD no lo toca")
                 continue
             raise OnboardError(
-                f"el gen {g['id']} ya existe con contenido DISTINTO: ONBOARD jamás "
-                "pisa un gen; resuélvelo por EVOLVE/compuerta o renombra el seed")
+                f"el gen {g['id']} ya existe con contenido DISTINTO y sin mutación "
+                "registrada en el ledger: ONBOARD jamás pisa un gen; resuélvelo por "
+                "EVOLVE/compuerta o renombra el seed")
         escrituras.append((gen_path, contenido,
                            f"gen sembrado: genome/genes/{g['id']}.md (v1)"))
         seeded.append(g["id"])

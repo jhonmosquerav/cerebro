@@ -147,5 +147,55 @@ class TestRechazos(unittest.TestCase):
                 onboard.apply(root / "onboard" / "company.yaml", root, date="12/07/2026")
 
 
+class TestSeedsEvolucionados(unittest.TestCase):
+    """gen-onboard v7: el replay no aborta por la fecha del pie ni por genes evolucionados."""
+
+    def test_seed_identico_con_otra_fecha_es_noop(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = esqueleto(td)
+            m = root / "onboard" / "company.yaml"
+            onboard.apply(m, root, date="2026-07-12")
+            gen = root / "genome" / "genes" / "gen-propuestas.md"
+            antes = gen.read_text(encoding="utf-8")
+            res = onboard.apply(m, root, date="2026-07-13")
+            self.assertEqual(gen.read_text(encoding="utf-8"), antes,
+                             "el gen no debe reescribirse por cambiar la fecha")
+            self.assertNotIn("gen sembrado: genome/genes/gen-propuestas.md (v1)",
+                             res.actions)
+
+    def test_gen_evolucionado_con_registro_no_aborta(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = esqueleto(td)
+            m = root / "onboard" / "company.yaml"
+            onboard.apply(m, root, date="2026-07-12")
+            gen = root / "genome" / "genes" / "gen-propuestas.md"
+            evolucionado = ("---\nid: gen-propuestas\ntrigger: \"otro\"\n"
+                            "status: active\nversion: 2\n---\n\nRegla evolucionada.\n")
+            gen.write_text(evolucionado, encoding="utf-8", newline="\n")
+            events.append_line(root / "genome" / "events.jsonl", {
+                "ts": "2026-07-13", "type": "gene_edited", "target": "gen-propuestas",
+                "signal": "evolución de prueba", "diff": "v1 → v2",
+                "approved_by": "user", "status": "applied"})
+            res = onboard.apply(m, root, date="2026-07-13")
+            self.assertEqual(gen.read_text(encoding="utf-8"), evolucionado,
+                             "ONBOARD no debe tocar un gen evolucionado")
+            self.assertNotIn("gen sembrado: genome/genes/gen-propuestas.md (v1)",
+                             res.actions)
+
+    def test_gen_distinto_sin_registro_sigue_siendo_error(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = esqueleto(td)
+            m = root / "onboard" / "company.yaml"
+            onboard.apply(m, root, date="2026-07-12")
+            gen = root / "genome" / "genes" / "gen-propuestas.md"
+            gen.write_text("---\nid: gen-propuestas\ntrigger: \"otro\"\n"
+                           "status: active\nversion: 3\n---\n\nSin compuerta.\n",
+                           encoding="utf-8", newline="\n")
+            # el ledger solo tiene el gene_added de la siembra: sin mutación registrada
+            with self.assertRaises(onboard.OnboardError) as ctx:
+                onboard.apply(m, root, date="2026-07-14")
+            self.assertIn("gen-propuestas", str(ctx.exception))
+
+
 if __name__ == "__main__":
     unittest.main()
