@@ -31,6 +31,7 @@ lleve hash-chain), 1 commit, re-sincronizar `AGENTS.md` (`mirror --fix`).
 | `prop-f0-16` | gen-ingest v4→v5 | reglas de agrupación destiladas del piloto (5 criterios) | ✅ aplicada 2026-08-07 |
 | `prop-f0-17` | gen-confianza-por-fuente v2→v3 | la confianza se ancla a la captura, no solo al emisor | ✅ aplicada 2026-08-07 |
 | `prop-f0-18` | gen-anti-inyeccion v1→v2 | señal 1 precisada para dominios con usuarios-agente | ✅ aplicada 2026-08-07 |
+| `prop-obs-01` | gen-visualizacion v2→v3 | render vivo = Bases nativas de Obsidian; preset tipado, plantillas, CLI como equivalente opcional (revisión de obsidianmd) | ✅ aplicada 2026-09-03 |
 
 Orden en que se aplicaron: 01 → 02 → 05 → 03 → 06 → 07a → 07b (06 supone 01,
 porque muta el mismo gen encima de la versión que 01 crea).

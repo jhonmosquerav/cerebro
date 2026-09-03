@@ -98,7 +98,8 @@ cerebro/
 │   ├── semantic/             # conocimiento consolidado
 │   ├── procedural/           # SOPs y procesos
 │   └── archive/              # retirado de circulación (histórico consultable a pedido)
-├── dashboards/               # paneles Dataview + lente de grafo (visualización opcional)
+├── dashboards/               # paneles nativos Bases (+ Dataview opcional) + lente de grafo
+├── templates/                # plantillas de página por type (capa Obsidian, opcional)
 ├── audit/                    # corridas de AUDIT, evaluaciones y corridas XRAY
 ├── tools/                    # ⚙️ validadores mecánicos (Python puro, 0 deps) + CLI cerebro.py
 ├── tests/                    # la suite que prueba las garantías (unittest, corre en CI)
@@ -122,8 +123,9 @@ cerebro/
 4. Suelta fuentes en **`raw/`** y corre **`BULK INGEST`**.
 5. Consulta con **`QUERY <tema>`**. Mantén con **`LINT`** y **`CONSOLIDATE`** cada 1–2 semanas.
 
-> ¿Quieres el tablero visual? Abre la carpeta como Vault en Obsidian e instala el plugin
-> **Dataview** (ya viene declarado en el preset). Ver `dashboards/00-leeme.md`.
+> ¿Quieres el tablero visual? Abre la carpeta como Vault en Obsidian: los paneles usan
+> **Bases** (plugin core, nada que instalar) y Dataview queda como alternativa opcional.
+> Ver `dashboards/00-leeme.md`.
 
 ---
 
@@ -198,7 +200,7 @@ Arranque reproducible: **clona → elige un blueprint → rellena tus datos → 
 - **Navega desde `index.md`**; nunca cargues toda la wiki (presupuesto de contexto).
 - **`raw/` es inmutable**: solo se lee. El conocimiento derivado vive en `wiki/`.
 - **Toda mutación del genoma pasa por la compuerta** y deja una línea en `events.jsonl`.
-- **Frontmatter obligatorio** en cada página de `wiki/` (Obsidian/Dataview-friendly).
+- **Frontmatter obligatorio** en cada página de `wiki/` (Obsidian-friendly: Bases/Dataview).
 - **Cada mutación = 1 commit** → permite replay y rollback.
 - **Tu `ONBOARD` real va en un clon**, no en este template (manténlo neutro y reutilizable).
 - **Git seguro en el clon con datos reales**: remoto **privado desde el día cero** (o
@@ -222,7 +224,7 @@ CEREBRO no existiría sin las ideas y herramientas de otros:
 - **[Benjamín Cordero](https://www.youtube.com/watch?v=p5YgvC6yzCs)** y la comunidad de Skool
   **Imperio** — por el video *"Claude Code + Obsidian = Memoria Infinita"*, que mostró el setup
   y encendió la chispa de este proyecto.
-- **[Obsidian](https://obsidian.md)** y su plugin **Dataview** — la ventana visual que
+- **[Obsidian](https://obsidian.md)** — Bases, propiedades tipadas y el plugin **Dataview** — la ventana visual que
   convierte el grafo y el frontmatter en algo navegable y consultable.
 - **[Anthropic](https://www.anthropic.com) / Claude Code (Claude Opus 4.8)** — co-arquitecto
   de la extensión mutagénica: el genoma por genes, la compuerta de mutación, el `ONBOARD`

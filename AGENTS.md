@@ -15,7 +15,7 @@ correr `ONBOARD` y operar su conocimiento.
 4. **Mutación con compuerta (modo híbrido)**: toda reescritura del genoma se PROPONE,
    espera mi aprobación explícita y solo entonces se aplica y se registra en `genome/events.jsonl`.
 5. **Auditabilidad**: toda mutación deja una línea en `genome/events.jsonl` (append-only, nunca se reescribe).
-6. Todo enlace es `[[wiki-link]]` y todo archivo de `wiki/` lleva **frontmatter YAML** (Obsidian/Dataview-friendly).
+6. Todo enlace es `[[wiki-link]]` y todo archivo de `wiki/` lleva **frontmatter YAML** (Obsidian-friendly: Bases/Dataview).
 7. Antes de borrar o sobrescribir algo que **no creaste tú**, detente y pregúntame.
 
 ## Operaciones (gatillos)
@@ -53,7 +53,7 @@ Las reglas completas viven en `genome/genes/`. Resumen:
 - [[gen-sintesis-de-volumen]] — N eventos con clave común → página de síntesis; deriva a EVOLVE si hay riesgo.
 - [[gen-jerarquizacion-indice]] — el índice crece con política: anclado determinista y partición en páginas-hub al superar `hub_umbral`.
 - [[gen-migracion-genoma]] — al cambiar el genoma, re-valida manifiesto y páginas y propone la migración; incluye el camino declarado para adoptar releases del template en un vault desplegado (migración entre vaults).
-- [[gen-visualizacion]] — capa opcional de paneles (Dataview, reporte estático o grafo interactivo vía lente externa); ONBOARD la recomienda.
+- [[gen-visualizacion]] — capa opcional de paneles (Bases nativas de Obsidian con Dataview como alternativa, reporte estático o grafo interactivo vía lente externa) + preset tipado y plantillas; ONBOARD la recomienda.
 
 **Operativos**
 - [[gen-onboard]] · [[gen-ingest]] · [[gen-bulk-ingest]] · [[gen-query]] · [[gen-checkpoint]] · [[gen-lint]] · [[gen-consolidate]] · [[gen-evolve]] · [[gen-auto-auditoria]] · [[gen-graph-lens]] · [[gen-xray]]
@@ -70,9 +70,9 @@ Las reglas completas viven en `genome/genes/`. Resumen:
   propuestas). Estado operacional reproducible, claveado al SHA de git. Regla: [[gen-auto-auditoria]].
 
 ## Visualización (opcional, removible)
-- `dashboards/` — paneles Dataview (salud del genoma, salud del conocimiento, por sector); ver `dashboards/00-leeme.md`.
+- `dashboards/` — paneles nativos Bases (`*.base`, plugin core) con alternativa Dataview (salud del genoma, salud del conocimiento, por sector); ver `dashboards/00-leeme.md`.
 - `dashboards/graph/` — runbook de la **lente de grafo** interactiva (graphify, opcional, backend local); salida derivada en `graphify-out/` (no versionada). Regla: [[gen-visualizacion]].
-- `.obsidian/` — preset con Dataview declarado. Cualquier agente que no sea Obsidian lo ignora. Regla: [[gen-visualizacion]].
+- `.obsidian/` — preset nativo (Bases, propiedades tipadas en `types.json`, grupos del grafo, plantillas de `templates/`; Dataview opcional). Cualquier agente que no sea Obsidian lo ignora. La CLI de Obsidian es equivalente opcional para el operador (`ops/runbook-obsidian-cli.md`), nunca dependencia. Regla: [[gen-visualizacion]].
 
 ## Loop de memoria infinita (contrato multi-implementación)
 El loop (volcar lo valioso antes de perderlo → cerrar con resumen episódico) es un **contrato

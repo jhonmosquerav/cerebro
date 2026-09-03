@@ -1,7 +1,7 @@
 ---
 title: CEREBRO — índice
 type: meta
-updated: 2026-08-07
+updated: 2026-09-03
 ---
 
 # 🧠 CEREBRO — mapa principal
@@ -25,7 +25,7 @@ si una sección supera `hub_umbral` anclas, se parte en página-hub y aquí qued
 - Deriva declarado↔evidencia: operación `XRAY` → corridas en `audit/xray/`. Regla: [[gen-xray]].
 
 ## Visualización (opcional, removible)
-- Paneles Dataview: `dashboards/00-leeme.md`. Lente de grafo interactiva: `dashboards/graph/00-leeme.md`. Regla: [[gen-visualizacion]].
+- Paneles nativos (Bases; Dataview opcional): `dashboards/00-leeme.md`. Plantillas por `type`: `templates/00-leeme.md`. Lente de grafo interactiva: `dashboards/graph/00-leeme.md`. Regla: [[gen-visualizacion]].
 
 ## Memoria (anclas por tier)
 Aún vacío. Conforme ingieras fuentes, ancla aquí según [[gen-jerarquizacion-indice]]
