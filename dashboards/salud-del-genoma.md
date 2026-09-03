@@ -5,15 +5,25 @@ type: meta
 
 # Salud del genoma
 
-Genes activos, su versión y cuándo se disparan. (Requiere Dataview.)
+Genes activos, su versión y cuándo se disparan.
+
+## Vista nativa (Bases, plugin core — nada que instalar)
+
+![[salud-del-genoma.base#Genes activos]]
+
+### Genes deprecados (si los hay)
+![[salud-del-genoma.base#Genes deprecados]]
+
+### Cápsulas
+![[salud-del-genoma.base#Cápsulas]]
+
+## Alternativa Dataview (plugin comunitario, opcional)
 
 ```dataview
 TABLE WITHOUT ID id AS "Gen", status AS "Estado", version AS "v", trigger AS "Se activa cuando"
 FROM "genome/genes"
 SORT id ASC
 ```
-
-## Genes deprecados (si los hay)
 
 ```dataview
 TABLE WITHOUT ID id AS "Gen", version AS "v"

@@ -1,0 +1,51 @@
+# Salud del genoma — vista nativa (Obsidian Bases, plugin core; no requiere Dataview).
+# Lee genome/genes y genome/capsules, que sí vienen poblados en el template.
+# La historia completa de mutaciones (señal + diff) vive en genome/events.jsonl.
+filters:
+  and:
+    - file.inFolder("genome")
+
+properties:
+  note.id:
+    displayName: Gen
+  note.status:
+    displayName: Estado
+  note.version:
+    displayName: v
+  note.trigger:
+    displayName: Se activa cuando
+
+views:
+  - type: table
+    name: Genes activos
+    filters:
+      and:
+        - file.inFolder("genome/genes")
+        - 'status == "active"'
+    order:
+      - id
+      - version
+      - trigger
+    sort:
+      - property: id
+        direction: ASC
+
+  - type: table
+    name: Genes deprecados
+    filters:
+      and:
+        - file.inFolder("genome/genes")
+        - 'status == "deprecated"'
+    order:
+      - id
+      - version
+
+  - type: table
+    name: Cápsulas
+    filters:
+      and:
+        - file.inFolder("genome/capsules")
+    order:
+      - file.name
+      - version
+      - status

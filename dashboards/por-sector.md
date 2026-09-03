@@ -14,7 +14,18 @@ type: meta
 - **E-commerce** → SKUs con stock/precio vencido, síntesis de tickets por producto.
 - **Legal** → contratos por vigencia, precedentes citados, conflictos de interés.
 
-## Ejemplo: pipeline (entidades con estado)
+## Vista nativa (Bases, plugin core — nada que instalar)
+
+Plantilla en [[por-sector.base]]: tras `ONBOARD`, el agente añade ahí las vistas concretas
+de tu sector (una vista por pregunta recurrente) y las embebe aquí.
+
+### Ejemplo: pipeline (entidades con estado)
+![[por-sector.base#Pipeline por estado]]
+
+### Ejemplo: tarjetas por tipo
+![[por-sector.base#Tarjetas por tipo]]
+
+## Alternativa Dataview (plugin comunitario, opcional)
 
 ```dataview
 TABLE estado AS "Estado", tier AS "Tier"
@@ -23,5 +34,5 @@ WHERE estado
 SORT estado ASC
 ```
 
-> Tras `ONBOARD`, el agente reemplaza este ejemplo por las vistas concretas de tu sector
+> Tras `ONBOARD`, el agente reemplaza estos ejemplos por las vistas concretas de tu sector
 > (y `gen-visualizacion` propone cuáles).

@@ -1,0 +1,92 @@
+# Salud del conocimiento — vista nativa (Obsidian Bases, plugin core; no requiere Dataview).
+# Espejo 1:1 de las consultas de salud-del-conocimiento.md. Apunta a wiki/, que en el
+# template nace vacía: sin filas hasta ONBOARD + INGEST. Regla: gen-visualizacion.
+# Desde fuera de Obsidian: obsidian base:query file=salud-del-conocimiento view="Vencidas" format=json
+filters:
+  and:
+    - file.inFolder("wiki")
+    - 'type != "meta"'
+
+formulas:
+  dias_sin_refuerzo: 'if(last_reinforced, (today() - date(last_reinforced)).days, "")'
+  vencida: 'if(valido_hasta, date(valido_hasta) < today(), false)'
+
+properties:
+  note.confidence:
+    displayName: Conf
+  note.tier:
+    displayName: Tier
+  note.last_reinforced:
+    displayName: Reforzado
+  note.decay_rate:
+    displayName: Decae
+  note.valido_hasta:
+    displayName: Venció
+  note.sensibilidad:
+    displayName: Sensibilidad
+  note.fecha_evento:
+    displayName: Fecha
+  formula.dias_sin_refuerzo:
+    displayName: Días sin refuerzo
+
+views:
+  - type: table
+    name: Confianza más baja
+    order:
+      - file.name
+      - tier
+      - confidence
+      - last_reinforced
+      - formula.dias_sin_refuerzo
+      - decay_rate
+    sort:
+      - property: confidence
+        direction: ASC
+    limit: 25
+
+  - type: table
+    name: Vencidas
+    filters:
+      and:
+        - formula.vencida == true
+    order:
+      - file.name
+      - valido_hasta
+      - tier
+    sort:
+      - property: valido_hasta
+        direction: ASC
+
+  - type: table
+    name: Confidenciales
+    filters:
+      and:
+        - 'sensibilidad == "confidencial"'
+    order:
+      - file.name
+      - tier
+      - sensibilidad
+
+  - type: table
+    name: Eventos recientes
+    filters:
+      and:
+        - 'clase == "evento"'
+    order:
+      - file.name
+      - fecha_evento
+      - tier
+    sort:
+      - property: fecha_evento
+        direction: DESC
+    limit: 15
+
+  - type: table
+    name: En cuarentena
+    filters:
+      and:
+        - riesgo_inyeccion == true
+    order:
+      - file.name
+      - tier
+      - created

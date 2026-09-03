@@ -1,0 +1,43 @@
+# Vistas por sector — plantilla nativa (Obsidian Bases). ONBOARD la adapta al negocio:
+# el agente propone vistas concretas (pipeline por estado, vencimientos, síntesis por
+# producto) y las añade aquí como vistas nuevas. Regla: gen-visualizacion.
+filters:
+  and:
+    - file.inFolder("wiki")
+    - 'type != "meta"'
+
+properties:
+  note.estado:
+    displayName: Estado
+  note.tier:
+    displayName: Tier
+  note.type:
+    displayName: Tipo
+  note.confidence:
+    displayName: Conf
+
+views:
+  - type: table
+    name: Pipeline por estado
+    filters:
+      and:
+        - file.hasProperty("estado")
+    groupBy:
+      property: estado
+      direction: ASC
+    order:
+      - file.name
+      - estado
+      - tier
+      - last_reinforced
+
+  - type: cards
+    name: Tarjetas por tipo
+    groupBy:
+      property: type
+      direction: ASC
+    order:
+      - file.name
+      - type
+      - confidence
+      - tier
