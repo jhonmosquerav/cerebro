@@ -1,0 +1,33 @@
+{
+  "collapse-filter": true,
+  "search": "-path:templates -path:docs -path:ops -path:audit -path:worked -path:raw",
+  "showTags": false,
+  "showAttachments": false,
+  "hideUnresolved": false,
+  "showOrphans": true,
+  "collapse-color-groups": false,
+  "colorGroups": [
+    { "query": "[\"sensibilidad\":confidencial]", "color": { "a": 1, "rgb": 15158332 } },
+    { "query": "[\"riesgo_inyeccion\":true]", "color": { "a": 1, "rgb": 15105570 } },
+    { "query": "[\"type\":hub]", "color": { "a": 1, "rgb": 15844367 } },
+    { "query": "path:wiki/semantic", "color": { "a": 1, "rgb": 3066993 } },
+    { "query": "path:wiki/procedural", "color": { "a": 1, "rgb": 3447003 } },
+    { "query": "path:wiki/working", "color": { "a": 1, "rgb": 16751001 } },
+    { "query": "path:wiki/episodic", "color": { "a": 1, "rgb": 10181046 } },
+    { "query": "path:wiki/archive", "color": { "a": 1, "rgb": 8355725 } },
+    { "query": "path:genome", "color": { "a": 1, "rgb": 4273383 } },
+    { "query": "path:dashboards", "color": { "a": 1, "rgb": 1752220 } }
+  ],
+  "collapse-display": true,
+  "showArrow": true,
+  "textFadeMultiplier": 0,
+  "nodeSizeMultiplier": 1.1,
+  "lineSizeMultiplier": 1,
+  "collapse-forces": true,
+  "centerStrength": 0.5,
+  "repelStrength": 12,
+  "linkStrength": 1,
+  "linkDistance": 220,
+  "scale": 1,
+  "close": false
+}
