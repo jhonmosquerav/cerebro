@@ -25,3 +25,13 @@ La fuente de verdad es un manifiesto declarativo: `onboard/company.yaml`.
 7. Re-sincroniza `AGENTS.md`. **No ingiere contenido**: ONBOARD solo configura.
 
 Reaplicar el mismo manifiesto no duplica nada; reaplicar uno editado genera un diff limpio.
+
+## Capturar fuentes desde el navegador (opcional, Obsidian Web Clipper)
+
+`onboard/clipper/cerebro-captura-web.json` es una plantilla para el
+[Web Clipper oficial](https://github.com/obsidianmd/obsidian-clipper): deposita la página
+capturada como markdown en `raw/web/` con metadatos de **captura** (`captura_url`,
+`captura_fecha`, `publicado`, `autor`), que es justo lo que `gen-confianza-por-fuente`
+necesita para anclar la confianza a la captura y no solo al emisor. Importar: extensión →
+Settings → Templates → *Import*. Luego, como con cualquier fuente: `INGEST raw/web/<archivo>`.
+Añadir a `raw/` es legítimo; modificar o borrar lo capturado, no (`gen-raw-inmutable`).

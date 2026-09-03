@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "0.1.0",
+  "name": "CEREBRO — captura web a raw/",
+  "behavior": "create",
+  "noteContentFormat": "{{content}}",
+  "properties": [
+    { "name": "title", "value": "{{title}}", "type": "text" },
+    { "name": "captura_url", "value": "{{url}}", "type": "text" },
+    { "name": "captura_fecha", "value": "{{date}}", "type": "date" },
+    { "name": "publicado", "value": "{{published}}", "type": "date" },
+    { "name": "autor", "value": "{{author}}", "type": "text" },
+    { "name": "descripcion", "value": "{{description}}", "type": "text" },
+    { "name": "tags", "value": "captura-web", "type": "multitext" }
+  ],
+  "triggers": [],
+  "noteNameFormat": "{{date}} {{title|safe_name}}",
+  "path": "raw/web"
+}
