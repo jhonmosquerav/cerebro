@@ -32,6 +32,9 @@ lleve hash-chain), 1 commit, re-sincronizar `AGENTS.md` (`mirror --fix`).
 | `prop-f0-17` | gen-confianza-por-fuente v2→v3 | la confianza se ancla a la captura, no solo al emisor | ✅ aplicada 2026-08-07 |
 | `prop-f0-18` | gen-anti-inyeccion v1→v2 | señal 1 precisada para dominios con usuarios-agente | ✅ aplicada 2026-08-07 |
 | `prop-obs-01` | gen-visualizacion v2→v3 | render vivo = Bases nativas de Obsidian; preset tipado, plantillas, CLI como equivalente opcional (revisión de obsidianmd) | ✅ aplicada 2026-09-03 |
+| `prop-obs-02` | gen-identidad-de-pagina v3→v4 | `aliases` nativo (nombres) junto a `id_alias` (claves): vault y Obsidian resuelven lo mismo; LNK-03 lo usa | ✅ aplicada 2026-09-07 |
+| `prop-obs-03` | gen-confidencialidad v3→v4 | SEN-02: `publish: true` solo en `publico` — nada que no sea público sale del vault por ningún canal | ✅ aplicada 2026-09-07 |
+| `prop-obs-04` | gen-graph-lens v4→v5 + gen-visualizacion v3→v4 | render nativo del grafo: `graph --canvas` (JSON Canvas 1.0) con la allowlist fail-closed del staging — enfoque B | ✅ aplicada 2026-09-07 |
 
 Orden en que se aplicaron: 01 → 02 → 05 → 03 → 06 → 07a → 07b (06 supone 01,
 porque muta el mismo gen encima de la versión que 01 crea).

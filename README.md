@@ -163,7 +163,7 @@ no un script determinista. En concreto:
 - **Enforcement, mecánico** — los invariantes tienen tres capas: las reglas del genoma,
   los permisos del agente (`.claude/settings.json` deniega escritura sobre `raw/`, pide
   confirmación para `genome/`) y, desde 2026-07-12, los **validadores mecánicos de
-  [`tools/`](tools/)** (Python puro, cero dependencias): 16 detectores de LINT, espejo
+  [`tools/`](tools/)** (Python puro, cero dependencias): 17 detectores de LINT, espejo
   `AGENTS.md`≡`CLAUDE.md`, integridad + hash-chain + append-only del ledger, hash de
   estado, score de salud y deriva del grafo (`XRAY`). Corren en CI en cada push y en el
   pre-commit local (`git config core.hooksPath .githooks`). Verifícalo tú mismo:
