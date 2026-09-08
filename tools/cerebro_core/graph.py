@@ -232,7 +232,8 @@ def texto_buscable(body: str) -> str:
 
 
 def _terminos_de(page) -> list[str]:
-    """Términos por los que una página puede ser mencionada: basename, title, alias."""
+    """Términos por los que una página puede ser mencionada: basename, title,
+    `id_alias` (claves canónicas) y `aliases` (nombres nativos de Obsidian)."""
     terms = {page.basename}
     if page.fm:
         title = page.fm.get("title")
@@ -245,6 +246,9 @@ def _terminos_de(page) -> list[str]:
                 if a:
                     terms.add(a)
                     terms.add(a.rsplit("/", 1)[-1])
+        nativos = page.fm.get("aliases")  # gen-identidad-de-pagina v4
+        if isinstance(nativos, list):
+            terms.update(str(a).strip() for a in nativos if str(a).strip())
     return sorted({t for t in terms if len(t) >= MIN_TERM_LEN})
 
 

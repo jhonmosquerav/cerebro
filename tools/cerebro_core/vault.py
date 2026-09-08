@@ -123,4 +123,13 @@ def load_vault(root: Path | str) -> Vault:
                     v._resolve.setdefault(alias, page.rel)
                     tail = alias.rsplit("/", 1)[-1]
                     v._resolve.setdefault(tail, page.rel)
+    # gen-identidad-de-pagina v4: `aliases` (campo nativo de Obsidian) resuelve igual
+    # que `id_alias`, para que el vault y Obsidian lleguen a la misma página. Va al
+    # final: un alias jamás le roba el slug a una página que existe con ese basename.
+    for page in resolubles:
+        if page.fm and isinstance(page.fm.get("aliases"), list):
+            for alias in page.fm["aliases"]:
+                alias = str(alias).strip().lower()
+                if alias:
+                    v._resolve.setdefault(alias, page.rel)
     return v

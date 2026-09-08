@@ -137,3 +137,29 @@ class TestCorpusReal(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestAliasNativo(unittest.TestCase):
+    """gen-identidad-de-pagina v4: `aliases` (campo nativo de Obsidian) resuelve enlaces
+    igual que `id_alias`, para que el vault y Obsidian resuelvan lo mismo."""
+
+    def test_aliases_nativo_resuelve(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = mini_vault(td)
+            escribir(root, "wiki/semantic/banrep.md", PAGINA.format(
+                title="Banco de la República", type="entidad", tier="semantic",
+                relations="{}", body="x.").replace(
+                "relations: {}", 'aliases: ["Banrep", "Banco Central"]\nrelations: {}'))
+            v = vlt.load_vault(root)
+            self.assertEqual(v.resolve_link("Banrep"), "wiki/semantic/banrep.md")
+            self.assertEqual(v.resolve_link("banco central"), "wiki/semantic/banrep.md")
+
+    def test_alias_nativo_no_roba_basename_existente(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = mini_vault(td)
+            escribir(root, "wiki/semantic/otra.md", PAGINA.format(
+                title="Otra", type="concepto", tier="semantic",
+                relations="{}", body="x.").replace(
+                "relations: {}", 'aliases: ["concepto-a"]\nrelations: {}'))
+            v = vlt.load_vault(root)
+            self.assertEqual(v.resolve_link("concepto-a"), "wiki/semantic/concepto-a.md")

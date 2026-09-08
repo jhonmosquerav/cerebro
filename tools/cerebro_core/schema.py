@@ -27,6 +27,8 @@ OPTIONAL_FIELDS = {
     "estado": "gen-entidad-con-estado",
     "id_pagina": "gen-identidad-de-pagina",
     "id_alias": "gen-identidad-de-pagina",
+    "aliases": "gen-identidad-de-pagina",        # v4: alias NATIVO (Obsidian) de nombres
+    "publish": "gen-confidencialidad",           # v4: solo true en sensibilidad: publico
     "riesgo_inyeccion": "gen-anti-inyeccion",
     "decay_aplicado": "gen-ciclo-de-vida",
     "archivado": "gen-ciclo-de-vida",
@@ -228,6 +230,10 @@ def validate_page_fm(fm: dict, *, is_meta: bool,
         errs.append(f"vigencia inválida: {fm['vigencia']!r} (∈ {sorted(VIGENCIAS)})")
     if "riesgo_inyeccion" in fm and not isinstance(fm["riesgo_inyeccion"], bool):
         errs.append("riesgo_inyeccion debe ser booleano")
+    if "aliases" in fm and fm["aliases"] is not None and not isinstance(fm["aliases"], list):
+        errs.append("aliases debe ser lista (alias nativo de Obsidian; gen-identidad-de-pagina)")
+    if "publish" in fm and fm["publish"] is not None and not isinstance(fm["publish"], bool):
+        errs.append("publish debe ser booleano (gen-confidencialidad)")
     if "id_alias" in fm and not isinstance(fm["id_alias"], list):
         errs.append("id_alias debe ser lista")
     # gen-jerarquizacion-indice v2: reglas propias del hub

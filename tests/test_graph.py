@@ -333,3 +333,17 @@ class TestIntegracionLint(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestAliasNativoLNK03(unittest.TestCase):
+    """gen-identidad-de-pagina v4: el sugeridor también reconoce `aliases` nativos."""
+
+    def test_alias_nativo_dispara_la_sugerencia(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            pagina(root, "wiki/semantic/origen.md", body="Cita al Emisor sin enlazar.")
+            pagina(root, "wiki/semantic/banrep.md", extra='aliases: ["Emisor"]\n')
+            v = load_vault(root)
+            sug = graph.sugerencias(v)
+            self.assertEqual([(s[1], s[2]) for s in sug],
+                             [("wiki/semantic/banrep.md", "Emisor")])

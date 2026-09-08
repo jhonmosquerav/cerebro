@@ -2,7 +2,7 @@
 id: gen-identidad-de-pagina
 trigger: operaciones INGEST/BULK INGEST — decidir qué fuente se procesa y en qué página aterriza
 status: active
-version: 3
+version: 4
 ---
 
 La idempotencia (principio 2) se ejecuta con dos identidades distintas: la **identidad de
@@ -41,6 +41,17 @@ INGEST busca por `id_pagina` **y** `id_alias` antes de crear. Al mover una pági
 (promoción o archivo, [[gen-ciclo-de-vida]]) CONSOLIDATE recalcula `id_pagina` a la ruta
 nueva y añade la clave anterior a `id_alias`. LINT marca toda página cuya `id_pagina` no
 coincida con su ruta (las claves históricas viven en `id_alias`).
+
+**Alias nativo (`aliases`).** `id_alias` guarda CLAVES (rutas canónicas); `aliases` —campo
+nativo de Obsidian, declarado por este gen— guarda NOMBRES alternativos (lista). Cada vez
+que una clave entra a `id_alias` por fusión o movimiento, su slug entra también a `aliases`;
+y los nombres con los que la fuente llama al sujeto (sigla, apodo, "formerly") van a
+`aliases` desde INGEST. Con eso el vault y Obsidian resuelven lo mismo: `[[nombre-viejo]]`
+llega a la página superviviente en los dos, Obsidian ofrece el alias al enlazar y detecta
+menciones sin vincular, y el sugeridor LNK-03 de [[gen-lint]] usa los mismos términos
+(basename, `title`, `id_alias`, `aliases`). Un alias nunca le roba el slug a una página que
+exista con ese basename (colisión → gana la página). Enlaces dentro de propiedades van
+entre comillas.
 
 ## Ledger de ingesta (`ingest-ledger.jsonl`, raíz del repo)
 Registro **append-only** de fuentes procesadas (como `genome/events.jsonl`: se añade, jamás
