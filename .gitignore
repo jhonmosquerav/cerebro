@@ -11,6 +11,8 @@ desktop.ini
 
 # Lente de grafo externa (graphify): salida derivada y regenerable; no es conocimiento
 graphify-out/
+# Render nativo del grafo (graph --canvas): JSON Canvas derivado y regenerable
+dashboards/graph/*.canvas
 
 # Estado runtime de los hooks de Claude Code (marcadores de PreCompact; no es conocimiento)
 .claude/hooks/.state/

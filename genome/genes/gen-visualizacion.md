@@ -2,7 +2,7 @@
 id: gen-visualizacion
 trigger: ONBOARD, o cuando se pide un panel / visualización
 status: active
-version: 3
+version: 4
 ---
 
 La visualización es una capa **OPCIONAL y removible**: no rompe la portabilidad porque son
@@ -11,10 +11,12 @@ archivos de texto (`dashboards/` en markdown y `.base` YAML, `templates/`) + un 
 `cerebro health --write`— genera un reporte de salud on-demand desde el frontmatter, sin
 Obsidian), **vivo** (vistas nativas **Bases** de Obsidian en `dashboards/*.base` —plugin
 core, nada que instalar; consultables desde fuera con `obsidian base:query … format=json`—,
-con los paneles Dataview como alternativa opcional equivalente) e **interactivo** (lente de
-grafo externa —p. ej. graphify— sobre una copia *staging* no-confidencial de `wiki/`, con
-backend local; su salida `graphify-out/` es derivada, regenerable y gitignored: nunca fuente
-de verdad ni se importa a `wiki/`; ver `dashboards/graph/`).
+con los paneles Dataview como alternativa opcional equivalente) e **interactivo**, en dos
+sabores: el **nativo** (`graph --canvas` emite JSON Canvas con allowlist fail-closed;
+Obsidian lo abre sin plugin ni LLM, [[gen-graph-lens]]) y el **externo** (lente de grafo
+—p. ej. graphify— sobre una copia *staging* no-confidencial de `wiki/`, con backend local).
+La salida de ambos (`dashboards/graph/*.canvas`, `graphify-out/`) es derivada, regenerable y
+gitignored: nunca fuente de verdad ni se importa a `wiki/`; ver `dashboards/graph/`.
 El preset `.obsidian/` declara además el **tipado de propiedades** (`types.json`), espejo
 del esquema de [[gen-frontmatter-obligatorio]] —si el esquema muta, el tipado muta en el
 mismo cambio—, grupos de color del grafo nativo por tier/sensibilidad y las plantillas por

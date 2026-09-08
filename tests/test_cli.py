@@ -71,3 +71,17 @@ class TestCli(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestGraphCanvas(unittest.TestCase):
+    def test_graph_canvas_escribe_json_canvas(self):
+        import json
+        import tempfile
+        with tempfile.TemporaryDirectory() as td:
+            out = Path(td) / "wiki.canvas"
+            r = correr("--vault", str(LIMPIO), "graph", "--canvas", str(out))
+            self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+            data = json.loads(out.read_text(encoding="utf-8"))
+            self.assertIn("nodes", data)
+            self.assertIn("edges", data)
+            self.assertIn("excluidas", r.stdout)

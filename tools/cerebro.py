@@ -19,6 +19,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from cerebro_core import consolidate_scan as cs_mod
 from cerebro_core import events as events_mod
+from cerebro_core import canvas as canvas_mod
 from cerebro_core import graph as graph_mod
 from cerebro_core import health as health_mod
 from cerebro_core import lint as lint_mod
@@ -176,6 +177,16 @@ def cmd_graph(args) -> int:
         return 0
     m = lint_mod._load_manifest(vault)
     umbral = m.hub_umbral if m else 7
+    if getattr(args, "canvas", None):
+        data = canvas_mod.render(v, scope=args.scope, hub_umbral=umbral)
+        out = Path(args.canvas)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(canvas_mod.dumps(data), encoding="utf-8", newline="\n")
+        c = data["cerebro"]
+        print(f"CANVAS escrito: {out} · scope {c['scope']} · {c['nodos']} nodos · "
+              f"{c['aristas']} aristas · {c['excluidas_por_allowlist']} excluidas por "
+              "allowlist fail-closed (derivado, regenerable; no es fuente de verdad)")
+        return 0
     rep = graph_mod.reporte(v, scope=args.scope, hub_umbral=umbral)
     sys.stdout.write(json.dumps(rep, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
                      if args.json else graph_mod.render_text(rep))
@@ -313,6 +324,9 @@ def build_parser() -> argparse.ArgumentParser:
                     help="ámbito analizado (default: all = wiki + genome + index)")
     sp.add_argument("origen", nargs="?", help="camino más corto: página de origen")
     sp.add_argument("destino", nargs="?", help="camino más corto: página de destino")
+    sp.add_argument("--canvas", default=None, metavar="RUTA.canvas",
+                    help="render nativo: escribe el grafo como JSON Canvas 1.0 (Obsidian lo "
+                         "abre sin plugin) con allowlist fail-closed; derivado, no versionar")
     sp.add_argument("--json", action="store_true")
     sp.set_defaults(fn=cmd_graph)
 

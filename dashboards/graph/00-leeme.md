@@ -188,3 +188,29 @@ En `graphify-out/` (todo gitignored):
 
 > ¿graphify no instalado o no quieres usarlo? Ignora esta carpeta: el resto de CEREBRO no depende
 > de ella.
+
+## Render nativo, sin graphify ni LLM (`graph --canvas`)
+
+Desde el 2026-09-07 la mitad estructural de GRAPH también se **dibuja**: el mismo grafo que
+`graph` reporta en texto sale como **JSON Canvas 1.0** (`.canvas`, formato abierto de
+Obsidian; se abre en Vista → Canvas, sin plugin).
+
+```bash
+python tools/cerebro.py graph --scope wiki --canvas dashboards/graph/wiki.canvas
+```
+
+```bash
+python tools/cerebro.py graph --scope genome --canvas dashboards/graph/genoma.canvas
+```
+
+- Un grupo por tier (`semantic`, `procedural`, …) y por genoma; nodos ordenados por grado;
+  hubs sobre `hub_umbral` en amarillo; aristas etiquetadas con el verbo de la relación
+  (`contradice` rojo, `reemplaza` naranja). Una tarjeta de leyenda arriba con los conteos.
+- **Misma allowlist fail-closed** que el staging de arriba: de `wiki/` entra solo la página
+  con `sensibilidad: publico|interno` explícita y sin cuarentena. Lo excluido no aparece
+  ni por ruta ni por título: solo se cuenta. El genoma e `index.md` entran como estructura.
+- Derivado y regenerable: `dashboards/graph/*.canvas` está en `.gitignore`. Si mueves nodos a
+  mano en Obsidian, la siguiente regeneración lo pisa: no es fuente de verdad.
+- Medido en el piloto de Fase B (2026-09-07): 107 nodos, 429 aristas, 4 páginas excluidas por
+  no declarar `sensibilidad` — la allowlist hizo su trabajo sin tocar nada.
+

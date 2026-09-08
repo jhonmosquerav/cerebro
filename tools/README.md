@@ -22,6 +22,7 @@ python tools/cerebro.py onboard apply --date 2026-07-12 [--dry-run]
 python tools/cerebro.py consolidate scan --as-of …  # decaimiento/promoción/duplicados
 python tools/cerebro.py health [--write]            # score 0–100; tablero estático
 python tools/cerebro.py xray [--inferred graph.json] [--write]   # deriva declarada↔evidencia
+python tools/cerebro.py graph --canvas dashboards/graph/wiki.canvas  # render nativo JSON Canvas (allowlist fail-closed)
 ```
 
 Todos aceptan `--vault DIR` para operar sobre otro clon (así corren los

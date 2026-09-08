@@ -2,7 +2,7 @@
 id: gen-graph-lens
 trigger: operación GRAPH / "visualiza o analiza el grafo"
 status: active
-version: 4
+version: 5
 ---
 
 GRAPH tiene dos mitades con garantías distintas. La mitad ESTRUCTURAL es mecánica,
@@ -13,7 +13,16 @@ dos páginas (`graph <origen> <destino>`). Corre siempre, también en un clon si
 da el mismo resultado en cada máquina — es la fuente canónica de las señales de hub para
 [[gen-jerarquizacion-indice]] y [[gen-consolidate]], y de islas para [[gen-lint]]. Al no salir
 del proceso no necesita copia staging: el filtro de allowlist rige solo para lo que se exporta
-a un motor externo. La mitad SEMÁNTICA (comunidades por modularidad, conexiones sorprendentes,
+a un motor externo. La mitad estructural tiene además un **render nativo**:
+`graph --canvas <ruta.canvas>` escribe el mismo grafo como **JSON Canvas 1.0** (formato
+abierto de Obsidian; se abre sin plugin ni LLM): un grupo por tier/genoma, nodos ordenados
+por grado, hubs sobre `hub_umbral` en amarillo, aristas etiquetadas con el verbo de la
+relación (`contradice` en rojo, `reemplaza` en naranja). Como SALE del proceso, aplica
+la **misma allowlist fail-closed** del staging: de `wiki/` entra solo la página con
+`sensibilidad: publico|interno` explícita y sin cuarentena; el genoma y `index.md` entran
+como estructura; lo excluido no aparece ni por ruta ni por título, solo como conteo. Es
+derivado y regenerable (`dashboards/graph/*.canvas`, gitignored), nunca fuente de verdad.
+La mitad SEMÁNTICA (comunidades por modularidad, conexiones sorprendentes,
 resúmenes narrados) sigue siendo de la lente externa descrita abajo, con su staging
 fail-closed intacto. Si ambas discrepan, manda la estructural: es reproducible.
 
