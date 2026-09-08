@@ -412,3 +412,89 @@ class TestRepoReal(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+PAGINA_SEN = """---
+title: {title}
+type: concepto
+tier: semantic
+tags: [t]
+confidence: 0.8
+created: 2026-07-01
+last_reinforced: 2026-07-10
+decay_rate: medium
+sources: []
+relations: {{}}
+{extra}---
+Cuerpo con [[ancla]].
+"""
+
+
+class TestPublishYAlias(unittest.TestCase):
+    """gen-confidencialidad v4 (SEN-02) y gen-identidad-de-pagina v4 (`aliases`)."""
+
+    def _vault(self, td, extra_pagina: str) -> Path:
+        import tempfile as _t  # noqa: F401
+        root = Path(td)
+        (root / "wiki" / "semantic").mkdir(parents=True)
+        (root / "index.md").write_text("---\ntitle: i\ntype: meta\n---\n- [[ancla]]\n- [[pagina]]\n",
+                                       encoding="utf-8")
+        (root / "wiki" / "semantic" / "ancla.md").write_text(
+            PAGINA_SEN.format(title="Ancla", extra="sensibilidad: publico\n"), encoding="utf-8")
+        (root / "wiki" / "semantic" / "pagina.md").write_text(
+            PAGINA_SEN.format(title="Pagina", extra=extra_pagina), encoding="utf-8")
+        return root
+
+    def _codes(self, root):
+        rep = lint.run(root, as_of=AS_OF)
+        return {(f.code, f.path) for f in rep.findings}, rep
+
+    def test_sen02_publish_en_confidencial_es_error(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as td:
+            root = self._vault(td, "sensibilidad: confidencial\npublish: true\n")
+            codes, rep = self._codes(root)
+            self.assertIn(("SEN-02", "wiki/semantic/pagina.md"), codes)
+            sev = [f.severity for f in rep.findings if f.code == "SEN-02"]
+            self.assertEqual(sev, ["error"])
+
+    def test_sen02_publish_en_interno_o_sin_campo_es_error(self):
+        import tempfile
+        for extra in ("sensibilidad: interno\npublish: true\n", "publish: true\n"):
+            with tempfile.TemporaryDirectory() as td:
+                root = self._vault(td, extra)
+                codes, _ = self._codes(root)
+                self.assertIn(("SEN-02", "wiki/semantic/pagina.md"), codes, extra)
+
+    def test_publish_en_publico_pasa_y_no_es_fm04(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as td:
+            root = self._vault(td, "sensibilidad: publico\npublish: true\n")
+            codes, _ = self._codes(root)
+            self.assertNotIn(("SEN-02", "wiki/semantic/pagina.md"), codes)
+            self.assertFalse(any(c == "FM-04" for c, _ in codes), codes)
+
+    def test_publish_false_nunca_dispara(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as td:
+            root = self._vault(td, "sensibilidad: confidencial\npublish: false\n")
+            codes, _ = self._codes(root)
+            self.assertNotIn(("SEN-02", "wiki/semantic/pagina.md"), codes)
+
+    def test_publish_no_booleano_es_fm03(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as td:
+            root = self._vault(td, "sensibilidad: publico\npublish: si\n")
+            codes, _ = self._codes(root)
+            self.assertIn(("FM-03", "wiki/semantic/pagina.md"), codes)
+
+    def test_aliases_es_campo_conocido_y_debe_ser_lista(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as td:
+            root = self._vault(td, 'sensibilidad: publico\naliases: ["Otro nombre"]\n')
+            codes, _ = self._codes(root)
+            self.assertFalse(any(c == "FM-04" for c, _ in codes), codes)
+        with tempfile.TemporaryDirectory() as td:
+            root = self._vault(td, "sensibilidad: publico\naliases: solo-texto\n")
+            codes, _ = self._codes(root)
+            self.assertIn(("FM-03", "wiki/semantic/pagina.md"), codes)

@@ -2,7 +2,7 @@
 id: gen-confidencialidad
 trigger: ingesta o consulta de información sensible (PII, secreto profesional, datos de cliente/paciente)
 status: active
-version: 3
+version: 4
 ---
 
 Eje de sensibilidad sobre toda página: `sensibilidad: publico | interno | confidencial`
@@ -17,3 +17,11 @@ el nombre de archivo — usa el ID seudonimizado. Además, INGEST **se detiene y
 anonimizar (nombre + identificador de una persona física). Regla práctica: el conocimiento
 clínico/legal/comercial estable es `publico` o `interno`; los datos de la persona concreta
 son `confidencial`. Complementa [[gen-frontmatter-obligatorio]] y la privacidad de toda empresa.
+
+**Nada que no sea `publico` sale del vault, por ningún canal.** El campo nativo `publish`
+(declarado por este gen; es el que Obsidian Publish y cualquier exportador que lo respete
+usan para decidir qué se publica) solo puede ser `true` en páginas `sensibilidad: publico`.
+En `interno`, `confidencial` o sin campo (hereda el default del manifiesto, que nunca es
+`publico` por omisión) es **error SEN-02 de LINT, mecánico** — no aviso: publicar por
+descuido no se deshace. Misma regla que ya rige la lente de grafo y su render nativo
+([[gen-graph-lens]]: allowlist fail-closed) y la CLI (`ops/runbook-obsidian-cli.md`).

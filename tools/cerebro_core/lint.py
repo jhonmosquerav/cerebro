@@ -291,6 +291,26 @@ def _check_confidencial_anclada(v: Vault, findings: list[Finding]) -> None:
                 "(gen-confidencialidad: lo confidencial no se ancla)"))
 
 
+def _check_publish(v: Vault, findings: list[Finding],
+                   default_sensibilidad: str) -> None:
+    """SEN-02 (gen-confidencialidad v4): `publish: true` solo en `sensibilidad: publico`.
+
+    `publish` es la propiedad nativa con la que Obsidian Publish (o cualquier exportador
+    que la respete) decide qué sale del vault. Lo que no es público no sale por ningún
+    canal —lente, CLI, Publish—, así que en `interno`, `confidencial` o sin campo (hereda
+    el default del manifiesto, nunca `publico` por omisión) es error, no aviso.
+    """
+    for p in v.wiki_pages:
+        if p.fm is None or p.is_meta or p.fm.get("publish") is not True:
+            continue
+        sens = p.fm.get("sensibilidad") or default_sensibilidad
+        if sens != "publico":
+            findings.append(Finding(
+                "SEN-02", "error", p.rel,
+                f"publish: true en página con sensibilidad {sens!r} "
+                "(gen-confidencialidad: solo lo `publico` sale del vault)"))
+
+
 def _check_ledger(root: Path, findings: list[Finding]) -> None:
     ledger = root / "ingest-ledger.jsonl"
     if not ledger.is_file():
@@ -388,6 +408,7 @@ def run(root: Path | str, *, as_of: datetime.date,
     descartes = _cargar_descartes(root, findings)
     omitidas = _check_link_suggestions(v, findings, descartes)
     _check_confidencial_anclada(v, findings)
+    _check_publish(v, findings, m.default_sensibilidad if m else "interno")
     _check_ledger(root, findings)
     _check_genome(v, findings)
     if exclude:

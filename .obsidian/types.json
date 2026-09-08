@@ -32,6 +32,7 @@
     "captura_fecha": "date",
     "publicado": "date",
     "autor": "text",
-    "descripcion": "text"
+    "descripcion": "text",
+    "publish": "checkbox"
   }
 }
