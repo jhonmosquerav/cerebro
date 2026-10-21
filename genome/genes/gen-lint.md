@@ -2,14 +2,15 @@
 id: gen-lint
 trigger: operación LINT (mantenimiento)
 status: active
-version: 7
+version: 8
 ---
 
 La detección estructural es MECÁNICA: LINT arranca ejecutando
 `python tools/cerebro.py lint --as-of <hoy>` y toma su salida como la lista
 canónica de candidatos de los detectores (a) huérfanas, (c) vencidos duro y
-blando, (d) verbos fuera de unión, (e) campos fuera de esquema, más
-identidad de página, ledger vs raw/, espejo y cuarentena. El agente NO
+blando, (d) verbos fuera de unión, (e) campos fuera de esquema, (g) perfil
+declarado vs aplicado, más identidad de página, ledger vs raw/, espejo y
+cuarentena. El agente NO
 re-deriva a mano lo que el script ya probó: su trabajo empieza donde el
 script termina — (b) contradicciones semánticas entre páginas (leer
 significado sigue siendo juicio), priorizar qué importa, y PROPONER el
@@ -38,7 +39,10 @@ un hallazgo evaluado y rechazado se registra en `lint-descartes.jsonl` (raíz, a
 `{ts, pagina, termino, motivo}`) y no se vuelve a sugerir; el reporte muestra un contador
 único de omitidos (línea malformada → aviso DSC-01). Aplicar o descartar un LNK-03 es
 trabajo de la operación LINT — incluida la cascada que provoque una página nueva creada
-por INGEST o CONSOLIDATE. Para cada hallazgo PROPÓN una acción (conectar, fusionar, marcar
+por INGEST o CONSOLIDATE. (g) **perfil** ([[gen-perfiles]]) — MECÁNICO: `PRF-01` (error)
+cuando el manifiesto declara perfil y `genome/perfil.md` falta, está corrupto o difiere en
+nombre o en alguna capacidad; `PRF-02` (aviso) cuando existe el archivo sin declaración. La
+corrección es siempre re-correr `onboard apply`, nunca editar el archivo. Para cada hallazgo PROPÓN una acción (conectar, fusionar, marcar
 `contradice`, bajar `confidence`, deprecar, o declarar el verbo/campo) y aplícala solo tras mi
 aprobación. No modifica el genoma por sí mismo; si detecta un patrón de regla, deriva a
 [[gen-evolve]]. Deja constancia en `log.md` (incluyendo el conteo del reporte
