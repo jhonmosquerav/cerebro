@@ -1,0 +1,26 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "cerebro",
+  "description": "CEREBRO: documentación agéntica, mutagénica y reproducible en markdown + JSONL. Este marketplace solo ENVUELVE el repo: la skill enseña a clonarlo, correr `init --profile` y `onboard apply`, y a invocar las operaciones de su CLAUDE.md. Nunca lo sustituye.",
+  "owner": {
+    "name": "Jhon Alexander Mosquera Vanegas",
+    "url": "https://github.com/jhonmosquerav"
+  },
+  "plugins": [
+    {
+      "name": "cerebro",
+      "source": "./plugin",
+      "description": "Instalar y operar un vault CEREBRO: clonar el repo, elegir perfil (minimo | memoria | gobernanza | completo), aplicar el manifiesto y usar ONBOARD / INGEST / QUERY / LINT bajo las reglas del propio vault.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Jhon Alexander Mosquera Vanegas",
+        "url": "https://github.com/jhonmosquerav"
+      },
+      "homepage": "https://github.com/jhonmosquerav/cerebro#readme",
+      "repository": "https://github.com/jhonmosquerav/cerebro",
+      "license": "MIT",
+      "category": "productivity",
+      "keywords": ["knowledge-base", "markdown", "obsidian", "memory", "wiki", "reproducible", "jsonl"]
+    }
+  ]
+}

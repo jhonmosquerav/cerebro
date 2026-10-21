@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "cerebro",
+  "displayName": "CEREBRO",
+  "version": "0.1.0",
+  "description": "Envoltorio mínimo del repo CEREBRO (documentación agéntica, mutagénica y reproducible en markdown + JSONL, cero dependencias). Una sola skill: cómo clonar el repo, elegir perfil con `init --profile`, aplicar el manifiesto con `onboard apply` y operar el vault con los verbos de su CLAUDE.md. No contiene genes ni reglas: la fuente de verdad sigue siendo el vault clonado.",
+  "author": {
+    "name": "Jhon Alexander Mosquera Vanegas",
+    "url": "https://github.com/jhonmosquerav"
+  },
+  "homepage": "https://github.com/jhonmosquerav/cerebro#readme",
+  "repository": "https://github.com/jhonmosquerav/cerebro",
+  "license": "MIT",
+  "keywords": ["knowledge-base", "markdown", "obsidian", "memory", "wiki", "reproducible", "jsonl"]
+}

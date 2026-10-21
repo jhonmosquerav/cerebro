@@ -122,17 +122,26 @@ cerebro/
 ## 🚀 Inicio rápido
 
 1. **Clona** este repo (o úsalo como template).
-2. **Elige un perfil** (opcional; sin elegir es `completo`):
+2. **Elige un perfil** y deja el manifiesto listo con `init` (sin elegir es `completo`):
    ```bash
-   cp onboard/company.example.yaml onboard/company.yaml
-   python tools/cerebro.py profile set memoria      # minimo | memoria | gobernanza | completo
-   python tools/cerebro.py profile enable auditoria # o disable grafo, etc.
+   python tools/cerebro.py init --profile memoria                     # minimo | memoria | gobernanza | completo
+   python tools/cerebro.py init --profile gobernanza --blueprint legal  # o parte de un blueprint de sector
    ```
+   `init` escribe `onboard/company.yaml` desde `company.example.yaml` o del blueprint, con
+   `profile:` fijado; no pisa uno existente (salvo `--force`), es idempotente y conserva tal
+   cual los placeholders `<...>` del blueprint para que los rellenes. Afinar después:
+   `python tools/cerebro.py profile enable auditoria` (o `disable grafo`, `set completo`).
 3. **Abre la carpeta** con Claude Code (o Cursor / OpenClaw — leen el mismo `CLAUDE.md`).
-4. Corre **`ONBOARD`** → te entrevista y completa `onboard/company.yaml`, luego siembra el
-   genoma de tu sector y aplica el perfil a partir de ese manifiesto (reproducible en estructura).
+4. Corre **`ONBOARD`** → completa `onboard/company.yaml` (entrevista si falta algo), luego siembra
+   el genoma de tu sector y aplica el perfil a partir de ese manifiesto (reproducible en estructura):
+   `python tools/cerebro.py onboard apply --date <hoy>`.
 5. Suelta fuentes en **`raw/`** y corre **`BULK INGEST`**.
 6. Consulta con **`QUERY <tema>`**. Mantén con **`LINT`** y **`CONSOLIDATE`** cada 1–2 semanas.
+
+> **Plugin de Claude Code (opcional, no sustituye al repo).** `/plugin marketplace add
+> jhonmosquerav/cerebro` y `/plugin install cerebro@cerebro` instalan una skill que solo
+> enseña estos pasos (clonar, `init --profile`, `onboard apply`) y los verbos del `CLAUDE.md`.
+> Sin la carpeta clonada no hay nada que operar. Ver `plugin/README.md`.
 
 ### Perfiles de instalación
 
