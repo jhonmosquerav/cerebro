@@ -2,7 +2,7 @@
 id: gen-onboard
 trigger: operación ONBOARD (primera vez o cambio de empresa)
 status: active
-version: 7
+version: 8
 ---
 
 ONBOARD adapta el cerebro a una empresa de forma **REPRODUCIBLE**. Fuente de verdad: el
@@ -39,5 +39,15 @@ tiene su mutación registrada como `applied` en `events.jsonl` se respeta sin to
 ONBOARD jamás pisa un gen y la verdad del gen evolucionado es el ledger, no el seed. Solo
 aborta el caso ilegítimo: un gen distinto **sin** mutación registrada (deriva fuera de
 compuerta). Probado en `tests/test_onboard.py::TestSeedsEvolucionados`.
+
+**Perfil de instalación (v8).** Si el manifiesto declara `profile:` o `capabilities:`
+([[gen-perfiles]]), el aplicado también renderiza `genome/perfil.md` (frontmatter plano con
+el perfil y cada `cap_<capacidad>`), añade la línea `- Perfil:` al bloque `## Estado` de
+`index.md` y registra `profile_applied` en `events.jsonl` **solo si cambia el conjunto
+efectivo** (re-aplicar es no-op; cambiar de perfil deja una línea con `anterior → nuevo`).
+Sin declaración no escribe nada: el perfil es `completo` y el hash del vault no cambia. El
+archivo aplicado jamás se edita a mano: se cambia el manifiesto (`python tools/cerebro.py
+profile set|enable|disable` lo hace sin tocar el resto) y se re-corre `onboard apply`. En
+la entrevista, el agente explica qué apaga cada perfil antes de escribir el manifiesto.
 
 No ingiere contenido: ONBOARD solo configura.
