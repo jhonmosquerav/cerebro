@@ -92,9 +92,11 @@ como backlog ordenado al final.
 
 ## Backlog que este plan deja ordenado (Fase 4, siguientes entregas)
 
-1. **4.2 Empaquetado instalable**: `cerebro.py init --profile <p> [--blueprint <s>]`
-   que deje `onboard/company.yaml` listo; skill/plugin de marketplace que solo envuelva
-   el repo (`/plugin marketplace add`), nunca lo sustituya.
+1. ~~**4.2 Empaquetado instalable**~~ ✅ infra entregada 2026-10-20 (sesión hija):
+   `cerebro.py init --profile <p> [--blueprint <s>]` (`cerebro_core/init_manifest.py`,
+   `tests/test_init.py`), plugin mínimo (`.claude-plugin/marketplace.json` → `plugin/`,
+   `tests/test_plugin.py`), README/tools/onboard documentados. Genoma intacto: la mención
+   de `init` en gen-onboard espera compuerta en `docs/propuestas-evolve/prop-prf-04-*.md`.
 2. **4.3 Catálogo de blueprints** con `versions`/`min_cerebro` al estilo
    `community-plugins.json` (obsidian-releases), consumido por `genome_adopted`.
 3. **4.4 Artículo del caso público colombiano** (roadmap Fase 4).

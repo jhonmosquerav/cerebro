@@ -38,6 +38,7 @@ lleve hash-chain), 1 commit, re-sincronizar `AGENTS.md` (`mirror --fix`).
 | `prop-prf-01` | gen-perfiles v1 (NUEVO, 26→27) + CLAUDE.md | instalación por perfil: 6 capacidades activables por manifiesto, estado en `genome/perfil.md`, núcleo no desactivable (revisión de 5 repos, Fase 4.1) | ✅ aplicada 2026-10-20 |
 | `prop-prf-02` | gen-onboard v7→v8 | ONBOARD aplica el perfil (render + evento `profile_applied` + bloque Estado) | ✅ aplicada 2026-10-20 |
 | `prop-prf-03` | gen-lint v7→v8 | detector (g) perfil: PRF-01 deriva manifiesto↔aplicado (error), PRF-02 sin declaración (aviso) | ✅ aplicada 2026-10-20 |
+| `prop-prf-04` | gen-onboard v8→v9 | `init --profile [--blueprint]` como camino mecánico de los modos (a)/(b): el manifiesto semilla nace con el perfil fijado; el plugin solo envuelve el repo | ⏳ **pendiente** (gate del operador) |
 
 Orden en que se aplicaron: 01 → 02 → 05 → 03 → 06 → 07a → 07b (06 supone 01,
 porque muta el mismo gen encima de la versión que 01 crea).

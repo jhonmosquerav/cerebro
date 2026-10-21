@@ -7,10 +7,15 @@ La fuente de verdad es un manifiesto declarativo: `onboard/company.yaml`.
 > entrevista) solo sirve para *generar* el manifiesto; el aplicado es una función pura.
 
 ## Tres modos (todos reproducibles)
-1. **Manifiesto** — copia `company.example.yaml` a `company.yaml`, edítalo y aplica `ONBOARD`.
-2. **Blueprint** — elige una receta de `onboard/blueprints/<sector>.yaml`, cópiala a
-   `company.yaml` y aplica. Onboardea muchas empresas del mismo vertical igual.
+1. **Manifiesto** — `python tools/cerebro.py init --profile <perfil>` copia
+   `company.example.yaml` a `company.yaml` con el perfil fijado; edítalo y aplica `ONBOARD`.
+2. **Blueprint** — `python tools/cerebro.py init --profile <perfil> --blueprint <sector>` copia
+   la receta de `onboard/blueprints/<sector>.yaml` (sus placeholders `<...>` se conservan tal
+   cual: rellénalos) y aplica. Onboardea muchas empresas del mismo vertical igual.
 3. **Entrevista** — el agente te pregunta, **escribe primero** `company.yaml` y luego aplica.
+
+`init` no pisa un `company.yaml` existente (salvo `--force`), es idempotente y no aplica nada;
+también puedes copiar el archivo a mano, como antes.
 
 ## Qué hace el aplicado (determinista e idempotente)
 1. Lee `company.yaml`.

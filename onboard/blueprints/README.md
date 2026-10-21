@@ -8,9 +8,9 @@ Un blueprint es un `company.yaml` semilla: trae los `relation_types`, `source_tr
 ## Cómo se usa
 
 ```bash
-# 1. Copia el blueprint de tu sector
-cp onboard/blueprints/<sector>.yaml onboard/company.yaml
-# 2. Reemplaza los placeholders "<tu ...>" por tus datos reales
+# 1. Copia el blueprint de tu sector con el perfil de instalación ya fijado
+python tools/cerebro.py init --profile memoria --blueprint <sector>   # o: cp onboard/blueprints/<sector>.yaml onboard/company.yaml
+# 2. Reemplaza los placeholders "<tu ...>" por tus datos reales (init los deja tal cual a propósito)
 # 3. Corre ONBOARD  →  genoma adaptado y determinista
 ```
 
