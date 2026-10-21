@@ -22,7 +22,31 @@ La fuente de verdad es un manifiesto declarativo: `onboard/company.yaml`.
 5. Siembra cada `seed_genes` en `genome/genes/` pasando por `gen-compuerta-mutacion`,
    registrando una línea por gen en `genome/events.jsonl` + commit.
 6. Actualiza `index.md` con la empresa y las anclas iniciales.
-7. Re-sincroniza `AGENTS.md`. **No ingiere contenido**: ONBOARD solo configura.
+7. Si el manifiesto declara `profile:`/`capabilities:`, renderiza `genome/perfil.md` (el
+   estado efectivo de las capacidades) y registra `profile_applied` cuando cambia
+   (`gen-perfiles`). Sin declaración: `completo`, sin archivo.
+8. Re-sincroniza `AGENTS.md`. **No ingiere contenido**: ONBOARD solo configura.
+
+## Elegir cuánto CEREBRO quieres: perfiles y capacidades
+
+| Perfil | Enciende | Para quién |
+|---|---|---|
+| `minimo` | solo núcleo (ONBOARD, INGEST, QUERY, LINT, compuerta, ledger, confidencialidad) | una wiki gobernada, sin memoria entre sesiones |
+| `memoria` | + `memoria` (hooks, CHECKPOINT, working/episodic) + `ciclo_de_vida` (CONSOLIDATE) | "solo memoria": recuerda, decae y promueve |
+| `gobernanza` | + `evolucion` (EVOLVE) + `auditoria` (AUDIT, XRAY, health) | un genoma que se audita y propone sus reglas, sin Obsidian |
+| `completo` | + `visualizacion` (dashboards, .obsidian) + `grafo` (GRAPH, canvas, lente) | todo (el comportamiento por defecto) |
+
+Cada capacidad se puede encender o apagar aparte con `capabilities:` (p. ej. `memoria` +
+`{ auditoria: true }`). Sin tocar YAML:
+
+```bash
+python tools/cerebro.py profile set memoria        # o: enable auditoria · disable grafo
+python tools/cerebro.py onboard apply --date 2026-10-20
+python tools/cerebro.py profile                    # qué rige, y si está aplicado
+```
+
+Apagar nunca borra: la operación deja de ejecutarse, sus comandos avisan (exit 2) y los
+hooks de memoria son no-op; lo que exista en sus carpetas se respeta.
 
 Reaplicar el mismo manifiesto no duplica nada; reaplicar uno editado genera un diff limpio.
 

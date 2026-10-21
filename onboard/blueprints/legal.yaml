@@ -1,6 +1,11 @@
 # Sector: bufete legal (litigio civil/mercantil, asesoría). Blueprint reusable destilado del sandbox Vega & Alcántara.
 # Cómo usarlo: cópialo a onboard/company.yaml, reemplaza los placeholders "<...>" con tus datos y corre ONBOARD. Los seed_genes ya pasan por la compuerta de mutación.
 
+# Perfil de instalación (gen-perfiles), OPCIONAL. Sin el bloque: completo (todo activo).
+#   profile: completo        # minimo | memoria | gobernanza | completo
+#   capabilities: {}         # overrides por capacidad, p. ej. { grafo: false }
+# Atajo: python tools/cerebro.py profile set memoria
+
 company:
   name: "<tu bufete>"
   sector: "bufete legal — litigio civil y mercantil"

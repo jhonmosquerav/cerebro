@@ -91,12 +91,23 @@ juicio.
       renormalizan, score único 0–100, test negativo (degradar baja el
       número), tablero estático `--write` + Dataview existente.
 
-## Fase 4 — Distribución 🔒 bloqueada a propósito
+## Fase 4 — Distribución 🟡 desbloqueada 2026-08-07 · iniciada 2026-10-20
 
-No se empaqueta ni promociona un sistema cuyo piloto real no corrió:
-distribuir antes de verificar amplifica el problema. Se desbloquea al
-cerrar Fase 1 completa. (Cuando toque: skill instalable, catálogo de
-blueprints, el artículo del caso público colombiano.)
+No se empaquetó ni promocionó un sistema cuyo piloto real no había corrido:
+distribuir antes de verificar amplifica el problema. La Fase 1 cerró el
+2026-08-07 y la fase quedó desbloqueada. Plan único vigente:
+`docs/plans/2026-10-20-perfiles-capacidades-plan.md` (absorbe este roadmap,
+el plan 2026-07-12 y el backlog de la spec Obsidian).
+
+- [x] **4.1 Instalación por perfiles y capacidades** ✅ 2026-10-20 —
+      gen-perfiles v1 (+ gen-onboard v8, gen-lint v8): `minimo` ⊂ `memoria` ⊂
+      `gobernanza` ⊂ `completo`, seis capacidades activables por manifiesto,
+      estado en `genome/perfil.md`, hooks y CLI que lo respetan, PRF-01 en
+      `verify`. Origen: revisión de 5 repos (`docs/revision-repos-2026-10-20.md`).
+- [ ] 4.2 Empaquetado instalable (`init --profile`, skill/plugin de marketplace
+      que envuelva el repo sin sustituirlo).
+- [ ] 4.3 Catálogo de blueprints con versiones y requisito mínimo.
+- [ ] 4.4 Artículo del caso público colombiano.
 
 ## Lo que NO se va a hacer
 

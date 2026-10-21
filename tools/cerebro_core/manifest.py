@@ -124,6 +124,19 @@ class Manifest:
     def graph_lens(self) -> dict:
         return self.raw.get("graph_lens") or {}
 
+    # gen-perfiles v1: perfil de instalación + overrides por capacidad
+    @property
+    def profile(self) -> str:
+        return self.raw.get("profile") or schema.DEFAULT_PROFILE
+
+    @property
+    def capabilities(self) -> dict:
+        return self.raw.get("capabilities") or {}
+
+    @property
+    def declares_profile(self) -> bool:
+        return "profile" in self.raw or "capabilities" in self.raw
+
 
 def load(path: Path | str) -> Manifest:
     p = Path(path)
@@ -229,6 +242,20 @@ def validate(m: Manifest) -> list[str]:
             for f_ in folders:
                 if not isinstance(f_, str) or not _FOLDER_RE.match(f_):
                     errs.append(f"taxonomy.{tier}: carpeta inválida {f_!r} (slug en minúsculas)")
+    # gen-perfiles v1
+    if m.raw.get("profile") is not None and m.raw["profile"] not in schema.PROFILES:
+        errs.append(f"profile inválido: {m.raw['profile']!r} (∈ {list(schema.PROFILE_ORDER)})")
+    caps = m.raw.get("capabilities")
+    if caps is not None:
+        if not isinstance(caps, dict):
+            errs.append("capabilities debe ser mapa capacidad→booleano")
+        else:
+            for cap, v in caps.items():
+                if cap not in schema.CAPABILITIES:
+                    errs.append(f"capabilities: capacidad desconocida {cap!r} "
+                                f"(∈ {list(schema.CAPABILITY_ORDER)})")
+                elif not isinstance(v, bool):
+                    errs.append(f"capabilities.{cap} debe ser booleano (true|false)")
     gl = m.graph_lens
     if gl:
         if gl.get("enable") not in (True, False, None):

@@ -19,6 +19,7 @@ python tools/cerebro.py events verify               # esquema + hash-chain + app
 python tools/cerebro.py events append --type … --target … --signal … --diff …
 python tools/cerebro.py hash --scope genome|knowledge|all [--detail]
 python tools/cerebro.py onboard apply --date 2026-07-12 [--dry-run]
+python tools/cerebro.py profile [set <perfil>|enable <cap>|disable <cap>] [--json]  # gen-perfiles
 python tools/cerebro.py consolidate scan --as-of …  # decaimiento/promoción/duplicados
 python tools/cerebro.py health [--write]            # score 0–100; tablero estático
 python tools/cerebro.py xray [--inferred graph.json] [--write]   # deriva declarada↔evidencia
@@ -27,6 +28,9 @@ python tools/cerebro.py graph --canvas dashboards/graph/wiki.canvas  # render na
 
 Todos aceptan `--vault DIR` para operar sobre otro clon (así corren los
 tests y los casos de `worked/`). Exit codes: 0 limpio · 1 hallazgos · 2 uso.
+`consolidate`, `health`, `xray` y `graph` respetan el perfil de instalación
+(`genome/perfil.md`, gen-perfiles): capacidad apagada ⇒ aviso y exit 2;
+`--ignore-profile` fuerza la corrida.
 
 Pre-commit local (C-05): `git config core.hooksPath .githooks` — bloquea
 mutaciones de `raw/`, reescrituras del ledger y espejo roto.
@@ -36,7 +40,8 @@ mutaciones de `raw/`, reescrituras del ledger y espejo roto.
 | Operación | Núcleo mecánico (aquí, 0 LLM) | Juicio (agente + compuerta) |
 |---|---|---|
 | LINT | huérfanas, enlaces rotos, frontmatter, verbos/campos fuera de esquema, vencidos, identidad, ledger, confidencial anclada | contradicciones semánticas, redactar arreglos |
-| ONBOARD | aplicar el manifiesto (perfil, taxonomía, seeds, events, index) | la entrevista, la pregunta de graph_lens, recomendaciones |
+| ONBOARD | aplicar el manifiesto (perfil de empresa, perfil de instalación, taxonomía, seeds, events, index) | la entrevista, la pregunta de graph_lens, recomendaciones |
+| perfil | efectivo = preset + overrides; `genome/perfil.md`; deriva PRF-01/02; gating de comandos | explicar qué apaga cada perfil; no ejecutar una operación apagada |
 | CONSOLIDATE | ventanas de decaimiento, elegibilidad de promoción, candidatos a archivo/duplicado | decidir fusiones, redactar consolidados |
 | AUDIT | los reportes `--json` como insumo del maker | ¿importa?, diff, score argumentado |
 | XRAY | buckets de deriva + score | interpretar derivas, proponer relaciones |

@@ -67,6 +67,87 @@ TIPOS_CON_CARPETA = {
     "sop": "procedural",
 }
 
+# ── gen-perfiles v1: capacidades activables y perfiles de instalación ────────
+# Una capacidad agrupa genes + operaciones + comandos + carpetas que se pueden apagar sin
+# romper el núcleo. El mapeo vive AQUÍ y en gen-perfiles (no en 26 genes editados): el
+# test de corpus delata un gen que no esté ni en el núcleo ni en una capacidad.
+CAPABILITY_ORDER = ("memoria", "ciclo_de_vida", "evolucion", "auditoria",
+                    "visualizacion", "grafo")
+CAPABILITIES = {
+    "memoria": {
+        "descripcion": "loop de memoria entre sesiones: hooks SessionStart/PreCompact/Stop, "
+                       "CHECKPOINT y los tiers working/ y episodic/",
+        "genes": ["gen-checkpoint"],
+        "operaciones": ["CHECKPOINT"],
+        "comandos": [],
+        "carpetas": ["wiki/working/", "wiki/episodic/", ".claude/hooks/"],
+    },
+    "ciclo_de_vida": {
+        "descripcion": "decaimiento, refuerzo, promoción working→semantic y archivo",
+        "genes": ["gen-ciclo-de-vida", "gen-consolidate"],
+        "operaciones": ["CONSOLIDATE"],
+        "comandos": ["consolidate scan"],
+        "carpetas": ["wiki/archive/"],
+    },
+    "evolucion": {
+        "descripcion": "el genoma propone reescribir sus propias reglas (EVOLVE); sin esto "
+                       "solo ONBOARD muta el genoma",
+        "genes": ["gen-evolve"],
+        "operaciones": ["EVOLVE"],
+        "comandos": [],
+        "carpetas": ["docs/propuestas-evolve/"],
+    },
+    "auditoria": {
+        "descripcion": "auto-auditoría reproducible (AUDIT), deriva declarado↔evidencia "
+                       "(XRAY) y score de salud",
+        "genes": ["gen-auto-auditoria", "gen-xray"],
+        "operaciones": ["AUDIT", "XRAY"],
+        "comandos": ["health", "xray"],
+        "carpetas": ["audit/"],
+    },
+    "visualizacion": {
+        "descripcion": "paneles Bases/Dataview, plantillas y preset .obsidian",
+        "genes": ["gen-visualizacion"],
+        "operaciones": [],
+        "comandos": ["health --write"],
+        "carpetas": ["dashboards/", "templates/", ".obsidian/"],
+    },
+    "grafo": {
+        "descripcion": "señales estructurales del grafo, render JSON Canvas y lente externa",
+        "genes": ["gen-graph-lens"],
+        "operaciones": ["GRAPH"],
+        "comandos": ["graph"],
+        "carpetas": ["dashboards/graph/", "graphify-out/"],
+    },
+}
+# Escalera ESTRICTA: cada perfil contiene al anterior, así subir de perfil es aditivo.
+PROFILE_ORDER = ("minimo", "memoria", "gobernanza", "completo")
+PROFILES = {
+    "minimo": (),
+    "memoria": ("memoria", "ciclo_de_vida"),
+    "gobernanza": ("memoria", "ciclo_de_vida", "evolucion", "auditoria"),
+    "completo": CAPABILITY_ORDER,
+}
+DEFAULT_PROFILE = "completo"   # ausencia de declaración = el comportamiento previo al gen
+# Núcleo NO desactivable: seguridad, identidad, compuerta y las operaciones base.
+CORE_GENES = frozenset({
+    "gen-raw-inmutable", "gen-frontmatter-obligatorio", "gen-identidad-de-pagina",
+    "gen-compuerta-mutacion", "gen-vigencia-temporal", "gen-confidencialidad",
+    "gen-anti-inyeccion", "gen-clase-temporal", "gen-entidad-con-estado",
+    "gen-confianza-por-fuente", "gen-sintesis-de-volumen", "gen-jerarquizacion-indice",
+    "gen-migracion-genoma", "gen-onboard", "gen-ingest", "gen-bulk-ingest", "gen-query",
+    "gen-lint", "gen-perfiles",
+})
+
+
+def capability_of(gen_id: str) -> str | None:
+    """Capacidad que gobierna un gen base; None si es núcleo o gen de sector."""
+    for cap, d in CAPABILITIES.items():
+        if gen_id in d["genes"]:
+            return cap
+    return None
+
+
 # ── verbos de relación ────────────────────────────────────────────────────────
 RELATION_CORE = {"usa", "depende_de", "contradice", "reemplaza"}  # núcleo reservado
 GENE_VERBS = {          # declarados por genes activos (gen-frontmatter-obligatorio v6)

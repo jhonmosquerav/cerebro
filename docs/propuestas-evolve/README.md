@@ -35,6 +35,9 @@ lleve hash-chain), 1 commit, re-sincronizar `AGENTS.md` (`mirror --fix`).
 | `prop-obs-02` | gen-identidad-de-pagina v3→v4 | `aliases` nativo (nombres) junto a `id_alias` (claves): vault y Obsidian resuelven lo mismo; LNK-03 lo usa | ✅ aplicada 2026-09-07 |
 | `prop-obs-03` | gen-confidencialidad v3→v4 | SEN-02: `publish: true` solo en `publico` — nada que no sea público sale del vault por ningún canal | ✅ aplicada 2026-09-07 |
 | `prop-obs-04` | gen-graph-lens v4→v5 + gen-visualizacion v3→v4 | render nativo del grafo: `graph --canvas` (JSON Canvas 1.0) con la allowlist fail-closed del staging — enfoque B | ✅ aplicada 2026-09-07 |
+| `prop-prf-01` | gen-perfiles v1 (NUEVO, 26→27) + CLAUDE.md | instalación por perfil: 6 capacidades activables por manifiesto, estado en `genome/perfil.md`, núcleo no desactivable (revisión de 5 repos, Fase 4.1) | ✅ aplicada 2026-10-20 |
+| `prop-prf-02` | gen-onboard v7→v8 | ONBOARD aplica el perfil (render + evento `profile_applied` + bloque Estado) | ✅ aplicada 2026-10-20 |
+| `prop-prf-03` | gen-lint v7→v8 | detector (g) perfil: PRF-01 deriva manifiesto↔aplicado (error), PRF-02 sin declaración (aviso) | ✅ aplicada 2026-10-20 |
 
 Orden en que se aplicaron: 01 → 02 → 05 → 03 → 06 → 07a → 07b (06 supone 01,
 porque muta el mismo gen encima de la versión que 01 crea).

@@ -3,8 +3,10 @@
 
     python tools/cerebro.py <comando> [opciones]
 
-Comandos: lint · mirror · events · hash · onboard · consolidate · health ·
-xray · graph · verify. Todos aceptan --vault DIR (default: la raíz de este repo).
+Comandos: lint · mirror · events · hash · onboard · profile · consolidate ·
+health · xray · graph · verify. Todos aceptan --vault DIR (default: la raíz de este repo).
+Los comandos de una capacidad apagada en genome/perfil.md (gen-perfiles) avisan y salen
+con exit 2; --ignore-profile los fuerza.
 Cero dependencias: cualquier Python ≥ 3.10.
 """
 from __future__ import annotations
@@ -26,6 +28,8 @@ from cerebro_core import lint as lint_mod
 from cerebro_core import manifest as mf
 from cerebro_core import mirror as mirror_mod
 from cerebro_core import onboard as onboard_mod
+from cerebro_core import profile as profile_mod
+from cerebro_core import schema
 from cerebro_core import statehash
 from cerebro_core import xray as xray_mod
 from cerebro_core.findings import has_errors
@@ -130,13 +134,152 @@ def cmd_onboard(args) -> int:
     return 0
 
 
+def _gate(args, cap: str) -> int | None:
+    """gen-perfiles: un comando de capacidad apagada avisa y sale con 2 (uso).
+
+    `--ignore-profile` lo fuerza (p. ej. para auditar un vault ajeno desde fuera).
+    Sin genome/perfil.md todo está activo; un archivo corrupto también cuenta como
+    activo (fail-open) y es LINT quien lo delata (PRF-01).
+    """
+    if getattr(args, "ignore_profile", False) or profile_mod.is_on(args.vault, cap):
+        return None
+    try:
+        nombre = (profile_mod.read_applied(args.vault) or (None, {}))[0]
+    except profile_mod.ProfileError:
+        nombre = None
+    print(f"[PERFIL] capacidad '{cap}' APAGADA en {profile_mod.PERFIL_REL} "
+          f"(perfil {nombre or '?'}): este comando no corre. Para activarla: "
+          f"`python tools/cerebro.py profile enable {cap}` y re-corre `onboard apply`; "
+          "o fuerza esta corrida con --ignore-profile.")
+    return 2
+
+
+def _render_profile_show(vault: Path, m, aplicado, estado: str) -> str:
+    lines = [f"PERFIL · vault {vault}"]
+    if m is None:
+        lines.append("manifiesto: (sin onboard/company.yaml) ⇒ perfil efectivo completo (todo activo)")
+        caps = {c: True for c in schema.CAPABILITY_ORDER}
+        nombre = schema.DEFAULT_PROFILE
+    else:
+        caps = profile_mod.effective(m)
+        nombre = m.profile
+        ov = profile_mod.overrides_of(m)
+        decl = "declarado" if m.declares_profile else "NO declarado (⇒ completo)"
+        lines.append(f"manifiesto: onboard/company.yaml · profile: {nombre} ({decl})"
+                     + (f" · overrides: {', '.join(f'{c}={str(v).lower()}' for c, v in ov.items())}"
+                        if ov else ""))
+    lines.append(f"aplicado ({profile_mod.PERFIL_REL}): {estado}")
+    lines.append("")
+    ancho = max(len(c) for c in schema.CAPABILITY_ORDER)
+    for cap in schema.CAPABILITY_ORDER:
+        d = schema.CAPABILITIES[cap]
+        marca = "ON " if caps[cap] else "off"
+        que = " · ".join(x for x in (
+            ", ".join(d["genes"]),
+            ", ".join(d["operaciones"] + [f"`{c}`" for c in d["comandos"]]),
+            ", ".join(d["carpetas"]),
+        ) if x)
+        lines.append(f"  {cap.ljust(ancho)}  {marca}  {que}")
+    lines.append("")
+    lines.append("perfiles: " + " ⊂ ".join(
+        f"{p} [{', '.join(schema.PROFILES[p]) or 'solo núcleo'}]" for p in schema.PROFILE_ORDER))
+    lines.append("núcleo (no desactivable): " + ", ".join(sorted(schema.CORE_GENES)))
+    return "\n".join(lines) + "\n"
+
+
+def cmd_profile(args) -> int:
+    vault = Path(args.vault)
+    manifest_path = Path(args.manifest) if args.manifest else vault / "onboard" / "company.yaml"
+    accion = args.accion
+    if accion in ("set", "enable", "disable"):
+        if not args.valor:
+            print(f"[ERROR] profile {accion} exige un valor "
+                  f"({'perfil' if accion == 'set' else 'capacidad'})")
+            return 2
+        if not manifest_path.is_file():
+            print(f"[ERROR] no existe {manifest_path}: copia onboard/company.example.yaml "
+                  "(o un blueprint) a onboard/company.yaml primero")
+            return 2
+        texto = manifest_path.read_text(encoding="utf-8")
+        try:
+            nuevo = profile_mod.edit_manifest_text(
+                texto, profile=args.valor if accion == "set" else None,
+                enable=args.valor if accion == "enable" else None,
+                disable=args.valor if accion == "disable" else None)
+        except profile_mod.ProfileError as e:
+            print(f"[ERROR] {e}")
+            return 2
+        if nuevo == texto:
+            print(f"sin cambios: el manifiesto ya expresa `{accion} {args.valor}`")
+        else:
+            manifest_path.write_text(nuevo, encoding="utf-8", newline="")
+            print(f"manifiesto actualizado: {manifest_path} ({accion} {args.valor})")
+        m = mf.load(manifest_path)
+        caps = profile_mod.effective(m)
+        print(f"perfil declarado: {m.profile} · activas: "
+              f"{', '.join(c for c in caps if caps[c]) or '—'} · apagadas: "
+              f"{', '.join(c for c in caps if not caps[c]) or '—'}")
+        print("para aplicarlo: python tools/cerebro.py onboard apply --date <hoy> "
+              "(1 commit; el evento profile_applied queda en events.jsonl)")
+        return 0
+    # show
+    m = None
+    if manifest_path.is_file():
+        try:
+            m = mf.load(manifest_path)
+            errs = mf.validate(m)
+            if errs:
+                print("[ERROR] manifiesto inválido:\n  - " + "\n  - ".join(errs))
+                return 1
+        except Exception as e:
+            print(f"[ERROR] manifiesto ilegible: {e}")
+            return 1
+    try:
+        aplicado = profile_mod.read_applied(vault)
+    except profile_mod.ProfileError as e:
+        aplicado = None
+        estado = f"ILEGIBLE ({e}) — PRF-01"
+    else:
+        if aplicado is None:
+            estado = ("sin archivo ⇒ todo activo"
+                      + (" · PENDIENTE de `onboard apply` (el manifiesto declara perfil)"
+                         if m is not None and m.declares_profile else ""))
+        elif m is None or not m.declares_profile:
+            estado = f"{aplicado[0]} · sin declaración en el manifiesto (PRF-02)"
+        else:
+            esperado = profile_mod.effective(m)
+            dif = [c for c in esperado if aplicado[1].get(c) != esperado[c]]
+            estado = (f"{aplicado[0]} · ✔ coincide con el manifiesto"
+                      if not dif and aplicado[0] == m.profile
+                      else f"{aplicado[0]} · ✘ DERIVA (difieren: {', '.join(dif) or 'nombre'}) "
+                           "— re-corre `onboard apply` (PRF-01)")
+    if args.json:
+        caps = profile_mod.effective(m) if m is not None else {c: True for c in schema.CAPABILITY_ORDER}
+        print(json.dumps({
+            "perfil": m.profile if m is not None else schema.DEFAULT_PROFILE,
+            "declarado": bool(m is not None and m.declares_profile),
+            "capacidades": caps,
+            "aplicado": {"perfil": aplicado[0], "capacidades": aplicado[1]} if aplicado else None,
+            "estado": estado,
+        }, ensure_ascii=False, indent=2, sort_keys=True))
+        return 0
+    sys.stdout.write(_render_profile_show(vault, m, aplicado, estado))
+    return 0
+
+
 def cmd_consolidate(args) -> int:
+    bloqueo = _gate(args, "ciclo_de_vida")
+    if bloqueo is not None:
+        return bloqueo
     report = cs_mod.run(args.vault, as_of=_as_of(args.as_of))
     sys.stdout.write(report.render_json() if args.json else report.render_text())
     return 0
 
 
 def cmd_health(args) -> int:
+    bloqueo = _gate(args, "auditoria")
+    if bloqueo is not None:
+        return bloqueo
     report = health_mod.run(args.vault, as_of=_as_of(args.as_of))
     sys.stdout.write(report.render_json() if args.json else report.render_text())
     if args.write:
@@ -146,6 +289,9 @@ def cmd_health(args) -> int:
 
 
 def cmd_xray(args) -> int:
+    bloqueo = _gate(args, "auditoria")
+    if bloqueo is not None:
+        return bloqueo
     report = xray_mod.run(args.vault, as_of=_as_of(args.as_of),
                           inferred_path=args.inferred, min_co=args.min_co)
     sys.stdout.write(report.render_json() if args.json else report.render_md())
@@ -156,6 +302,9 @@ def cmd_xray(args) -> int:
 
 
 def cmd_graph(args) -> int:
+    bloqueo = _gate(args, "grafo")
+    if bloqueo is not None:
+        return bloqueo
     vault = Path(args.vault)
     v = load_vault(vault)
     if getattr(args, "origen", None):
@@ -292,11 +441,26 @@ def build_parser() -> argparse.ArgumentParser:
     ob_a.add_argument("--dry-run", action="store_true")
     ob_a.set_defaults(fn=cmd_onboard)
 
+    sp = sub.add_parser("profile", help="perfil de instalación y capacidades (gen-perfiles)")
+    sp.add_argument("accion", nargs="?", default="show",
+                    choices=["show", "set", "enable", "disable"],
+                    help="show (default) · set <perfil> · enable <cap> · disable <cap>; "
+                         "set/enable/disable editan solo profile:/capabilities: del manifiesto")
+    sp.add_argument("valor", nargs="?", default=None,
+                    help=f"perfil ∈ {list(schema.PROFILE_ORDER)} o capacidad ∈ "
+                         f"{list(schema.CAPABILITY_ORDER)}")
+    sp.add_argument("--manifest", default=None,
+                    help="ruta del company.yaml (default: <vault>/onboard/company.yaml)")
+    sp.add_argument("--json", action="store_true")
+    sp.set_defaults(fn=cmd_profile)
+
     sp = sub.add_parser("consolidate", help="scanner mecánico de consolidate")
     co = sp.add_subparsers(dest="consolidate_cmd", required=True)
     co_s = co.add_parser("scan")
     co_s.add_argument("--as-of", default=None)
     co_s.add_argument("--json", action="store_true")
+    co_s.add_argument("--ignore-profile", dest="ignore_profile", action="store_true",
+                      help="corre aunque la capacidad ciclo_de_vida esté apagada")
     co_s.set_defaults(fn=cmd_consolidate)
 
     sp = sub.add_parser("health", help="score de salud determinista")
@@ -304,6 +468,8 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--json", action="store_true")
     sp.add_argument("--write", action="store_true",
                     help="escribe dashboards/salud-mecanica.md")
+    sp.add_argument("--ignore-profile", dest="ignore_profile", action="store_true",
+                    help="corre aunque la capacidad auditoria esté apagada")
     sp.set_defaults(fn=cmd_health)
 
     sp = sub.add_parser("xray", help="deriva declarado vs inferido (propone, no aplica)")
@@ -315,6 +481,8 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--json", action="store_true")
     sp.add_argument("--write", action="store_true",
                     help="persiste la corrida en audit/xray/<as-of>-<sha8>/")
+    sp.add_argument("--ignore-profile", dest="ignore_profile", action="store_true",
+                    help="corre aunque la capacidad auditoria esté apagada")
     sp.set_defaults(fn=cmd_xray)
 
     sp = sub.add_parser(
@@ -328,6 +496,8 @@ def build_parser() -> argparse.ArgumentParser:
                     help="render nativo: escribe el grafo como JSON Canvas 1.0 (Obsidian lo "
                          "abre sin plugin) con allowlist fail-closed; derivado, no versionar")
     sp.add_argument("--json", action="store_true")
+    sp.add_argument("--ignore-profile", dest="ignore_profile", action="store_true",
+                    help="corre aunque la capacidad grafo esté apagada")
     sp.set_defaults(fn=cmd_graph)
 
     sp = sub.add_parser("verify", help="todos los invariantes mecánicos de una vez")

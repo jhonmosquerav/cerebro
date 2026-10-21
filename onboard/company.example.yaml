@@ -10,6 +10,21 @@ company:
   language: es                       # idioma principal del cerebro
   domains: ["acmebots.com"]
 
+# ---------------------------------------------------------------------
+# PERFIL DE INSTALACIÓN (gen-perfiles). Elige cuánto CEREBRO quieres: un preset de
+# capacidades, y cada capacidad se puede encender/apagar aparte en `capabilities:`.
+# Escalera (cada perfil contiene al anterior):
+#   minimo     = solo núcleo: ONBOARD, INGEST, QUERY, LINT, compuerta, ledger, confidencialidad
+#   memoria    = minimo + memoria (hooks + CHECKPOINT, working/episodic) + ciclo_de_vida (CONSOLIDATE)
+#   gobernanza = memoria + evolucion (EVOLVE) + auditoria (AUDIT, XRAY, health)
+#   completo   = gobernanza + visualizacion (dashboards, .obsidian) + grafo (GRAPH, canvas)
+# Sin este bloque: completo. ONBOARD escribe el estado efectivo en genome/perfil.md; los
+# hooks y la CLI lo respetan; LINT (PRF-01) delata si editas esto sin re-correr ONBOARD.
+# Atajos: python tools/cerebro.py profile set memoria | enable auditoria | disable grafo
+# ---------------------------------------------------------------------
+profile: completo
+capabilities: {}                   # overrides, p. ej. { grafo: false } o { auditoria: true }
+
 # Tipos de documento que maneja el negocio (guían la clasificación de INGEST)
 document_types: [propuesta, contrato, transcripcion-call, ticket]
 

@@ -8,6 +8,15 @@
 PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$PWD}"
 STATE_DIR="$PROJECT_DIR/.claude/hooks/.state"
 
+# --- gen-perfiles: ¿está activa la capacidad $1? (genome/perfil.md, frontmatter plano)
+# Sin archivo ⇒ activa (perfil completo). Solo `cap_<nombre>: false` apaga.
+cap_on() {
+  f="$PROJECT_DIR/genome/perfil.md"
+  [ -f "$f" ] || return 0
+  if grep -q "^cap_$1:[[:space:]]*false" "$f" 2>/dev/null; then return 1; fi
+  return 0
+}
+
 # --- stdin: JSON del hook (si no hay pipe, p. ej. prueba manual, no bloquear) ---
 RAW=""
 if [ ! -t 0 ]; then
@@ -17,6 +26,19 @@ SOURCE=$(printf '%s' "$RAW" | sed -n 's/.*"source"[[:space:]]*:[[:space:]]*"\([^
 
 echo "=== CEREBRO: contexto de arranque (hook SessionStart, source: ${SOURCE:-desconocido}) ==="
 echo "Regla de la casa: navega desde index.md por relaciones; nunca cargues la wiki entera."
+
+# --- perfil de instalación (gen-perfiles): qué capacidades rigen en este vault ---
+if [ -f "$PROJECT_DIR/genome/perfil.md" ]; then
+  PERFIL=$(sed -n 's/^perfil:[[:space:]]*//p' "$PROJECT_DIR/genome/perfil.md" | head -n 1)
+  APAGADAS=$(sed -n 's/^cap_\([a-z_]*\):[[:space:]]*false/\1/p' "$PROJECT_DIR/genome/perfil.md" | tr '\n' ' ')
+  echo ""
+  echo "--- perfil de instalación (genome/perfil.md): ${PERFIL:-?} ---"
+  if [ -n "$APAGADAS" ]; then
+    echo "Capacidades APAGADAS: $APAGADAS— sus operaciones no se ejecutan; se activan por manifiesto + ONBOARD (gen-perfiles)."
+  else
+    echo "Todas las capacidades activas."
+  fi
+fi
 
 # --- index.md: primeras 50 líneas ---
 if [ -f "$PROJECT_DIR/index.md" ]; then
@@ -58,7 +80,10 @@ for m in "$STATE_DIR"/pending-dump-*; do
   base=$(basename "$m")
   if [ -n "$PENDING" ]; then PENDING="$PENDING, $base"; else PENDING="$base"; fi
 done
-if [ "$SOURCE" = "compact" ] || [ -n "$PENDING" ]; then
+if ! cap_on memoria; then
+  echo ""
+  echo "[PERFIL] capacidad memoria apagada: los hooks PreCompact/Stop son no-op y CHECKPOINT no se exige."
+elif [ "$SOURCE" = "compact" ] || [ -n "$PENDING" ]; then
   echo ""
   echo "[RECORDATORIO] Hay volcados pre-compactación por revisar: mira wiki/working/,"
   echo "destila lo valioso (a semantic/, procedural/ o log.md) y borra el marcador"

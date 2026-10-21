@@ -11,6 +11,18 @@
 
 PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$PWD}"
 
+# --- gen-perfiles: ¿está activa la capacidad $1? (genome/perfil.md, frontmatter plano)
+# Sin archivo ⇒ activa (perfil completo). Solo `cap_<nombre>: false` apaga.
+cap_on() {
+  f="$PROJECT_DIR/genome/perfil.md"
+  [ -f "$f" ] || return 0
+  if grep -q "^cap_$1:[[:space:]]*false" "$f" 2>/dev/null; then return 1; fi
+  return 0
+}
+
+# sin capacidad memoria no hay loop de memoria que cerrar → permitir siempre
+cap_on memoria || exit 0
+
 # --- stdin: JSON del hook ---
 RAW=""
 if [ ! -t 0 ]; then

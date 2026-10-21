@@ -14,6 +14,7 @@ from pathlib import Path
 
 from . import events as events_mod
 from . import manifest as mf
+from . import profile as profile_mod
 from . import statehash
 from .schema import is_iso_date
 from .slug import slugify
@@ -153,11 +154,19 @@ def _render_profile(m: mf.Manifest, date: str) -> str:
 
 
 def _render_estado(m: mf.Manifest, date: str) -> str:
-    return (
+    out = (
         "## Estado\n"
         f"- Fase: **configurado** — ONBOARD aplicado mecánicamente el {date}.\n"
         f"- Empresa: **{m.company_name}** ({m.sector or 'sector sin declarar'})\n"
     )
+    if m.declares_profile:
+        caps = profile_mod.effective(m)
+        apagadas = [c for c in caps if not caps[c]]
+        out += (f"- Perfil: **{m.profile}** — "
+                + (f"apagadas: {', '.join(apagadas)}" if apagadas
+                   else "todas las capacidades activas")
+                + " (ver `genome/perfil.md`, [[gen-perfiles]])\n")
+    return out
 
 
 def _replace_estado(index_text: str, nuevo: str) -> str:
@@ -262,11 +271,46 @@ def apply(manifest_path: Path | str, vault_root: Path | str, *,
             "status": "applied",
         })
 
+    # perfil de instalación (gen-perfiles v1): solo si el manifiesto lo declara.
+    # Ausencia ⇒ completo y sin archivo (los vaults previos conservan su hash).
+    if m.declares_profile:
+        perfil_path = root / profile_mod.PERFIL_REL
+        try:
+            perfil_nuevo = profile_mod.render(m, date)
+        except profile_mod.ProfileError as e:
+            raise OnboardError(f"perfil inválido: {e}") from e
+        perfil_actual = (perfil_path.read_text(encoding="utf-8").replace("\r\n", "\n")
+                         if perfil_path.is_file() else None)
+        if perfil_actual != perfil_nuevo:
+            escrituras.append((perfil_path, perfil_nuevo,
+                               f"perfil: {profile_mod.PERFIL_REL} renderizado ({m.profile})"))
+        caps_nuevas = profile_mod.effective(m)
+        caps_previas = None
+        nombre_previo = None
+        if perfil_actual is not None:
+            try:
+                nombre_previo, caps_previas = profile_mod.parse_applied(perfil_actual)
+            except profile_mod.ProfileError:
+                caps_previas = None
+        if caps_previas != caps_nuevas or nombre_previo != m.profile:
+            apagadas = [c for c in caps_nuevas if not caps_nuevas[c]]
+            eventos_nuevos.append({
+                "ts": date,
+                "type": profile_mod.EVENT_TYPE,
+                "target": "perfil",
+                "signal": "ONBOARD: perfil de instalación aplicado desde onboard/company.yaml"
+                          + (f" (apagadas: {', '.join(apagadas)})" if apagadas
+                             else " (todas las capacidades activas)"),
+                "diff": f"{nombre_previo or '∅'} → {m.profile}",
+                "approved_by": "user",
+                "status": "applied",
+            })
+
     if nuevo_index != index_text:
         escrituras.append((index_path, nuevo_index, "index.md: bloque Estado actualizado"))
 
     acciones = [a for _, a in carpetas] + [a for _, _, a in escrituras] + [
-        f"evento: gene_added {e['target']}" for e in eventos_nuevos
+        f"evento: {e['type']} {e['target']}" for e in eventos_nuevos
     ]
 
     # 2) ESCRIBIR (solo si no es dry-run) ────────────────────────────────────

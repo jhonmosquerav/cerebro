@@ -33,6 +33,13 @@
     "publicado": "date",
     "autor": "text",
     "descripcion": "text",
-    "publish": "checkbox"
+    "publish": "checkbox",
+    "perfil": "text",
+    "cap_memoria": "checkbox",
+    "cap_ciclo_de_vida": "checkbox",
+    "cap_evolucion": "checkbox",
+    "cap_auditoria": "checkbox",
+    "cap_visualizacion": "checkbox",
+    "cap_grafo": "checkbox"
   }
 }

@@ -17,6 +17,11 @@
 #
 # Cómo usarlo: cópialo a onboard/company.yaml, reemplaza los placeholders "<...>" y corre ONBOARD.
 
+# Perfil de instalación (gen-perfiles), OPCIONAL. Sin el bloque: completo (todo activo).
+#   profile: completo        # minimo | memoria | gobernanza | completo
+#   capabilities: {}         # overrides por capacidad, p. ej. { grafo: false }
+# Atajo: python tools/cerebro.py profile set memoria
+
 company:
   name: "<tu entidad territorial — p. ej. Alcaldía de Bucaramanga>"
   sector: "seguridad y convivencia ciudadana territorial — formulación y seguimiento del PISCC"

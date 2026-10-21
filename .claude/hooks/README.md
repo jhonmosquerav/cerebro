@@ -52,6 +52,14 @@ el marcador `pending-dump` de la sesión si existe. En **todos** los demás caso
 - árbol limpio en esas rutas → permite;
 - sin `git`, sin `session_id` o sin fecha → permite (degradación: nunca bloquear a ciegas).
 
+## Perfil de instalación (gen-perfiles)
+Los tres scripts comparten el helper `cap_on <capacidad>`, que lee el frontmatter plano
+de `genome/perfil.md` (`cap_memoria: false` ⇒ apagada; sin archivo ⇒ activa). Con la
+capacidad `memoria` apagada: `session-start.sh` sigue inyectando índice y bitácora
+(navegación, núcleo) pero anuncia el perfil y omite el recordatorio de volcados;
+`pre-compact.sh` termina sin escribir; `stop.sh` nunca bloquea. Se enciende por
+manifiesto (`profile:`/`capabilities:`) + `onboard apply`, jamás editando el archivo.
+
 ## Límites honestos (v1)
 - La extracción de `pre-compact.sh` es **mecánica**: recorta texto plano del transcript,
   no resume ni juzga. El volcado *inteligente* lo hace el agente cuando `SessionStart` le

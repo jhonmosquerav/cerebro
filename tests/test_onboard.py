@@ -85,10 +85,11 @@ class TestReproducibilidad(unittest.TestCase):
             ledger = root / "genome" / "events.jsonl"
             lineas = [json.loads(l) for l in
                       ledger.read_text(encoding="utf-8").strip().split("\n")]
-            self.assertEqual(len(lineas), 1)  # 1 seed gene en el ejemplo
-            self.assertEqual(lineas[0]["type"], "gene_added")
-            self.assertEqual(lineas[0]["target"], "gen-propuestas")
+            # 1 seed gene + 1 perfil (el ejemplo declara `profile: completo`, gen-perfiles)
+            self.assertEqual([(l["type"], l["target"]) for l in lineas],
+                             [("gene_added", "gen-propuestas"), ("profile_applied", "perfil")])
             self.assertEqual(lineas[0]["ts"], "2026-07-12")
+            self.assertTrue((root / "genome" / "perfil.md").is_file())
             self.assertEqual(
                 [f.render() for f in events.verify_file(ledger) if f.severity == "error"], [])
 

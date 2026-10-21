@@ -358,6 +358,49 @@ def _check_ledger(root: Path, findings: list[Finding]) -> None:
                 "(gen-raw-inmutable violado; no procesar, reportar)"))
 
 
+def _check_profile(root: Path, m: mf.Manifest | None, findings: list[Finding]) -> None:
+    """gen-perfiles v1 / gen-lint v8: el perfil declarado y el aplicado coinciden.
+
+    PRF-01 (error): el manifiesto declara perfil y `genome/perfil.md` falta, está
+    corrupto o difiere — alguien editó el manifiesto sin re-correr ONBOARD, o editó el
+    archivo a mano. Error y no aviso porque un hook o un comando leerían un estado que
+    el manifiesto ya no respalda. PRF-02 (aviso): existe el archivo sin declaración.
+    """
+    from . import profile as profile_mod
+    rel = profile_mod.PERFIL_REL
+    declarado = m is not None and m.declares_profile
+    try:
+        aplicado = profile_mod.read_applied(root)
+    except profile_mod.ProfileError as e:
+        findings.append(Finding("PRF-01", "error", rel, f"perfil aplicado ilegible: {e}"))
+        return
+    if declarado:
+        try:
+            esperado = profile_mod.effective(m)
+        except profile_mod.ProfileError as e:
+            findings.append(Finding("PRF-01", "error", "onboard/company.yaml", str(e)))
+            return
+        if aplicado is None:
+            findings.append(Finding(
+                "PRF-01", "error", rel,
+                f"el manifiesto declara profile: {m.profile} y el perfil no está aplicado "
+                "(no existe el archivo) — corre `onboard apply`"))
+            return
+        nombre, caps = aplicado
+        difieren = [c for c in esperado if caps.get(c) != esperado[c]]
+        if difieren or nombre != m.profile:
+            findings.append(Finding(
+                "PRF-01", "error", rel,
+                f"deriva manifiesto↔aplicado: manifiesto {m.profile} vs aplicado "
+                f"{nombre or '?'}; capacidades que difieren: {', '.join(difieren) or 'ninguna'} "
+                "— re-corre `onboard apply` (nunca edites genome/perfil.md a mano)"))
+    elif aplicado is not None:
+        findings.append(Finding(
+            "PRF-02", "aviso", rel,
+            "existe un perfil aplicado sin declaración en onboard/company.yaml: declara "
+            "`profile:` (o retira el archivo si el vault vuelve a completo)"))
+
+
 def _check_genome(v: Vault, findings: list[Finding]) -> None:
     for p in v.genes + v.capsules:
         if p.fm is None:
@@ -411,6 +454,7 @@ def run(root: Path | str, *, as_of: datetime.date,
     _check_publish(v, findings, m.default_sensibilidad if m else "interno")
     _check_ledger(root, findings)
     _check_genome(v, findings)
+    _check_profile(root, m, findings)
     if exclude:
         findings = [f for f in findings if f.code not in exclude]
     return Report(as_of=as_of, findings=sort_findings(findings),

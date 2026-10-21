@@ -2,6 +2,7 @@
 tipo: plan-de-implementacion
 fecha: 2026-07-12
 spec: docs/specs/2026-07-12-enforcement-mecanico-design.md
+estado: ejecutado (2026-07-12..27); absorbido por docs/plans/2026-10-20-perfiles-capacidades-plan.md
 ---
 
 # Plan de implementación — enforcement mecánico

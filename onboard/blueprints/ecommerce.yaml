@@ -1,6 +1,11 @@
 # Blueprint: e-commerce / retail — tienda online con catálogo por SKU, proveedores, tickets y reseñas.
 # Cómo usarlo: copia este archivo a onboard/company.yaml, reemplaza los placeholders "<...>" con tus datos y aplica ONBOARD (determinista: mismo manifiesto -> mismo genoma).
 
+# Perfil de instalación (gen-perfiles), OPCIONAL. Sin el bloque: completo (todo activo).
+#   profile: completo        # minimo | memoria | gobernanza | completo
+#   capabilities: {}         # overrides por capacidad, p. ej. { grafo: false }
+# Atajo: python tools/cerebro.py profile set memoria
+
 company:
   name: "<tu empresa>"
   sector: "e-commerce / retail"

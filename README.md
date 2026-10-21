@@ -40,6 +40,11 @@ cambio auditado y reversible.
   QUERY, EVOLVE…) siguen siendo ejecutadas por el LLM bajo las reglas del genoma.
 - **🔌 Portable** — todo es markdown; corre con cualquier agente que lea archivos. `AGENTS.md`
   espeja a `CLAUDE.md`.
+- **🧩 Instalable por perfiles** — elige cuánto CEREBRO quieres: `minimo` (wiki gobernada),
+  `memoria` (recuerda entre sesiones), `gobernanza` (se audita y propone sus reglas) o
+  `completo` (con paneles y grafo). Cada capacidad se enciende o apaga por manifiesto, el
+  estado queda en `genome/perfil.md` y `lint` delata si el manifiesto y lo aplicado
+  divergen. Apagar nunca borra.
 - **🪶 Sin infraestructura** — son tus archivos, en tu disco. Ni servidor, ni base vectorial,
   ni suscripción.
 
@@ -117,11 +122,30 @@ cerebro/
 ## 🚀 Inicio rápido
 
 1. **Clona** este repo (o úsalo como template).
-2. **Abre la carpeta** con Claude Code (o Cursor / OpenClaw — leen el mismo `CLAUDE.md`).
-3. Corre **`ONBOARD`** → te entrevista y genera `onboard/company.yaml`, luego siembra el
-   genoma de tu sector a partir de ese manifiesto (reproducible en estructura).
-4. Suelta fuentes en **`raw/`** y corre **`BULK INGEST`**.
-5. Consulta con **`QUERY <tema>`**. Mantén con **`LINT`** y **`CONSOLIDATE`** cada 1–2 semanas.
+2. **Elige un perfil** (opcional; sin elegir es `completo`):
+   ```bash
+   cp onboard/company.example.yaml onboard/company.yaml
+   python tools/cerebro.py profile set memoria      # minimo | memoria | gobernanza | completo
+   python tools/cerebro.py profile enable auditoria # o disable grafo, etc.
+   ```
+3. **Abre la carpeta** con Claude Code (o Cursor / OpenClaw — leen el mismo `CLAUDE.md`).
+4. Corre **`ONBOARD`** → te entrevista y completa `onboard/company.yaml`, luego siembra el
+   genoma de tu sector y aplica el perfil a partir de ese manifiesto (reproducible en estructura).
+5. Suelta fuentes en **`raw/`** y corre **`BULK INGEST`**.
+6. Consulta con **`QUERY <tema>`**. Mantén con **`LINT`** y **`CONSOLIDATE`** cada 1–2 semanas.
+
+### Perfiles de instalación
+
+| Perfil | Qué enciende | Para quién |
+|---|---|---|
+| `minimo` | solo el núcleo: ONBOARD, INGEST, QUERY, LINT, compuerta, ledger, confidencialidad | una wiki gobernada, sin memoria entre sesiones |
+| `memoria` | + `memoria` (hooks, CHECKPOINT, working/episodic) + `ciclo_de_vida` (CONSOLIDATE) | "solo memoria": recuerda, decae y promueve |
+| `gobernanza` | + `evolucion` (EVOLVE) + `auditoria` (AUDIT, XRAY, health) | un genoma que se audita y propone sus reglas, sin Obsidian |
+| `completo` | + `visualizacion` (dashboards, .obsidian) + `grafo` (GRAPH, canvas, lente) | todo |
+
+Cada capacidad se puede encender o apagar aparte (`capabilities: { auditoria: true }`).
+Una capacidad apagada no se ejecuta, sus comandos avisan (exit 2) y los hooks de memoria
+son no-op; **nada se borra**. Regla: `genome/genes/gen-perfiles.md`.
 
 > ¿Quieres el tablero visual? Abre la carpeta como Vault en Obsidian: los paneles usan
 > **Bases** (plugin core, nada que instalar) y Dataview queda como alternativa opcional.
