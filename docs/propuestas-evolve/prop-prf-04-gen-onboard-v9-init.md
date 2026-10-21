@@ -1,7 +1,7 @@
 ---
 tipo: propuesta-evolve
 tarea: PRF-04
-status: pending
+status: approved
 fecha: 2026-10-20
 genes_afectados: [gen-onboard]
 origen: entrega 4.2 del plan 2026-10-20 (empaquetado instalable): `init --profile` y el plugin mínimo ya existen como infra; el gen que describe los modos de ONBOARD aún no sabe que el manifiesto semilla puede nacer mecánicamente
@@ -57,8 +57,9 @@ manifiesto semilla)"; luego `mirror --fix`.
 
 ## Compuerta
 
-**Pendiente.** No se ha tocado `genome/genes/gen-onboard.md` ni `genome/events.jsonl`. Al
-aprobar: aplicar el diff, `version: 9`, `python tools/cerebro.py events append --type
+**Aprobada por el operador el 2026-10-20** ("Apruebo prop-prf-04: aplica gen-onboard v8->v9,
+events append, fila ONBOARD de CLAUDE.md, mirror --fix, 1 commit firmado, sin push"). Aplicado
+en esa misma tanda; registro `gene_edited` en `genome/events.jsonl`. Receta seguida: aplicar el diff, `version: 9`, `python tools/cerebro.py events append --type
 gene_edited --target gen-onboard --signal "PRF-04: init como manifiesto semilla" --diff
 "v8 -> v9"`, ajustar la fila ONBOARD de `CLAUDE.md`, `mirror --fix`, 1 commit firmado,
 y pasar esta fila a ✅ en `docs/propuestas-evolve/README.md`.

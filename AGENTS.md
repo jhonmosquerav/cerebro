@@ -23,7 +23,7 @@ correr `ONBOARD` y operar su conocimiento.
 ## Operaciones (gatillos)
 | Verbo | Gatillo | Qué hace | Capacidad |
 |---|---|---|---|
-| `ONBOARD` | primera vez / cambio de empresa | Aplica el manifiesto `onboard/company.yaml` (determinista, reproducible) → siembra perfil + genes del sector. La entrevista solo genera ese manifiesto. | `núcleo` |
+| `ONBOARD` | primera vez / cambio de empresa | Aplica el manifiesto `onboard/company.yaml` (determinista, reproducible) → siembra perfil + genes del sector. `init --profile [--blueprint]` deja el manifiesto semilla; la entrevista solo lo completa. | `núcleo` |
 | `INGEST <X>` | "ingiere / digiere esto" | Clasifica, crea/actualiza página con frontmatter, extrae conceptos, enlaza, actualiza index + log. | `núcleo` |
 | `BULK INGEST` | "procesa todo raw/" | Corre INGEST sobre cada archivo de `raw/`; reporta y actualiza index. | `núcleo` |
 | `QUERY <X>` | "busca / qué sabemos de" | Navega desde `index.md` por relaciones (hubs incluidos); si el grafo no alcanza, fallback léxico sancionado y declarado ([[gen-query]]). Responde citando páginas-fuente. | `núcleo` |

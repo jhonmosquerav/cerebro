@@ -2,7 +2,7 @@
 id: gen-onboard
 trigger: operación ONBOARD (primera vez o cambio de empresa)
 status: active
-version: 8
+version: 9
 ---
 
 ONBOARD adapta el cerebro a una empresa de forma **REPRODUCIBLE**. Fuente de verdad: el
@@ -23,6 +23,17 @@ Siguen siendo del agente: la entrevista que escribe el manifiesto, la
 pregunta única de `graph_lens.backend` cuando la lente está activa sin
 backend (la herramienta aborta a propósito en ese caso), las
 recomendaciones de vistas ([[gen-visualizacion]]) y el commit de la corrida.
+
+**Manifiesto semilla (v9).** Los modos (a) y (b) arrancan con
+`python tools/cerebro.py init --profile <minimo|memoria|gobernanza|completo>
+[--blueprint <sector>]`: copia `onboard/company.example.yaml` o el blueprint a
+`onboard/company.yaml` con `profile:` fijado ([[gen-perfiles]]) y **nada más tocado**; es
+idempotente, no pisa un manifiesto distinto sin `--force`, conserva tal cual los
+placeholders `<...>` del blueprint (rellenarlos es del operador o de la entrevista del
+modo c) y no aplica nada: el aplicado sigue siendo `onboard apply`. El agente propone
+`init` antes que copiar archivos a mano. El plugin de marketplace (`plugin/`) es solo un
+envoltorio de estos pasos y de los verbos de `CLAUDE.md`: no contiene genes ni reglas, y
+cualquier regla que necesite vivir en él pasa primero por esta compuerta.
 
 La herramienta **AVISA** (no aborta) cuando la `taxonomy` del manifiesto no ofrece destino
 para alguno de los tipos de página que el genoma declara —en particular `sintesis`, que el
