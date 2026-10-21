@@ -3,7 +3,7 @@
 
     python tools/cerebro.py <comando> [opciones]
 
-Comandos: lint · mirror · events · hash · onboard · profile · consolidate ·
+Comandos: init · lint · mirror · events · hash · onboard · profile · consolidate ·
 health · xray · graph · verify. Todos aceptan --vault DIR (default: la raíz de este repo).
 Los comandos de una capacidad apagada en genome/perfil.md (gen-perfiles) avisan y salen
 con exit 2; --ignore-profile los fuerza.
@@ -24,6 +24,7 @@ from cerebro_core import events as events_mod
 from cerebro_core import canvas as canvas_mod
 from cerebro_core import graph as graph_mod
 from cerebro_core import health as health_mod
+from cerebro_core import init_manifest as init_mod
 from cerebro_core import lint as lint_mod
 from cerebro_core import manifest as mf
 from cerebro_core import mirror as mirror_mod
@@ -109,6 +110,29 @@ def cmd_hash(args) -> int:
     if args.detail:
         sys.stdout.write(statehash.manifest_lines(args.vault, args.scope))
     print(f"{args.scope} {statehash.tree_hash(args.vault, args.scope)}")
+    return 0
+
+
+def cmd_init(args) -> int:
+    """Fase 4.2: deja onboard/company.yaml listo con el perfil fijado (sin aplicar nada)."""
+    try:
+        res = init_mod.run(args.vault, profile=args.profile, blueprint=args.blueprint,
+                           force=args.force, date=args.date)
+    except init_mod.InitError as e:
+        print(f"[ERROR] init no escribió nada: {e}")
+        return 2
+    origen = f"blueprint `{res.blueprint}`" if res.blueprint else "onboard/company.example.yaml"
+    if res.written:
+        print(f"INIT · {res.manifest_path} escrito desde {origen} · profile: {res.profile}")
+    else:
+        print(f"INIT · sin cambios: {res.manifest_path} ya es lo que init escribiría "
+              f"(profile: {res.profile}; idempotencia)")
+    if res.placeholders:
+        print("  [AVISO] el manifiesto conserva placeholders `<...>` del blueprint: se dejan tal "
+              "cual a propósito; rellénalos antes de aplicar.")
+    print("pasos siguientes:")
+    for i, paso in enumerate(res.next_steps, 1):
+        print(f"  {i}. {paso}")
     return 0
 
 
@@ -399,6 +423,18 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--vault", default=str(REPO_ROOT),
                    help="raíz del vault (default: este repo)")
     sub = p.add_subparsers(dest="cmd", required=True)
+
+    sp = sub.add_parser("init", help="deja onboard/company.yaml listo con un perfil (Fase 4.2)")
+    sp.add_argument("--profile", required=True, choices=list(schema.PROFILE_ORDER),
+                    help="perfil de instalación (gen-perfiles): minimo ⊂ memoria ⊂ gobernanza ⊂ completo")
+    sp.add_argument("--blueprint", default=None, metavar="SECTOR",
+                    help="partir de onboard/blueprints/<SECTOR>.yaml en vez del ejemplo "
+                         "(sus placeholders <...> se conservan tal cual)")
+    sp.add_argument("--force", action="store_true",
+                    help="reemplazar un onboard/company.yaml existente que difiera")
+    sp.add_argument("--date", default=None,
+                    help="fecha YYYY-MM-DD que se imprime en los pasos siguientes (default: hoy)")
+    sp.set_defaults(fn=cmd_init)
 
     sp = sub.add_parser("lint", help="detectores mecánicos de gen-lint")
     sp.add_argument("--as-of", default=None, help="fecha de corte YYYY-MM-DD (default: hoy)")
