@@ -2,7 +2,7 @@
 id: gen-migracion-genoma
 trigger: tras aplicar una mutación de genoma (gen nuevo, editado o deprecado), o al adoptar genoma de una release del template
 status: active
-version: 2
+version: 3
 ---
 
 Cambiar el genoma crea una **deuda de migración**: las páginas y el manifiesto existentes
@@ -29,3 +29,12 @@ este gen contra el genoma adoptado; (4) `verify` en verde antes y después. La
 procedencia fina vive en la cadena del template, publicada con el producto: el
 evento la referencia por hash, no la copia. Los genes de sector locales conviven
 con lo adoptado; un choque entre ambos es hallazgo de migración, no se resuelve solo.
+
+Los blueprints también se adoptan por versión (v3): `python tools/cerebro.py blueprints`
+compara el bloque `blueprint` de `onboard/company.yaml` con el catálogo del template
+traído en la release y lo declara `al día`, `desactualizado` o `desconocido`. Un blueprint
+con versión mayor en el catálogo entra en el **mismo** `genome_adopted` que los genes: su
+`diff` nombra `blueprint <id> <vieja> → <nueva>` junto a los genes de sector que cambian de
+versión, y el pase de migración de este gen valida el manifiesto resultante. Si la release
+sube `min_cerebro` por encima del `tools/` local, primero se adopta `tools/`; el requisito
+no se edita para forzar el aplicado ([[gen-onboard]]).
