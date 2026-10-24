@@ -105,13 +105,32 @@ Interpretación: hacia el **remoto privado verificado** (pasos 1–2 en verde), 
 confidenciales versionados es lo esperado. Hacia el **template público o cualquier remoto
 dudoso**, una sola coincidencia = **ABORTA el push**.
 
+**Paso 4b — ¿algún secreto, credencial o ruta personal saliendo?**
+
+```bash
+# palabra completa () y sin distinguir mayúsculas: 'secret' ya no casa con 'secretaría',
+# 'secretarios' ni 'secretos' (vocabulario normal del sector público); 'token' no casa con 'tokens'
+SEC='(api[_-]?key|secret|secrets|token|password|passwd|contrase(n|ñ)a)|BEGIN (RSA|OPENSSH|EC|PGP|DSA) PRIVATE KEY'
+git diff 'origin/main..HEAD' | grep -nIiE "$SEC" || echo 'secretos: limpio'
+# rutas de usuario y hostnames que delatan la máquina del operador
+git diff 'origin/main..HEAD' | grep -nIE '/Users/|C:\Users|/home/[a-z]' || echo 'rutas personales: limpio'
+```
+
+Es un barrido **orientativo**: una coincidencia se lee en contexto (una frase que habla *de*
+contraseñas no es una contraseña). Lo que sí es automático: una clave privada o un valor
+real de credencial = **ABORTA el push** y pasa a §4.
+
 **Paso 5 — ¿derivados y estado volátil ignorados y fuera del árbol?**
 
 ```bash
-git check-ignore -v graphify-out || echo 'ALTO: graphify-out/ NO está ignorado'
-git check-ignore -v .claude/hooks/.state || echo 'AVISO: .claude/hooks/.state/ aún sin ignorar (hooks A-02)'
+# se pregunta por una ruta SONDA dentro de cada carpeta, no por la carpeta: un patrón de
+# directorio de .gitignore no casa contra una carpeta que aún no existe (clon fresco) y daba
+# falso ALTO; la sonda resuelve igual exista o no la carpeta
+git check-ignore -q graphify-out/sonda           || echo 'ALTO: graphify-out/ NO está ignorado'
+git check-ignore -q dashboards/graph/sonda.canvas || echo 'ALTO: dashboards/graph/*.canvas NO está ignorado'
+git check-ignore -q .claude/hooks/.state/sonda   || echo 'AVISO: .claude/hooks/.state/ aún sin ignorar (hooks A-02)'
 # nada de eso debe estar TRACKEADO (ignorar no des-trackea): la salida debe ser vacía
-git ls-files graphify-out .claude/hooks/.state
+git ls-files graphify-out dashboards/graph .claude/hooks/.state | grep -v '00-leeme.md' || true
 ```
 
 **Paso 6 — decisión.** Todo en verde → push. Cualquier ALTO → no hay push; si algo salió
@@ -219,7 +238,9 @@ Secreto, credencial o PII vertidos en el repo (o pusheados):
    Barrido orientativo de secretos (complementa, no sustituye, la revisión humana):
 
    ```bash
-   git grep -nIE 'BEGIN (RSA|OPENSSH|EC) PRIVATE KEY|api[_-]?key|secret|token' -- ':!ops/'
+   # mismo patrón del paso 4b (palabra completa, sin distinguir mayúsculas), sobre TODO el árbol
+   SEC='(api[_-]?key|secret|secrets|token|password|passwd|contrase(n|ñ)a)|BEGIN (RSA|OPENSSH|EC|PGP|DSA) PRIVATE KEY'
+   git grep -nIiE "$SEC" -- ':!ops/'
    ```
 
    Congela pushes del repo afectado desde ya.
