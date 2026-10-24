@@ -15,7 +15,10 @@ La fuente de verdad es un manifiesto declarativo: `onboard/company.yaml`.
 3. **Entrevista** — el agente te pregunta, **escribe primero** `company.yaml` y luego aplica.
 
 `init` no pisa un `company.yaml` existente (salvo `--force`), es idempotente y no aplica nada;
-también puedes copiar el archivo a mano, como antes.
+también puedes copiar el archivo a mano, como antes. Los blueprints están **catalogados con
+versión y requisito mínimo** (`blueprints/catalog.yaml`, Fase 4.3): `python tools/cerebro.py
+blueprints` lista qué hay, qué siembra cada uno y si tu `company.yaml` está al día; `init` y
+`onboard apply` rechazan un blueprint que exija un CEREBRO más nuevo que el instalado.
 
 ## Qué hace el aplicado (determinista e idempotente)
 1. Lee `company.yaml`.

@@ -17,6 +17,13 @@
 #
 # Cómo usarlo: cópialo a onboard/company.yaml, reemplaza los placeholders "<...>" y corre ONBOARD.
 
+# Procedencia (Fase 4.3): bloque `blueprint` copiado tal cual del blueprint de origen, como lo deja
+# `init --blueprint`. No cambia el genoma que produce el manifiesto (state-hash intacto).
+blueprint:
+  id: seguridad-territorial
+  version: "1.0.0"
+  min_cerebro: "0.1.0"
+
 company:
   name: "Alcaldía Municipal de Peñas Blancas"
   sector: "seguridad y convivencia ciudadana territorial — formulación y seguimiento del PISCC"

@@ -1,0 +1,94 @@
+# =====================================================================
+# Catálogo de blueprints de sector (Fase 4.3) — índice con versiones y requisito mínimo.
+# Patrón de obsidian-releases: cada blueprint lleva su identidad dentro del archivo
+# (bloque `blueprint: {id, version, min_cerebro}`), este catálogo la indexa con historial
+# y `python tools/cerebro.py blueprints` / `verify` prueban que coinciden (CAT-01…CAT-06).
+#
+# Para publicar una versión nueva de un blueprint: (1) edita el YAML del sector y sube
+# `blueprint.version` (semver) y, si exige algo nuevo de tools/, `blueprint.min_cerebro`;
+# (2) refleja ambos aquí y añade la línea al historial `versions` con fecha y cambios;
+# (3) `python tools/cerebro.py blueprints` debe salir en verde. Un vault desplegado compara su
+# `onboard/company.yaml` contra este catálogo y adopta la versión nueva vía `genome_adopted`
+# (gen-migracion-genoma). Se mantiene a mano; nunca se le cree sin correr el validador.
+# =====================================================================
+catalog_version: 1
+cerebro_version: "0.1.0"          # versión de tools/cerebro_core con la que se validó este catálogo
+
+blueprints:
+  - id: agencia
+    name: "Agencia de automatización / marketing"
+    file: agencia.yaml
+    version: "1.0.0"
+    min_cerebro: "0.1.0"
+    origen: simulacion
+    genes: [gen-accionables, gen-objecion-transversal]
+    versions:
+      - version: "1.0.0"
+        min_cerebro: "0.1.0"
+        fecha: 2026-10-23
+        cambios: "primera versión catalogada; receta destilada de la simulación multi-sector (2026-06) y usada por worked/agencia-demo"
+
+  - id: ecommerce
+    name: "E-commerce / retail"
+    file: ecommerce.yaml
+    version: "1.0.0"
+    min_cerebro: "0.1.0"
+    origen: simulacion
+    genes: [gen-sku-identidad]
+    versions:
+      - version: "1.0.0"
+        min_cerebro: "0.1.0"
+        fecha: 2026-10-23
+        cambios: "primera versión catalogada; receta destilada de la simulación multi-sector (2026-06)"
+
+  - id: legal
+    name: "Bufete legal"
+    file: legal.yaml
+    version: "1.0.0"
+    min_cerebro: "0.1.0"
+    origen: simulacion
+    genes: [gen-vigencia-normativa, gen-conflicto-interes, gen-version-clausula]
+    versions:
+      - version: "1.0.0"
+        min_cerebro: "0.1.0"
+        fecha: 2026-10-23
+        cambios: "primera versión catalogada; receta destilada de la simulación multi-sector (2026-06) y usada por worked/legal-demo"
+
+  - id: produccion
+    name: "Producción / manufactura"
+    file: produccion.yaml
+    version: "1.0.0"
+    min_cerebro: "0.1.0"
+    origen: simulacion
+    genes: [gen-trazabilidad-lote, gen-integridad-ncr]
+    versions:
+      - version: "1.0.0"
+        min_cerebro: "0.1.0"
+        fecha: 2026-10-23
+        cambios: "primera versión catalogada; receta destilada de la simulación multi-sector (2026-06)"
+
+  - id: salud
+    name: "Clínica / salud"
+    file: salud.yaml
+    version: "1.0.0"
+    min_cerebro: "0.1.0"
+    origen: simulacion
+    genes: [gen-triada-clinica]
+    versions:
+      - version: "1.0.0"
+        min_cerebro: "0.1.0"
+        fecha: 2026-10-23
+        cambios: "primera versión catalogada; receta destilada de la simulación multi-sector (2026-06); default_sensibilidad confidencial desde AUDIT 2026-06-30"
+
+  - id: seguridad-territorial
+    name: "Seguridad y convivencia ciudadana territorial (Colombia, PISCC)"
+    file: seguridad-territorial.yaml
+    version: "1.0.0"
+    min_cerebro: "0.1.0"
+    origen: normativo
+    genes: [gen-dato-con-corte, gen-territorializacion, gen-linea-base-y-meta, gen-trazabilidad-fonset]
+    versions:
+      - version: "1.0.0"
+        min_cerebro: "0.1.0"
+        fecha: 2026-10-23
+        cambios: "primera versión catalogada; marco normativo colombiano verificado en fuente primaria el 2026-07-27 (Ley 1801/2016, Ley 418/1997, Ley 1421/2010, Decreto 399/2011); usada por worked/piscc-demo"

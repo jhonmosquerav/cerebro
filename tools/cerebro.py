@@ -3,8 +3,8 @@
 
     python tools/cerebro.py <comando> [opciones]
 
-Comandos: init · lint · mirror · events · hash · onboard · profile · consolidate ·
-health · xray · graph · verify. Todos aceptan --vault DIR (default: la raíz de este repo).
+Comandos: init · blueprints · lint · mirror · events · hash · onboard · profile ·
+consolidate · health · xray · graph · verify. Todos aceptan --vault DIR (default: la raíz de este repo).
 Los comandos de una capacidad apagada en genome/perfil.md (gen-perfiles) avisan y salen
 con exit 2; --ignore-profile los fuerza.
 Cero dependencias: cualquier Python ≥ 3.10.
@@ -19,6 +19,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from cerebro_core import blueprints as bp_mod
 from cerebro_core import consolidate_scan as cs_mod
 from cerebro_core import events as events_mod
 from cerebro_core import canvas as canvas_mod
@@ -111,6 +112,43 @@ def cmd_hash(args) -> int:
         sys.stdout.write(statehash.manifest_lines(args.vault, args.scope))
     print(f"{args.scope} {statehash.tree_hash(args.vault, args.scope)}")
     return 0
+
+
+def cmd_blueprints(args) -> int:
+    """Fase 4.3: catálogo de blueprints (versiones, requisito mínimo) y estado del manifiesto."""
+    vault = Path(args.vault)
+    res = bp_mod.resumen(vault)
+    if args.json:
+        print(json.dumps(res, ensure_ascii=False, indent=2, sort_keys=True))
+        return 1 if res["hallazgos"] else 0
+    print(f"BLUEPRINTS · vault {vault} · tools/ {res['cerebro_version']}")
+    if res["catalogo"] is None:
+        print("  (sin onboard/blueprints/catalog.yaml: este vault no distribuye blueprints)")
+    else:
+        ancho = max([len(e["id"]) for e in res["blueprints"]] + [2])
+        print(f"  {'id'.ljust(ancho)}  versión  min_cerebro  origen      genes")
+        for e in res["blueprints"]:
+            genes = ", ".join(e["genes"] or []) or "—"
+            print(f"  {e['id'].ljust(ancho)}  {str(e['version']).ljust(7)}  "
+                  f"{str(e['min_cerebro']).ljust(11)}  {str(e['origen']).ljust(10)}  {genes}")
+    est = res["manifiesto"]
+    textos = {
+        "sin-manifiesto": "sin onboard/company.yaml (template o vault aún sin ONBOARD)",
+        "sin-bloque": "sin bloque blueprint (manifiesto artesanal: modo a/c de ONBOARD)",
+        "desconocido": f"blueprint `{est['id']}` v{est['version_local']} no está en el catálogo",
+        "desactualizado": f"blueprint `{est['id']}` v{est['version_local']} → el catálogo trae "
+                          f"v{est['version_catalogo']} (adoptar vía genome_adopted, gen-migracion-genoma)",
+        "adelantado": f"blueprint `{est['id']}` v{est['version_local']} es más nuevo que el catálogo "
+                      f"(v{est['version_catalogo']}): ¿catálogo sin actualizar?",
+        "al-dia": f"blueprint `{est['id']}` v{est['version_local']} al día con el catálogo",
+    }
+    print(f"  manifiesto: {textos[est['estado']]}")
+    hallazgos = bp_mod.check(vault)
+    for f in hallazgos:
+        print(f"  {f.render()}")
+    print("BLUEPRINTS: " + ("catálogo ≡ archivos ✔" if not hallazgos
+                           else f"{len(hallazgos)} hallazgo(s) ✘"))
+    return 1 if hallazgos else 0
 
 
 def cmd_init(args) -> int:
@@ -414,6 +452,10 @@ def cmd_verify(args) -> int:
                 paso("manifiesto de ejemplo", "; ".join(errs) if errs else [])
             except Exception as e:
                 paso("manifiesto de ejemplo", str(e))
+        if bp_mod.has_catalog(vault):
+            n = len([q for q in (vault / bp_mod.BLUEPRINTS_REL).glob("*.yaml")
+                     if q.name != "catalog.yaml"])
+            paso(f"catálogo de blueprints ({n})", bp_mod.check(vault))
     print("VERIFY: " + ("EN VERDE ✔" if ok else "EN ROJO ✘"))
     return 0 if ok else 1
 
@@ -435,6 +477,11 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--date", default=None,
                     help="fecha YYYY-MM-DD que se imprime en los pasos siguientes (default: hoy)")
     sp.set_defaults(fn=cmd_init)
+
+    sp = sub.add_parser("blueprints",
+                        help="catálogo de blueprints: versiones, requisito mínimo, deriva (Fase 4.3)")
+    sp.add_argument("--json", action="store_true", help="salida JSON estable")
+    sp.set_defaults(fn=cmd_blueprints)
 
     sp = sub.add_parser("lint", help="detectores mecánicos de gen-lint")
     sp.add_argument("--as-of", default=None, help="fecha de corte YYYY-MM-DD (default: hoy)")

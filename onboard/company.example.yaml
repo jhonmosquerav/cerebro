@@ -25,6 +25,18 @@ company:
 profile: completo
 capabilities: {}                   # overrides, p. ej. { grafo: false } o { auditoria: true }
 
+# ---------------------------------------------------------------------
+# PROCEDENCIA DEL BLUEPRINT (Fase 4.3), OPCIONAL. Si partiste de un blueprint de sector con
+# `init --blueprint <sector>`, este bloque llega copiado tal cual y dice de qué versión naciste;
+# `python tools/cerebro.py blueprints` lo compara con onboard/blueprints/catalog.yaml y
+# `onboard apply` rechaza un `min_cerebro` mayor que la versión de tools/ instalada. Un
+# manifiesto escrito a mano (como este ejemplo) no lo necesita.
+#   blueprint:
+#     id: legal                # = nombre del archivo del blueprint, sin .yaml
+#     version: "1.0.0"         # semver del blueprint
+#     min_cerebro: "0.1.0"     # versión mínima de tools/cerebro_core
+# ---------------------------------------------------------------------
+
 # Tipos de documento que maneja el negocio (guían la clasificación de INGEST)
 document_types: [propuesta, contrato, transcripcion-call, ticket]
 

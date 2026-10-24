@@ -137,6 +137,14 @@ class Manifest:
     def declares_profile(self) -> bool:
         return "profile" in self.raw or "capabilities" in self.raw
 
+    # Fase 4.3: procedencia del blueprint del que nació el manifiesto (opcional)
+    @property
+    def blueprint(self) -> dict:
+        """Bloque `blueprint: {id, version, min_cerebro}` que `init --blueprint` copia tal
+        cual. Es procedencia, no configuración: un manifiesto artesanal no lo trae."""
+        b = self.raw.get("blueprint")
+        return b if isinstance(b, dict) else {}
+
 
 def load(path: Path | str) -> Manifest:
     p = Path(path)
@@ -256,6 +264,29 @@ def validate(m: Manifest) -> list[str]:
                                 f"(∈ {list(schema.CAPABILITY_ORDER)})")
                 elif not isinstance(v, bool):
                     errs.append(f"capabilities.{cap} debe ser booleano (true|false)")
+    # Fase 4.3: bloque `blueprint:` (procedencia) y requisito mínimo de CEREBRO
+    b = m.raw.get("blueprint")
+    if b is not None:
+        if not isinstance(b, dict):
+            errs.append("blueprint debe ser mapa {id, version, min_cerebro}")
+        else:
+            from . import blueprints as _bp
+            bid = b.get("id")
+            if not isinstance(bid, str) or not _FOLDER_RE.match(bid):
+                errs.append(f"blueprint.id inválido: {bid!r} (slug en minúsculas)")
+            for campo in ("version", "min_cerebro"):
+                try:
+                    _bp.parse_semver(b.get(campo))
+                except ValueError as ex:
+                    errs.append(f"blueprint.{campo} — {ex}")
+            try:
+                if _bp.parse_semver(b.get("min_cerebro")) > _bp.parse_semver(_bp.installed_version()):
+                    errs.append(
+                        f"este manifiesto exige CEREBRO ≥ {b['min_cerebro']} y tools/ es "
+                        f"{_bp.installed_version()}: actualiza tools/ (release del template) "
+                        f"antes de aplicar")
+            except ValueError:
+                pass
     gl = m.graph_lens
     if gl:
         if gl.get("enable") not in (True, False, None):

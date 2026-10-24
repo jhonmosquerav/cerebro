@@ -28,6 +28,9 @@ python tools/cerebro.py init --profile <minimo|memoria|gobernanza|completo> [--b
   Antes de elegir por el usuario, **pregunta una sola cosa**: ¿quiere solo memoria entre
   sesiones, o también que el genoma se audite y proponga sus reglas? Explica qué apaga cada
   perfil. Nada se borra al apagar; se puede subir después con `profile set` + `onboard apply`.
+- `python tools/cerebro.py blueprints` lista los blueprints disponibles con su versión y el
+  CEREBRO mínimo que exigen (catálogo `onboard/blueprints/catalog.yaml`); `init` rechaza uno
+  que pida un `tools/` más nuevo que el del clon.
 - Si partió de un blueprint, los placeholders `<...>` se conservan tal cual: pídele los datos
   al usuario (nombre, sector, dominios) y rellénalos en `onboard/company.yaml`; `onboard apply`
   los rechaza si siguen ahí.

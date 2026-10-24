@@ -54,7 +54,7 @@ def list_blueprints(root: Path | str) -> list[str]:
     """Sectores disponibles: los del vault y, si no tiene, los del template."""
     for base in (Path(root) / BLUEPRINTS_REL, TEMPLATE_ROOT / BLUEPRINTS_REL):
         if base.is_dir():
-            nombres = sorted(p.stem for p in base.glob("*.yaml"))
+            nombres = sorted(p.stem for p in base.glob("*.yaml") if p.name != "catalog.yaml")
             if nombres:
                 return nombres
     return []
@@ -69,6 +69,9 @@ def source_for(root: Path | str, blueprint: str | None) -> Path:
             raise InitError(f"no encuentro {EJEMPLO_REL} ni en el vault ni en el template")
         return src
     nombre = blueprint[:-5] if blueprint.endswith(".yaml") else blueprint
+    if nombre == "catalog":
+        raise InitError("catalog.yaml es el índice de blueprints, no un blueprint: elige un sector "
+                        f"({', '.join(list_blueprints(root)) or 'ninguno'})")
     src = _first_existing(root / BLUEPRINTS_REL / f"{nombre}.yaml",
                           TEMPLATE_ROOT / BLUEPRINTS_REL / f"{nombre}.yaml")
     if src is None:

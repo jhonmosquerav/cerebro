@@ -13,6 +13,7 @@ en Windows y Linux, probado en CI en ambos).
 
 ```bash
 python tools/cerebro.py init --profile memoria [--blueprint legal] [--force]  # deja onboard/company.yaml listo (Fase 4.2)
+python tools/cerebro.py blueprints [--json]         # catálogo de blueprints: versiones, min_cerebro, deriva CAT-xx (Fase 4.3)
 python tools/cerebro.py verify                      # todos los invariantes de una vez
 python tools/cerebro.py lint --as-of 2026-07-12     # 16 detectores; --json estable
 python tools/cerebro.py mirror [--fix]              # AGENTS.md ≡ CLAUDE.md (C-02)
@@ -34,6 +35,12 @@ blueprint de `--blueprint <sector>`) a `onboard/company.yaml` fijando `profile:`
 misma edición textual de `profile set`; idempotente, no pisa un manifiesto distinto sin
 `--force`, conserva los placeholders `<...>` del blueprint y no aplica nada (eso es
 `onboard apply`). Lógica en `cerebro_core/init_manifest.py`; tests en `tests/test_init.py`.
+`blueprints` (Fase 4.3) contrasta `onboard/blueprints/catalog.yaml` con los archivos
+(detectores CAT-01…CAT-06: correspondencia 1:1, bloque `blueprint:` coincidente, `genes` =
+`seed_genes`, historial creciente, `min_cerebro` ≤ `__version__`) e informa si el
+`company.yaml` del vault nació de un blueprint y está al día; entra en `verify`. `manifest.validate`
+rechaza un `min_cerebro` mayor que la versión instalada, así que `init` y `onboard apply` abortan
+sin escribir. Lógica en `cerebro_core/blueprints.py`; tests en `tests/test_blueprints.py`.
 `consolidate`, `health`, `xray` y `graph` respetan el perfil de instalación
 (`genome/perfil.md`, gen-perfiles): capacidad apagada ⇒ aviso y exit 2;
 `--ignore-profile` fuerza la corrida.
@@ -46,7 +53,7 @@ mutaciones de `raw/`, reescrituras del ledger y espejo roto.
 | Operación | Núcleo mecánico (aquí, 0 LLM) | Juicio (agente + compuerta) |
 |---|---|---|
 | LINT | huérfanas, enlaces rotos, frontmatter, verbos/campos fuera de esquema, vencidos, identidad, ledger, confidencial anclada | contradicciones semánticas, redactar arreglos |
-| ONBOARD | `init` (manifiesto semilla con perfil) + aplicar el manifiesto (perfil de empresa, perfil de instalación, taxonomía, seeds, events, index) | la entrevista que rellena el manifiesto, la pregunta de graph_lens, recomendaciones |
+| ONBOARD | `init` (manifiesto semilla con perfil) + aplicar el manifiesto (perfil de empresa, perfil de instalación, taxonomía, seeds, events, index) + catálogo de blueprints (versión, `min_cerebro`, deriva) | la entrevista que rellena el manifiesto, la pregunta de graph_lens, recomendaciones, decidir adoptar una versión nueva de blueprint |
 | perfil | efectivo = preset + overrides; `genome/perfil.md`; deriva PRF-01/02; gating de comandos | explicar qué apaga cada perfil; no ejecutar una operación apagada |
 | CONSOLIDATE | ventanas de decaimiento, elegibilidad de promoción, candidatos a archivo/duplicado | decidir fusiones, redactar consolidados |
 | AUDIT | los reportes `--json` como insumo del maker | ¿importa?, diff, score argumentado |

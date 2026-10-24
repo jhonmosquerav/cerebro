@@ -6,6 +6,15 @@
 #   capabilities: {}         # overrides por capacidad, p. ej. { grafo: false }
 # Atajo: python tools/cerebro.py profile set memoria
 
+# Identidad del blueprint (Fase 4.3): id = nombre del archivo, versión semver y versión mínima de
+# CEREBRO (tools/cerebro_core.__version__) que necesita. El catálogo con historial está en
+# onboard/blueprints/catalog.yaml y `python tools/cerebro.py blueprints` prueba que coinciden.
+# `init --blueprint` copia este bloque tal cual al manifiesto como procedencia; ONBOARD no lo renderiza.
+blueprint:
+  id: ecommerce
+  version: "1.0.0"
+  min_cerebro: "0.1.0"
+
 company:
   name: "<tu empresa>"
   sector: "e-commerce / retail"

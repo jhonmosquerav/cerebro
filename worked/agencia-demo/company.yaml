@@ -1,6 +1,13 @@
 # Blueprint: AGENCIA DE AUTOMATIZACIÓN / MARKETING (sector fijo, reusable).
 # Uso: copia a onboard/company.yaml, reemplaza los placeholders <...> de `company` y aplica ONBOARD.
 
+# Procedencia (Fase 4.3): bloque `blueprint` copiado tal cual del blueprint de origen, como lo deja
+# `init --blueprint`. No cambia el genoma que produce el manifiesto (state-hash intacto).
+blueprint:
+  id: agencia
+  version: "1.0.0"
+  min_cerebro: "0.1.0"
+
 company:
   name: "Automatiza Andina SAS"
   sector: "agencia de automatización y marketing"
