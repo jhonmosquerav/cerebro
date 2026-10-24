@@ -104,11 +104,11 @@ el plan 2026-07-12 y el backlog de la spec Obsidian).
       `gobernanza` ⊂ `completo`, seis capacidades activables por manifiesto,
       estado en `genome/perfil.md`, hooks y CLI que lo respetan, PRF-01 en
       `verify`. Origen: revisión de 5 repos (`docs/revision-repos-2026-10-20.md`).
-- [x] **4.2 Empaquetado instalable** ✅ 2026-10-20 (infra) — `python tools/cerebro.py
+- [x] **4.2 Empaquetado instalable** ✅ 2026-10-20 — `python tools/cerebro.py
       init --profile <p> [--blueprint <s>]` deja `onboard/company.yaml` listo (idempotente,
       no pisa, conserva placeholders); plugin mínimo de Claude Code (`.claude-plugin/
-      marketplace.json` → `plugin/`, una skill que solo envuelve el repo). Pendiente de
-      compuerta: `prop-prf-04` (gen-onboard v8→v9 menciona `init`), `status: pending`.
+      marketplace.json` → `plugin/`, una skill que solo envuelve el repo). Compuerta
+      cerrada: `prop-prf-04` aplicada 2026-10-20 (gen-onboard v8→v9 menciona `init`).
 - [ ] 4.3 Catálogo de blueprints con versiones y requisito mínimo.
 - [ ] 4.4 Artículo del caso público colombiano.
 
