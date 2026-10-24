@@ -1,7 +1,7 @@
 ---
 title: CEREBRO — índice
 type: meta
-updated: 2026-10-20
+updated: 2026-10-23
 ---
 
 # 🧠 CEREBRO — mapa principal
@@ -24,6 +24,7 @@ si una sección supera `hub_umbral` anclas, se parte en página-hub y aquí qued
 - Lente de grafo: operación `GRAPH` → salida derivada en `graphify-out/` (no versionada). Regla: [[gen-graph-lens]].
 - Deriva declarado↔evidencia: operación `XRAY` → corridas en `audit/xray/`. Regla: [[gen-xray]].
 - Perfil de instalación: `profile:` del manifiesto → `ONBOARD` lo aplica a `genome/perfil.md` (capacidades activas; sin archivo = completo). Regla: [[gen-perfiles]].
+- Catálogo de blueprints: `onboard/blueprints/catalog.yaml` (versión, `min_cerebro`, historial) → `python tools/cerebro.py blueprints` dice si el manifiesto está al día. Regla: [[gen-onboard]], adopción por versión en [[gen-migracion-genoma]].
 
 ## Visualización (opcional, removible)
 - Paneles nativos (Bases; Dataview opcional): `dashboards/00-leeme.md`. Plantillas por `type`: `templates/00-leeme.md`. Lente de grafo interactiva: `dashboards/graph/00-leeme.md`. Regla: [[gen-visualizacion]].

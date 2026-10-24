@@ -97,9 +97,9 @@ como backlog ordenado al final.
    `tests/test_init.py`), plugin mínimo (`.claude-plugin/marketplace.json` → `plugin/`,
    `tests/test_plugin.py`), README/tools/onboard documentados. Genoma intacto: la mención
    de `init` en gen-onboard espera compuerta en `docs/propuestas-evolve/prop-prf-04-*.md`.
-2. **4.3 Catálogo de blueprints** con `versions`/`min_cerebro` al estilo
+2. ~~**4.3 Catálogo de blueprints**~~ ✅ 2026-10-23 (plan `2026-10-23-cierre-fase-4-plan.md`) con `versions`/`min_cerebro` al estilo
    `community-plugins.json` (obsidian-releases), consumido por `genome_adopted`.
-3. **4.4 Artículo del caso público colombiano** (roadmap Fase 4).
+3. ~~**4.4 Artículo del caso público colombiano**~~ ✅ 2026-10-23 `docs/caso-piscc-colombia.md` (roadmap Fase 4).
 4. Candidatos de `docs/caso-fase-b.md` aún sin gate: pasan por EVOLVE cuando el uso los
    vuelva a señalar (regla de oro del roadmap: nada entra al genoma sin ejercitarse).
 5. Ideas de la revisión de repos **no adoptadas aún** (ver `docs/revision-repos-2026-10-20.md`):

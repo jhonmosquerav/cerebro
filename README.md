@@ -45,6 +45,11 @@ cambio auditado y reversible.
   `completo` (con paneles y grafo). Cada capacidad se enciende o apaga por manifiesto, el
   estado queda en `genome/perfil.md` y `lint` delata si el manifiesto y lo aplicado
   divergen. Apagar nunca borra.
+- **📚 Blueprints de sector catalogados** — seis recetas listas (producción, agencia, legal,
+  salud, e-commerce y **seguridad territorial colombiana**, esta última derivada de la ley y no
+  de una simulación), cada una con versión y requisito mínimo de CEREBRO en
+  [`onboard/blueprints/catalog.yaml`](onboard/blueprints/catalog.yaml). `verify` prueba que el
+  catálogo y los archivos coinciden; un vault sabe de qué versión nació y si hay una más nueva.
 - **🪶 Sin infraestructura** — son tus archivos, en tu disco. Ni servidor, ni base vectorial,
   ni suscripción.
 
@@ -80,7 +85,10 @@ ingeridas, idempotencia medida (0 duplicados), recall 20/20 por navegación pura
 `genome_adopted` de la doctrina de distribución y primera auditoría sobre wiki viva.
 Caso con métricas verificables: [`docs/caso-fase-b.md`](docs/caso-fase-b.md). Los
 hallazgos del piloto ya volvieron al genoma por compuerta (F0-08…F0-12) y los nuevos
-esperan su gate.
+esperan su gate. El primer sector que no sale de una simulación sino de la ley —el PISCC,
+plan de seguridad obligatorio de las alcaldías colombianas— está contado en
+[`docs/caso-piscc-colombia.md`](docs/caso-piscc-colombia.md) (Fase 4, cerrada el 2026-10-23:
+perfiles, `init`, plugin, catálogo de blueprints y este caso).
 
 ---
 
@@ -95,7 +103,7 @@ cerebro/
 │   ├── capsules/             # combinaciones de genes para un workflow
 │   ├── company-profile.md    # identidad de la empresa (lo llena ONBOARD)
 │   └── events.jsonl          # auditoría append-only de mutaciones (replay/rollback)
-├── onboard/                  # manifiesto reproducible (company.yaml) + blueprints
+├── onboard/                  # manifiesto reproducible (company.yaml) + blueprints catalogados (catalog.yaml)
 ├── raw/                      # fuentes crudas, INMUTABLES
 ├── wiki/
 │   ├── working/              # observaciones recientes (decae rápido)
@@ -131,6 +139,8 @@ cerebro/
    `profile:` fijado; no pisa uno existente (salvo `--force`), es idempotente y conserva tal
    cual los placeholders `<...>` del blueprint para que los rellenes. Afinar después:
    `python tools/cerebro.py profile enable auditoria` (o `disable grafo`, `set completo`).
+   Para ver qué blueprints hay, qué siembran y qué versión de CEREBRO exigen:
+   `python tools/cerebro.py blueprints`.
 3. **Abre la carpeta** con Claude Code (o Cursor / OpenClaw — leen el mismo `CLAUDE.md`).
 4. Corre **`ONBOARD`** → completa `onboard/company.yaml` (entrevista si falta algo), luego siembra
    el genoma de tu sector y aplica el perfil a partir de ese manifiesto (reproducible en estructura):
@@ -176,6 +186,7 @@ son no-op; **nada se borra**. Regla: `genome/genes/gen-perfiles.md`.
 | `EVOLVE` | Detecta patrones y **propone** mutaciones del genoma (solo se aplican con tu OK). |
 | `AUDIT` | Se auto-audita con **maker≠auditor**: busca contradicciones, vacíos y reglas obsoletas, y te **propone** ≤3 mejoras de mayor impacto bajo tu gate. Corridas reproducibles en `audit/runs/`, ancladas al SHA de git. |
 | `GRAPH` | Lente de grafo externa (opcional) sobre una copia *staging* de `wiki/` filtrada por allowlist (solo páginas explícitamente `publico`/`interno`); deriva señales (hubs, comunidades, caminos, islas) y las **propone** a las operaciones de mantenimiento. Salida derivada, no es fuente de verdad. |
+| `XRAY` | Mide la **deriva** entre el grafo declarado y la evidencia (local o inferida): tres buckets + score, y **propone** a LINT/CONSOLIDATE/EVOLVE. Corridas en `audit/xray/`. |
 
 ---
 
@@ -188,7 +199,10 @@ no un script determinista. En concreto:
   declarativo (`onboard/company.yaml`): mismo manifiesto → misma estructura de genoma y
   perfil. Quien lo aplica es un LLM siguiendo reglas versionadas, así que la garantía es de
   estructura y protocolo, no de bit exacto. Hay [blueprints de sector](onboard/blueprints/)
-  listos para copiar y aplicar (producción, agencia, legal, salud, e-commerce).
+  listos para aplicar con `init --blueprint` (producción, agencia, legal, salud, e-commerce y
+  seguridad territorial), **catalogados con versión y requisito mínimo**: un blueprint que
+  exija un CEREBRO más nuevo se rechaza antes de escribir nada, y un vault desplegado adopta
+  una versión nueva como cualquier mejora del template (`genome_adopted`).
 - **Evolución auditable** — cada mutación del genoma queda como una línea en
   `genome/events.jsonl` (con fecha, señal y diff) más su commit de git (norma de la casa:
   una mutación = un commit). Puedes **reconstruir o revertir** cómo llegó el genoma a su
@@ -216,10 +230,12 @@ no un script determinista. En concreto:
 | salud: score 0–100 con componentes N/A honestas | recomendaciones |
 | XRAY: deriva declarado↔evidencia + score | interpretar la deriva y proponer |
 | casos `worked/` regenerables byte a byte | — |
+| catálogo de blueprints ≡ archivos (versión, `min_cerebro`, genes, historial) | decidir adoptar una versión nueva |
 
 La integración de estas herramientas a los genes **se aprobó y aplicó por compuerta
 completa** (gates 2026-07-27, 2026-07-29 y 2026-08-07: **18/18 propuestas**, incluida
-`prop-f0-04`/gen-xray tras verse su valor en la Fase B) — ver
+`prop-f0-04`/gen-xray tras verse su valor en la Fase B; después, las tandas Obsidian,
+perfiles y catálogo de 2026-09 y 2026-10) — ver
 [`docs/propuestas-evolve/`](docs/propuestas-evolve/): el genoma no se muta solo, ni
 siquiera para mejorarse. Desde el 2026-08-07 las aprobaciones del gate van además
 **firmadas** (SSH + `ops/allowed_signers`, ver `ops/runbook-firma-aprobaciones.md`).

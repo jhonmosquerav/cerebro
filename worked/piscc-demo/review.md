@@ -71,6 +71,15 @@ alcaldía real:
   línea base, indicadores y focalización viene de fuentes derivadas, no del
   documento original. Antes de usar esto en producción: leer la guía.
 
+## El caso contado para lectores de alcaldías (2026-10-23)
+
+`docs/caso-piscc-colombia.md` cuenta este caso para quien formula o audita un PISCC y para
+equipos de datos de LATAM, con las mismas fronteras de esta review (municipio ficticio, cero
+datos ingeridos, verificación normativa sin estudio de vigencia). Desde la Fase 4.3 el
+blueprint está catalogado (`onboard/blueprints/catalog.yaml`, `seguridad-territorial` 1.0.0,
+CEREBRO mínimo 0.1.0) y este `company.yaml` lleva el bloque `blueprint` como procedencia, sin
+cambiar el `state-hash`.
+
 ## Qué NO cubre lo mecánico
 
 - **La herramienta instala los genes; no los cumple.** Que una cifra llegue

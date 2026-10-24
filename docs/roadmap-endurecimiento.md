@@ -1,7 +1,7 @@
 ---
 titulo: CEREBRO — Roadmap de endurecimiento
 tipo: nota-de-arquitectura
-estado: en-ejecucion
+estado: fases-0-a-4-cerradas
 fecha: 2026-07-12
 relacion_backlog: ejecuta la Fase C diferida de audit/evaluations/2026-07-01-810f24e/60-backlog.md
 ---
@@ -91,7 +91,7 @@ juicio.
       renormalizan, score único 0–100, test negativo (degradar baja el
       número), tablero estático `--write` + Dataview existente.
 
-## Fase 4 — Distribución 🟡 desbloqueada 2026-08-07 · iniciada 2026-10-20
+## Fase 4 — Distribución ✅ desbloqueada 2026-08-07 · iniciada 2026-10-20 · **cerrada 2026-10-23**
 
 No se empaquetó ni promocionó un sistema cuyo piloto real no había corrido:
 distribuir antes de verificar amplifica el problema. La Fase 1 cerró el
@@ -109,8 +109,17 @@ el plan 2026-07-12 y el backlog de la spec Obsidian).
       no pisa, conserva placeholders); plugin mínimo de Claude Code (`.claude-plugin/
       marketplace.json` → `plugin/`, una skill que solo envuelve el repo). Compuerta
       cerrada: `prop-prf-04` aplicada 2026-10-20 (gen-onboard v8→v9 menciona `init`).
-- [ ] 4.3 Catálogo de blueprints con versiones y requisito mínimo.
-- [ ] 4.4 Artículo del caso público colombiano.
+- [x] **4.3 Catálogo de blueprints con versiones y requisito mínimo** ✅ 2026-10-23 — cada
+      blueprint lleva `blueprint: {id, version, min_cerebro}`; `onboard/blueprints/catalog.yaml`
+      los indexa con historial; `cerebro blueprints` y `verify` prueban que coinciden
+      (CAT-01…06); `init`/`onboard apply` rechazan un `min_cerebro` mayor que `tools/`;
+      gen-onboard v10 + gen-migracion-genoma v3 (`prop-cat-01`). Spec:
+      `docs/specs/2026-10-23-catalogo-blueprints-design.md`.
+- [x] **4.4 Artículo del caso público colombiano** ✅ 2026-10-23 —
+      [`docs/caso-piscc-colombia.md`](caso-piscc-colombia.md): el blueprint
+      `seguridad-territorial` y `worked/piscc-demo` contados para alcaldías y equipos de datos,
+      con fuentes y límites explícitos (municipio ficticio, sin datos ingeridos, sin estudio de
+      vigencia exhaustivo).
 
 ## Lo que NO se va a hacer
 
