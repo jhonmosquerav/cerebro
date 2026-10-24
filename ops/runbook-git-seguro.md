@@ -108,12 +108,12 @@ dudoso**, una sola coincidencia = **ABORTA el push**.
 **Paso 4b — ¿algún secreto, credencial o ruta personal saliendo?**
 
 ```bash
-# palabra completa () y sin distinguir mayúsculas: 'secret' ya no casa con 'secretaría',
+# palabra completa (\b) y sin distinguir mayúsculas: 'secret' ya no casa con 'secretaría',
 # 'secretarios' ni 'secretos' (vocabulario normal del sector público); 'token' no casa con 'tokens'
-SEC='(api[_-]?key|secret|secrets|token|password|passwd|contrase(n|ñ)a)|BEGIN (RSA|OPENSSH|EC|PGP|DSA) PRIVATE KEY'
+SEC='\b(api[_-]?key|secret|secrets|token|password|passwd|contrase(n|ñ)a)\b|BEGIN (RSA|OPENSSH|EC|PGP|DSA) PRIVATE KEY'
 git diff 'origin/main..HEAD' | grep -nIiE "$SEC" || echo 'secretos: limpio'
 # rutas de usuario y hostnames que delatan la máquina del operador
-git diff 'origin/main..HEAD' | grep -nIE '/Users/|C:\Users|/home/[a-z]' || echo 'rutas personales: limpio'
+git diff 'origin/main..HEAD' | grep -nIE '/Users/|C:\\Users|/home/[a-z]' || echo 'rutas personales: limpio'
 ```
 
 Es un barrido **orientativo**: una coincidencia se lee en contexto (una frase que habla *de*
@@ -239,7 +239,7 @@ Secreto, credencial o PII vertidos en el repo (o pusheados):
 
    ```bash
    # mismo patrón del paso 4b (palabra completa, sin distinguir mayúsculas), sobre TODO el árbol
-   SEC='(api[_-]?key|secret|secrets|token|password|passwd|contrase(n|ñ)a)|BEGIN (RSA|OPENSSH|EC|PGP|DSA) PRIVATE KEY'
+   SEC='\b(api[_-]?key|secret|secrets|token|password|passwd|contrase(n|ñ)a)\b|BEGIN (RSA|OPENSSH|EC|PGP|DSA) PRIVATE KEY'
    git grep -nIiE "$SEC" -- ':!ops/'
    ```
 
