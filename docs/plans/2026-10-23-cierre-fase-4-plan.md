@@ -44,6 +44,6 @@ docs, artículo y push con checklist.
 - [x] README: blueprints catalogados, verbo `blueprints`, fila XRAY, caso colombiano, lista
       de blueprints al día (seis, con seguridad territorial).
 - [x] Roadmap: 4.3 y 4.4 ✅, Fase 4 cerrada; este plan marcado.
-- [ ] `verify` + suite en verde (Windows); `worked/` byte a byte.
-- [ ] Commits firmados; checklist pre-push §2 del runbook; push a `origin/main`.
-- [ ] `log.md`, episódico `wiki/episodic/2026-10-23-<session8>.md`, memoria del agente.
+- [x] `verify` + suite en verde (Windows, 309 tests); `worked/` byte a byte.
+- [x] Commits firmados; checklist pre-push §2 del runbook; push a `origin/main` (2026-10-23).
+- [x] `log.md`, episódico `wiki/episodic/2026-10-23-85ec123d.md`, memoria del agente.
