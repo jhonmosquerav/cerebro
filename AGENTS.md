@@ -23,7 +23,7 @@ correr `ONBOARD` y operar su conocimiento.
 ## Operaciones (gatillos)
 | Verbo | Gatillo | Qué hace | Capacidad |
 |---|---|---|---|
-| `ONBOARD` | primera vez / cambio de empresa | Aplica el manifiesto `onboard/company.yaml` (determinista, reproducible) → siembra perfil + genes del sector. `init --profile [--blueprint]` deja el manifiesto semilla; la entrevista solo lo completa. | `núcleo` |
+| `ONBOARD` | primera vez / cambio de empresa | Aplica el manifiesto `onboard/company.yaml` (determinista, reproducible) → siembra perfil + genes del sector. `init --profile [--blueprint]` deja el manifiesto semilla; la entrevista solo lo completa. Blueprints catalogados con versión y `min_cerebro` (`blueprints`): uno que exija más CEREBRO del instalado se rechaza sin escribir. | `núcleo` |
 | `INGEST <X>` | "ingiere / digiere esto" | Clasifica, crea/actualiza página con frontmatter, extrae conceptos, enlaza, actualiza index + log. | `núcleo` |
 | `BULK INGEST` | "procesa todo raw/" | Corre INGEST sobre cada archivo de `raw/`; reporta y actualiza index. | `núcleo` |
 | `QUERY <X>` | "busca / qué sabemos de" | Navega desde `index.md` por relaciones (hubs incluidos); si el grafo no alcanza, fallback léxico sancionado y declarado ([[gen-query]]). Responde citando páginas-fuente. | `núcleo` |
@@ -125,6 +125,9 @@ ya prueba**. Antes de afirmar que el vault está sano, corre y cita su salida:
   aplicado; `set/enable/disable` editan solo `profile:`/`capabilities:` del manifiesto y
   recuerdan re-correr `onboard apply`. `consolidate`, `health`, `xray` y `graph` salen con
   exit 2 si su capacidad está apagada (`--ignore-profile` fuerza).
+- `blueprints [--json]` — catálogo de blueprints ≡ archivos (CAT-01…06): versión, `min_cerebro`,
+  historial y estado del `company.yaml` del vault frente al catálogo (al día / desactualizado /
+  artesanal); entra en `verify`. Publicar una versión nueva = archivo + catálogo + historial.
 - La integración de estas herramientas a los genes se aprobó y aplicó por compuerta
   **completa**: gates 2026-07-27, 2026-07-29 y 2026-08-07 — 18/18 propuestas aplicadas,
   incluida `prop-f0-04` (gen-xray, aprobada tras verse su valor en la Fase B):

@@ -2,7 +2,7 @@
 id: gen-onboard
 trigger: operación ONBOARD (primera vez o cambio de empresa)
 status: active
-version: 9
+version: 10
 ---
 
 ONBOARD adapta el cerebro a una empresa de forma **REPRODUCIBLE**. Fuente de verdad: el
@@ -34,6 +34,19 @@ modo c) y no aplica nada: el aplicado sigue siendo `onboard apply`. El agente pr
 `init` antes que copiar archivos a mano. El plugin de marketplace (`plugin/`) es solo un
 envoltorio de estos pasos y de los verbos de `CLAUDE.md`: no contiene genes ni reglas, y
 cualquier regla que necesite vivir en él pasa primero por esta compuerta.
+
+**Catálogo de blueprints (v10).** Cada blueprint de `onboard/blueprints/` declara su
+identidad en el bloque `blueprint: {id, version, min_cerebro}` (id = nombre del archivo,
+semver, versión mínima de `tools/`), y `onboard/blueprints/catalog.yaml` los indexa con su
+historial de versiones. `init --blueprint` copia el bloque **tal cual** al manifiesto: es
+procedencia, no configuración (ONBOARD no lo renderiza y el genoma que produce el
+manifiesto no cambia). `init` y `onboard apply` **rechazan sin escribir nada** un
+blueprint cuyo `min_cerebro` supere la versión instalada: el remedio es adoptar una release
+del template ([[gen-migracion-genoma]]), nunca editar el requisito. `verify` prueba que
+catálogo y archivos coinciden (CAT-01…CAT-06); publicar una versión nueva de un blueprint
+es subir `version` en el archivo, reflejarlo en el catálogo con su línea de historial y
+dejar `python tools/cerebro.py blueprints` en verde. Un manifiesto artesanal (modos a/c)
+no lleva el bloque y es legítimo.
 
 La herramienta **AVISA** (no aborta) cuando la `taxonomy` del manifiesto no ofrece destino
 para alguno de los tipos de página que el genoma declara —en particular `sintesis`, que el
