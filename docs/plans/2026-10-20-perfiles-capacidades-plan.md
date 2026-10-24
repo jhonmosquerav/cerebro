@@ -2,7 +2,7 @@
 tipo: plan-de-implementacion
 fecha: 2026-10-20
 spec: docs/specs/2026-10-20-perfiles-capacidades-design.md
-estado: en-ejecucion
+estado: ejecutado (4.1 el 2026-10-20; backlog 4.2–4.4 cerrado el 2026-10-23 en docs/plans/2026-10-23-cierre-fase-4-plan.md)
 absorbe:
   - docs/plans/2026-07-12-enforcement-mecanico-plan.md (ejecutado 2026-07-12..27; cerrado)
   - docs/roadmap-endurecimiento.md → Fase 4 (distribución), desbloqueada al cerrar Fase 1
@@ -41,52 +41,52 @@ como backlog ordenado al final.
 ---
 
 ### Tarea 1 — Esquema y módulo `profile`
-- [ ] `schema.py`: `CAPABILITIES` (id → descripción, genes, operaciones, comandos,
+- [x] `schema.py`: `CAPABILITIES` (id → descripción, genes, operaciones, comandos,
       carpetas), `PROFILES` (escalera), `CORE_GENES`, `capability_of(gen_id)`.
-- [ ] `tools/cerebro_core/profile.py`: `effective(manifest)` → dict cap→bool;
+- [x] `tools/cerebro_core/profile.py`: `effective(manifest)` → dict cap→bool;
       `render(manifest, date)` → `genome/perfil.md`; `read_applied(root)` → dict desde
       el frontmatter; `is_on(root, cap)` (sin archivo ⇒ True); `edit_manifest(...)` para
       `set/enable/disable` (edición textual de solo `profile:` y `capabilities:`).
-- [ ] Tests `tests/test_profile.py`: escalera estricta; todo gen del repo está en núcleo o
+- [x] Tests `tests/test_profile.py`: escalera estricta; todo gen del repo está en núcleo o
       en exactamente una capacidad; `effective` con overrides; render determinista;
       edición textual conserva el resto del manifiesto.
 
 ### Tarea 2 — Manifiesto y ONBOARD
-- [ ] `manifest.py`: propiedades `profile`, `capabilities`, `declares_profile`; validación.
-- [ ] `onboard.py`: si declara perfil → escribe `genome/perfil.md`, línea `- Perfil:` en
+- [x] `manifest.py`: propiedades `profile`, `capabilities`, `declares_profile`; validación.
+- [x] `onboard.py`: si declara perfil → escribe `genome/perfil.md`, línea `- Perfil:` en
       `## Estado`, evento `profile_applied` solo si cambia el conjunto efectivo.
-- [ ] Tests: ejemplo (declara `completo`) escribe perfil y es idempotente; `worked/` intacto;
+- [x] Tests: ejemplo (declara `completo`) escribe perfil y es idempotente; `worked/` intacto;
       cambiar `memoria`→`completo` añade un evento; misma fecha ⇒ mismo hash.
 
 ### Tarea 3 — LINT, CLI y gating
-- [ ] `lint.py`: PRF-01 (error, deriva/ausente) y PRF-02 (aviso, sin declaración).
-- [ ] `cerebro.py`: subcomando `profile [set|enable|disable]`; gating con exit 2 y
+- [x] `lint.py`: PRF-01 (error, deriva/ausente) y PRF-02 (aviso, sin declaración).
+- [x] `cerebro.py`: subcomando `profile [set|enable|disable]`; gating con exit 2 y
       `--ignore-profile` en `consolidate`, `health`, `xray`, `graph`.
-- [ ] Tests CLI: `profile` imprime tabla; `disable grafo` + `onboard apply` ⇒ `graph`
+- [x] Tests CLI: `profile` imprime tabla; `disable grafo` + `onboard apply` ⇒ `graph`
       sale 2 y con `--ignore-profile` sale 0; lint PRF-01 tras editar manifiesto sin aplicar.
 
 ### Tarea 4 — Hooks
-- [ ] `.claude/hooks/*.sh` y copia `.codex/hooks/*.sh`: helper `cap_on`; `pre-compact` y
+- [x] `.claude/hooks/*.sh` y copia `.codex/hooks/*.sh`: helper `cap_on`; `pre-compact` y
       `stop` no-op con memoria apagada; `session-start` anuncia perfil.
-- [ ] Prueba manual sobre vault temporal (memoria on/off) con la salida citada en el log.
-- [ ] `.claude/hooks/README.md` (y `.codex/hooks/README.md`) documentan el gating.
+- [x] Prueba manual sobre vault temporal (memoria on/off) con la salida citada en el log.
+- [x] `.claude/hooks/README.md` (y `.codex/hooks/README.md`) documentan el gating.
 
 ### Tarea 5 — Genoma por compuerta
-- [ ] `docs/propuestas-evolve/prop-prf-01..03.md` + fila en su README.
-- [ ] gen-perfiles v1 (nuevo) · gen-onboard v7→v8 · gen-lint v7→v8; `CLAUDE.md` (regla de
+- [x] `docs/propuestas-evolve/prop-prf-01..03.md` + fila en su README.
+- [x] gen-perfiles v1 (nuevo) · gen-onboard v7→v8 · gen-lint v7→v8; `CLAUDE.md` (regla de
       arranque, columna Capacidad, sección Perfiles, índice de genes, loop de memoria,
       validadores) + `mirror --fix`; 3 × `events append` + 3 commits firmados.
 
 ### Tarea 6 — Documentación e instalación
-- [ ] `onboard/company.example.yaml` (bloque `profile`/`capabilities` comentado y activo),
+- [x] `onboard/company.example.yaml` (bloque `profile`/`capabilities` comentado y activo),
       blueprints (bloque comentado), `onboard/README.md`, `tools/README.md`, `README.md`
       (instalación con perfiles), `.obsidian/types.json` (`perfil`, `cap_*`),
       `docs/revision-repos-2026-10-20.md`, roadmap Fase 4 desbloqueada, plan 2026-07-12
       marcado como absorbido.
 
 ### Tarea 7 — Cierre
-- [ ] `verify` + suite en verde; push a `origin/main` alineado.
-- [ ] `log.md`, episódico `wiki/episodic/2026-10-20-<session8>.md`, memoria del agente.
+- [x] `verify` + suite en verde; push a `origin/main` alineado.
+- [x] `log.md`, episódico `wiki/episodic/2026-10-20-<session8>.md`, memoria del agente.
 
 ---
 

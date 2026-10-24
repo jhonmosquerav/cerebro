@@ -156,13 +156,16 @@ pendiente y NO se marca cumplido con esto.
 
 ## Criterios de salida (verificables)
 
-- [ ] CI verde (ubuntu + windows) con badge en README.
-- [ ] `onboard apply` demostrablemente reproducible e idempotente (tests).
-- [ ] `lint`, `mirror`, `events verify`, `hash`, `health`, `xray` corren sin LLM y su
+> Todos cumplidos entre 2026-07-12 y 2026-07-27 (Fase 0 y Fase C cerradas; evidencia en
+> `docs/roadmap-endurecimiento.md` y `log.md`). Marcados el 2026-10-23 al cerrar pendientes.
+
+- [x] CI verde (ubuntu + windows) con badge en README.
+- [x] `onboard apply` demostrablemente reproducible e idempotente (tests).
+- [x] `lint`, `mirror`, `events verify`, `hash`, `health`, `xray` corren sin LLM y su
       salida es determinista (tests de fixtures con violaciones sembradas).
-- [ ] El propio repo pasa `verify` en verde.
-- [ ] Hash-chain disponible para líneas nuevas de events.jsonl + append-only verificado
+- [x] El propio repo pasa `verify` en verde.
+- [x] Hash-chain disponible para líneas nuevas de events.jsonl + append-only verificado
       contra la historia git (C-03) y ensayo de replay documentado (C-06).
-- [ ] Pre-commit local instalable que bloquea `raw/` y no-append de events (C-05).
-- [ ] README ya no afirma nada que el CI no pruebe (tabla probado vs juicio).
-- [ ] 2 casos `worked/` regenerables byte a byte en CI con review honesto.
+- [x] Pre-commit local instalable que bloquea `raw/` y no-append de events (C-05).
+- [x] README ya no afirma nada que el CI no pruebe (tabla probado vs juicio).
+- [x] 2 casos `worked/` regenerables byte a byte en CI con review honesto.

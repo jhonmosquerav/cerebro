@@ -82,8 +82,10 @@ juicio.
       ⇒ 2026-08-07: **aplicada** — la condición se cumplió de verdad: XRAY corrió
       sobre el vault poblado del piloto (deriva medida, hallazgo M-05 incluido)
       ANTES de entrar al genoma. gen-xray v1, genoma 25 → 26.
-- [ ] Primera deriva real confirmada por humano sobre un vault poblado
-      (requiere Fase B).
+- [x] Primera deriva real confirmada por humano sobre un vault poblado
+      ⇒ 2026-08-07: XRAY sobre el piloto de Fase B (deriva 96/100) destapó M-05 (resolución de
+      wikilinks fuera de la wiki), confirmado por el auditor en AUDIT B-05 y corregido con
+      aprobación del operador (fix 294aa71). Casilla cerrada el 2026-10-23.
 
 ## Fase 3 — Salud ✅ construida
 
