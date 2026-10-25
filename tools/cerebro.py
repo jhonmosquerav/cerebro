@@ -25,6 +25,7 @@ from cerebro_core import events as events_mod
 from cerebro_core import canvas as canvas_mod
 from cerebro_core import graph as graph_mod
 from cerebro_core import health as health_mod
+from cerebro_core import identity as identity_mod
 from cerebro_core import init_manifest as init_mod
 from cerebro_core import lint as lint_mod
 from cerebro_core import manifest as mf
@@ -88,15 +89,20 @@ def cmd_events(args) -> int:
             print("ledger en verde: esquema válido, historia append-only")
         return 1 if has_errors(findings) else 0
     if args.events_cmd == "append":
+        ident = _aprobador(args)
+        if ident is None:
+            return 2
         evento = {
             "ts": args.ts or datetime.date.today().isoformat(),
             "type": args.type,
             "target": args.target,
             "signal": args.signal,
             "diff": args.diff,
-            "approved_by": args.approved_by,
+            "approved_by": ident.value,
             "status": args.status,
         }
+        if args.corrects:
+            evento["corrects"] = args.corrects
         try:
             line = events_mod.append_line(ledger, evento)
         except events_mod.EventError as e:
@@ -105,6 +111,19 @@ def cmd_events(args) -> int:
         print(f"evento añadido con hash-chain: {line}")
         return 0
     return 2
+
+
+def _aprobador(args) -> identity_mod.Identity | None:
+    """C-04: la identidad de approved_by se resuelve, nunca se rellena con un genérico."""
+    try:
+        ident = identity_mod.resolve(args.vault, args.approved_by)
+    except identity_mod.IdentityError as e:
+        print(f"[ERROR] {e}")
+        return None
+    print(f"aprobador: {ident.value} ({ident.source})")
+    for av in ident.avisos:
+        print(f"  [AVISO] {av}")
+    return ident
 
 
 def cmd_hash(args) -> int:
@@ -177,8 +196,14 @@ def cmd_init(args) -> int:
 def cmd_onboard(args) -> int:
     manifest_path = Path(args.manifest) if args.manifest else Path(args.vault) / "onboard" / "company.yaml"
     date = args.date or datetime.date.today().isoformat()
+    ident = _aprobador(args)
+    if ident is None:
+        print("ONBOARD abortado sin escribir nada: sus siembras y profile_applied necesitan "
+              "la identidad del aprobador")
+        return 2
     try:
-        res = onboard_mod.apply(manifest_path, args.vault, date=date, dry_run=args.dry_run)
+        res = onboard_mod.apply(manifest_path, args.vault, date=date, dry_run=args.dry_run,
+                                approved_by=ident.value)
     except onboard_mod.OnboardError as e:
         print(f"[ERROR] ONBOARD abortado sin escribir nada:\n{e}")
         return 1
@@ -503,7 +528,12 @@ def build_parser() -> argparse.ArgumentParser:
     ev_a = ev.add_parser("append", help="añade un evento con hash-chain")
     for campo in ("type", "target", "signal", "diff"):
         ev_a.add_argument(f"--{campo}", required=True)
-    ev_a.add_argument("--approved-by", dest="approved_by", default="user")
+    ev_a.add_argument("--approved-by", dest="approved_by", default=None,
+                      help="identidad del aprobador (default: la clave de user.signingkey en "
+                           "ops/allowed_signers, si no git user.email; nunca un genérico)")
+    ev_a.add_argument("--corrects", action="append", default=None, metavar="SHA256",
+                      help="con --type attribution_corrected: sha256 de cada línea que cura "
+                           "(repetible)")
     ev_a.add_argument("--status", default="applied",
                       choices=sorted(events_mod.VALID_STATUS))
     ev_a.add_argument("--ts", default=None, help="YYYY-MM-DD (default: hoy)")
@@ -522,6 +552,9 @@ def build_parser() -> argparse.ArgumentParser:
     ob_a.add_argument("--date", default=None,
                       help="fecha determinista YYYY-MM-DD (default: hoy; fíjala para reproducir)")
     ob_a.add_argument("--dry-run", action="store_true")
+    ob_a.add_argument("--approved-by", dest="approved_by", default=None,
+                      help="identidad del aprobador de la corrida (default: como en "
+                           "`events append`)")
     ob_a.set_defaults(fn=cmd_onboard)
 
     sp = sub.add_parser("profile", help="perfil de instalación y capacidades (gen-perfiles)")

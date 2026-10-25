@@ -7,22 +7,31 @@ Tres garantías mecánicas:
    Las líneas históricas sin `prev` siguen siendo válidas (migración honesta).
 3. **Append-only contra git** — cada versión histórica del archivo debe ser
    prefijo de la siguiente; reescrituras del pasado quedan delatadas.
+4. **Aprobador con dueño (C-04, ATR-01)** — desde la primera línea con identidad
+   real, un `approved_by` genérico es error (EVT-09) salvo que lo cure un evento
+   `attribution_corrected` posterior cuyo `corrects` lleve el sha256 de esa línea
+   (EVT-10 valida su forma). Las líneas previas a la primera atribución son
+   historia válida, igual que las previas a la hash-chain.
 """
 from __future__ import annotations
 
 import hashlib
 import json
+import re
 import subprocess
 from pathlib import Path
 
 from .findings import Finding
+from .identity import is_generic
 from .schema import is_iso_date
 
 REQUIRED_KEYS = ("ts", "type", "target", "signal", "diff", "approved_by", "status")
 VALID_STATUS = {"applied", "proposed", "reverted", "pending"}
+CORRECTION_TYPE = "attribution_corrected"
 # Orden canónico de claves al escribir (las históricas usan este mismo orden).
 KEY_ORDER = ("ts", "type", "target", "signal", "diff", "approved_by", "status",
-             "incident_ref", "prev")
+             "corrects", "incident_ref", "prev")
+_SHA_RE = re.compile(r"[0-9a-f]{64}")
 
 
 class EventError(ValueError):
@@ -38,6 +47,39 @@ def _read_lines(path: Path) -> list[str]:
     return [l for l in text.split("\n") if l.strip()]
 
 
+def _parse(line: str) -> dict | None:
+    try:
+        ev = json.loads(line)
+    except json.JSONDecodeError:
+        return None
+    return ev if isinstance(ev, dict) else None
+
+
+def _attributed(ev: dict | None) -> bool:
+    return bool(ev) and "approved_by" in ev and not is_generic(ev["approved_by"])
+
+
+def attribution_started(path: Path | str) -> bool:
+    """True si el ledger ya tiene una línea con aprobador real (desde ahí rige EVT-09)."""
+    path = Path(path)
+    return path.is_file() and any(_attributed(_parse(l)) for l in _read_lines(path))
+
+
+def _correction_problem(ev: dict, earlier_shas: set[str]) -> str | None:
+    """Motivo por el que un `attribution_corrected` es inválido, o None si está bien."""
+    if is_generic(ev.get("approved_by")):
+        return "attribution_corrected con approved_by genérico: solo lo firma el aprobador real"
+    corrects = ev.get("corrects")
+    if not isinstance(corrects, list) or not corrects:
+        return "attribution_corrected sin `corrects` (lista no vacía de sha256 de líneas previas)"
+    for s in corrects:
+        if not isinstance(s, str) or not _SHA_RE.fullmatch(s):
+            return f"`corrects` lleva algo que no es un sha256: {str(s)[:20]!r}"
+        if s not in earlier_shas:
+            return f"`corrects` apunta a una línea que no existe antes de esta: {s[:12]}…"
+    return None
+
+
 def verify_file(path: Path | str) -> list[Finding]:
     path = Path(path)
     rel = path.name if not path.is_absolute() else "genome/events.jsonl"
@@ -45,8 +87,17 @@ def verify_file(path: Path | str) -> list[Finding]:
         return [Finding("EVT-00", "error", rel, "el ledger no existe")]
     findings: list[Finding] = []
     lines = _read_lines(path)
+    shas = [_sha(l) for l in lines]
+    # Líneas curadas por un attribution_corrected bien formado (EVT-10 lo valida abajo).
+    curadas: set[str] = set()
+    for j, line in enumerate(lines):
+        ev = _parse(line)
+        if ev and ev.get("type") == CORRECTION_TYPE and \
+                _correction_problem(ev, set(shas[:j])) is None:
+            curadas.update(ev["corrects"])
     prev_ts = None
     chain_started = False
+    attribution = False
     for i, line in enumerate(lines, start=1):
         loc = f"{rel}:{i}"
         try:
@@ -69,6 +120,20 @@ def verify_file(path: Path | str) -> list[Finding]:
                                     f"status inválido: {ev['status']!r} (∈ {sorted(VALID_STATUS)})"))
         if "approved_by" in ev and not str(ev.get("approved_by") or "").strip():
             findings.append(Finding("EVT-03", "error", loc, "approved_by vacío"))
+        # atribución (C-04): monótona, como la cadena
+        if ev.get("type") == CORRECTION_TYPE:
+            problema = _correction_problem(ev, set(shas[: i - 1]))
+            if problema:
+                findings.append(Finding("EVT-10", "error", loc, problema))
+        elif attribution and "approved_by" in ev and is_generic(ev["approved_by"]) \
+                and str(ev["approved_by"]).strip() and shas[i - 1] not in curadas:
+            findings.append(Finding(
+                "EVT-09", "error", loc,
+                f"approved_by genérico {ev['approved_by']!r} después de iniciada la "
+                "atribución: cúralo con un evento attribution_corrected "
+                "(gen-compuerta-mutacion)"))
+        if _attributed(ev):
+            attribution = True
         if "ts" in ev and is_iso_date(ev["ts"]):
             if prev_ts and ev["ts"] < prev_ts:
                 findings.append(Finding("EVT-04", "aviso", loc,
@@ -143,7 +208,19 @@ def append_line(path: Path | str, evento: dict) -> str:
         raise EventError(f"ts no es fecha ISO: {evento['ts']!r}")
     if evento["status"] not in VALID_STATUS:
         raise EventError(f"status inválido: {evento['status']!r}")
+    if not str(evento["approved_by"] or "").strip():
+        raise EventError("approved_by vacío")
     lines = _read_lines(path) if path.is_file() else []
+    if evento["type"] == CORRECTION_TYPE:
+        problema = _correction_problem(evento, {_sha(l) for l in lines})
+        if problema:
+            raise EventError(problema)
+    elif "corrects" in evento:
+        raise EventError(f"`corrects` solo vale en eventos {CORRECTION_TYPE}")
+    elif is_generic(evento["approved_by"]) and any(_attributed(_parse(l)) for l in lines):
+        raise EventError(
+            f"approved_by genérico {evento['approved_by']!r} en un ledger con atribución "
+            "iniciada: pasa la identidad real del aprobador (gen-compuerta-mutacion, EVT-09)")
     ev = dict(evento)
     if lines:
         ev["prev"] = _sha(lines[-1])

@@ -13,6 +13,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from . import events as events_mod
+from .identity import is_generic
 from . import manifest as mf
 from . import profile as profile_mod
 from . import statehash
@@ -185,10 +186,20 @@ def _replace_estado(index_text: str, nuevo: str) -> str:
 
 
 def apply(manifest_path: Path | str, vault_root: Path | str, *,
-          date: str, dry_run: bool = False) -> ApplyResult:
+          date: str, dry_run: bool = False, approved_by: str = "user") -> ApplyResult:
+    """`approved_by` por defecto `user` solo sirve en un ledger sin atribución (los
+    worked/, que regeneran byte a byte); la CLI siempre pasa la identidad resuelta."""
     root = Path(vault_root)
     if not is_iso_date(date):
         raise OnboardError(f"fecha inválida (usa YYYY-MM-DD): {date!r}")
+    if not str(approved_by or "").strip():
+        raise OnboardError("approved_by vacío: ONBOARD necesita la identidad del aprobador")
+    if is_generic(approved_by) and events_mod.attribution_started(
+            root / "genome" / "events.jsonl"):
+        raise OnboardError(
+            f"approved_by genérico {approved_by!r} y el ledger ya tiene atribución (C-04): "
+            "corre `onboard apply` por la CLI, que resuelve la identidad, o pásala con "
+            "--approved-by (gen-compuerta-mutacion, EVT-09)")
     # 1) VALIDAR TODO ────────────────────────────────────────────────────────
     try:
         m = mf.load(manifest_path)
@@ -267,7 +278,7 @@ def apply(manifest_path: Path | str, vault_root: Path | str, *,
             "target": g["id"],
             "signal": "ONBOARD: gen de sector sembrado desde onboard/company.yaml",
             "diff": "∅ → v1",
-            "approved_by": "user",
+            "approved_by": approved_by,
             "status": "applied",
         })
 
@@ -302,7 +313,7 @@ def apply(manifest_path: Path | str, vault_root: Path | str, *,
                           + (f" (apagadas: {', '.join(apagadas)})" if apagadas
                              else " (todas las capacidades activas)"),
                 "diff": f"{nombre_previo or '∅'} → {m.profile}",
-                "approved_by": "user",
+                "approved_by": approved_by,
                 "status": "applied",
             })
 
