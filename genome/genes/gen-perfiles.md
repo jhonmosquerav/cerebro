@@ -2,7 +2,7 @@
 id: gen-perfiles
 trigger: ONBOARD, instalación o cambio de perfil; antes de ejecutar cualquier operación no-núcleo
 status: active
-version: 1
+version: 2
 ---
 
 CEREBRO se instala **por perfil**: un preset de **capacidades**, cada una encendible o
@@ -38,7 +38,8 @@ conservan su hash de estado.
 ([[gen-onboard]]) con frontmatter plano (`perfil`, `cap_<capacidad>: true|false`, `updated`)
 para que lo lean el agente, los hooks POSIX con un `grep` y Obsidian como propiedades tipadas.
 Cada cambio del conjunto efectivo deja una línea `profile_applied` en `genome/events.jsonl`
-(hash-chain, `approved_by: user` como las siembras): apagar genes es una mutación del genoma
+(hash-chain, con la identidad del aprobador como toda línea del ledger —
+[[gen-compuerta-mutacion]]): apagar genes es una mutación del genoma
 vigente aunque no toque los archivos de los genes. El archivo **jamás se edita a mano**: se
 cambia el manifiesto (`profile:`/`capabilities:`, o `python tools/cerebro.py profile
 set|enable|disable`) y se re-corre `onboard apply`. LINT ([[gen-lint]]) delata la deriva entre
