@@ -40,6 +40,7 @@ lleve hash-chain), 1 commit, re-sincronizar `AGENTS.md` (`mirror --fix`).
 | `prop-prf-03` | gen-lint v7→v8 | detector (g) perfil: PRF-01 deriva manifiesto↔aplicado (error), PRF-02 sin declaración (aviso) | ✅ aplicada 2026-10-20 |
 | `prop-prf-04` | gen-onboard v8→v9 | `init --profile [--blueprint]` como camino mecánico de los modos (a)/(b): el manifiesto semilla nace con el perfil fijado; el plugin solo envuelve el repo | ✅ aplicada 2026-10-20 |
 | `prop-cat-01` | gen-onboard v9→v10 + gen-migracion-genoma v2→v3 | blueprints con `blueprint: {id, version, min_cerebro}` y catálogo `catalog.yaml` con historial; `init`/`onboard apply` rechazan `min_cerebro` futuro; adopción por versión en `genome_adopted` (Fase 4.3) | ✅ aplicada 2026-10-23 |
+| `prop-atr-01` | gen-compuerta-mutacion v4→v5 + gen-perfiles v1→v2 | `approved_by` siempre con dueño: `events append`/`onboard apply` resuelven la identidad (clave de firma ↔ `allowed_signers`, si no `git user.email`), EVT-09 delata genéricos tras la primera atribución, `attribution_corrected` (EVT-10) cura L95–L97 sin reescribir | ✅ aplicada 2026-10-25 |
 
 Orden en que se aplicaron: 01 → 02 → 05 → 03 → 06 → 07a → 07b (06 supone 01,
 porque muta el mismo gen encima de la versión que 01 crea).

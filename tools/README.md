@@ -17,10 +17,11 @@ python tools/cerebro.py blueprints [--json]         # catálogo de blueprints: v
 python tools/cerebro.py verify                      # todos los invariantes de una vez
 python tools/cerebro.py lint --as-of 2026-07-12     # 16 detectores; --json estable
 python tools/cerebro.py mirror [--fix]              # AGENTS.md ≡ CLAUDE.md (C-02)
-python tools/cerebro.py events verify               # esquema + hash-chain + append-only vs git (C-03)
-python tools/cerebro.py events append --type … --target … --signal … --diff …
+python tools/cerebro.py events verify               # esquema + hash-chain + aprobador (EVT-09/10) + append-only vs git (C-03)
+python tools/cerebro.py events append --type … --target … --signal … --diff …  # approved_by se resuelve solo (ATR-01)
+python tools/cerebro.py events append --type attribution_corrected --corrects <sha256> …  # cura una atribución sin reescribir
 python tools/cerebro.py hash --scope genome|knowledge|all [--detail]
-python tools/cerebro.py onboard apply --date 2026-07-12 [--dry-run]
+python tools/cerebro.py onboard apply --date 2026-07-12 [--dry-run] [--approved-by …]
 python tools/cerebro.py profile [set <perfil>|enable <cap>|disable <cap>] [--json]  # gen-perfiles
 python tools/cerebro.py consolidate scan --as-of …  # decaimiento/promoción/duplicados
 python tools/cerebro.py health [--write]            # score 0–100; tablero estático
@@ -79,3 +80,12 @@ integración formal de estas herramientas a los genes **se aplicó por compuerta
   significado es juicio. Decir lo contrario sería vender humo.
 - Las líneas históricas de `events.jsonl` (previas a 2026-07-12) no llevan
   `prev`: su integridad la prueba el append-only contra git, no la cadena.
+- `approved_by` (ATR-01, `cerebro_core/identity.py`): sin `--approved-by`, `events append` y
+  `onboard apply` usan el principal de `ops/allowed_signers` cuya clave es la de
+  `user.signingkey`, si no `git user.email`, y si no hay ninguno salen con exit 2 sin escribir.
+  Desde la primera línea atribuida un genérico (`user`, `operador`, `agente`…) se rechaza al
+  escribir y es EVT-09 al verificar; las 77 primeras líneas del template son anteriores a C-04 y
+  valen como historia. Se corrige con `attribution_corrected` (`corrects` = sha256 de las líneas;
+  EVT-10 valida su forma). La API `onboard.apply` conserva `user` solo para ledgers sin
+  atribución, que es lo que regeneran los `worked/`. Lo que el script no puede saber: si la
+  identidad resuelta aprobó de verdad. Eso lo prueba la firma del commit.

@@ -35,7 +35,8 @@ cambio auditado y reversible.
   fecha ⇒ mismo hash de estado, y re-aplicar es no-op — probado en CI (Linux **y**
   Windows) y verificable byte a byte en [`worked/`](worked/). Cada mutación queda con su
   fecha, su porqué y su diff en `genome/events.jsonl` — con **hash-chain** en las líneas
-  nuevas y verificación **append-only contra la historia de git**. Es *git para el
+  nuevas, **aprobador identificado** (nunca un genérico) y verificación **append-only
+  contra la historia de git**. Es *git para el
   conocimiento*, con validadores que lo demuestran. Las operaciones de juicio (INGEST,
   QUERY, EVOLVE…) siguen siendo ejecutadas por el LLM bajo las reglas del genoma.
 - **🔌 Portable** — todo es markdown; corre con cualquier agente que lea archivos. `AGENTS.md`
@@ -211,7 +212,7 @@ no un script determinista. En concreto:
   los permisos del agente (`.claude/settings.json` deniega escritura sobre `raw/`, pide
   confirmación para `genome/`) y, desde 2026-07-12, los **validadores mecánicos de
   [`tools/`](tools/)** (Python puro, cero dependencias): 17 detectores de LINT, espejo
-  `AGENTS.md`≡`CLAUDE.md`, integridad + hash-chain + append-only del ledger, hash de
+  `AGENTS.md`≡`CLAUDE.md`, integridad + hash-chain + aprobador con dueño + append-only del ledger, hash de
   estado, score de salud y deriva del grafo (`XRAY`). Corren en CI en cada push y en el
   pre-commit local (`git config core.hooksPath .githooks`). Verifícalo tú mismo:
 
@@ -225,7 +226,7 @@ no un script determinista. En concreto:
 |---|---|
 | `ONBOARD` aplicado: mismo manifiesto ⇒ mismo hash; idempotente | la entrevista que genera el manifiesto |
 | LINT: huérfanas, enlaces rotos, esquema, vencidos, identidad, ledger | contradicciones semánticas y redacción de arreglos |
-| ledger: esquema por línea, hash-chain, append-only vs git | el porqué de cada mutación |
+| ledger: esquema por línea, hash-chain, aprobador con dueño (EVT-09/10), append-only vs git | el porqué de cada mutación |
 | espejo `AGENTS.md` ≡ `CLAUDE.md` | — |
 | salud: score 0–100 con componentes N/A honestas | recomendaciones |
 | XRAY: deriva declarado↔evidencia + score | interpretar la deriva y proponer |

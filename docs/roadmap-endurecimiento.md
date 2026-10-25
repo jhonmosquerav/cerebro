@@ -140,5 +140,9 @@ el plan 2026-07-12 y el backlog de la spec Obsidian).
   verificable con git puro), gen-compuerta-mutacion v4, clave del operador
   registrada, commits de ambos vaults firmados. Runbook:
   `ops/runbook-firma-aprobaciones.md`.
+  ⇒ 2026-10-25: **endurecida (ATR-01)** — la atribución dejó de depender de recordar
+  `--approved-by`: la resuelven `events append` y `onboard apply`, y `verify` delata los
+  genéricos (EVT-09). Las L95–L97, que salieron con `user`, quedan curadas por un
+  `attribution_corrected` (L98) sin reescribir el ledger.
 - D-03 (paquete de cumplimiento ISO 27001 / AI Act) se apoya directamente
   en events.jsonl + audit/runs/ + este enforcement: madura tras Fase B.

@@ -38,7 +38,7 @@
    la arreglé aquí: es un hallazgo para EVOLVE/backlog, no algo que se cuela
    en un caso trabajado.
 2. **Me equivoqué generando `taxonomia.txt` a mano.** Calculé la ruta relativa
-   restando longitudes de string y Windows me dio la ruta corta (`JHONAL~1`)
+   restando longitudes de string y Windows me dio la ruta corta 8.3 de la carpeta de usuario
    en una punta y la larga en la otra: salieron rutas mutiladas
    (`d/piscc-gen/wiki/...`). Error mío, no del producto — pero ilustra
    justamente por qué el contrato de `worked/` exige que la salida esperada la
