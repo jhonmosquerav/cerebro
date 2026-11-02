@@ -47,7 +47,7 @@ juicio.
       corre `verify --exclude temporales`: lint estructural completo, sin que
       un vencimiento por calendario bloquee commits ajenos.
 
-## Fase 1 — Evidencia 🟡 iniciada
+## Fase 1 — Evidencia ✅ **cerrada 2026-08-07**
 
 - [x] `worked/` con contrato + 2 casos sintéticos re-corribles byte a byte
       en CI (agencia, legal), cada uno con `review.md` honesto que documenta
