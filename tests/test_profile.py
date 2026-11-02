@@ -256,7 +256,10 @@ class TestCliPerfil(unittest.TestCase):
             self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
             r = self._correr(root, "profile")
             self.assertIn("PENDIENTE de `onboard apply`", r.stdout)
-            r = self._correr(root, "onboard", "apply", "--date", "2026-10-20")
+            # identidad explícita: el CI no tiene git user.email y el test no debe
+            # depender de la configuración global de quien lo corre (ATR-01)
+            r = self._correr(root, "onboard", "apply", "--date", "2026-10-20",
+                             "--approved-by", "operador@empresa.test")
             self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
             self.assertIn("profile_applied", r.stdout)
             r = self._correr(root, "profile")
