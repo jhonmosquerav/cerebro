@@ -36,9 +36,15 @@ python tools/cerebro.py hash --scope genome
 ```
 
 > Nota: el hash de `state-hash.txt` corresponde al esqueleto mínimo que usa
-> el test (ver `tests/test_worked.py`); sobre un clon completo del template
-> los archivos delta (genes, perfil, events) son idénticos byte a byte,
-> pero el hash global incluye además los genes base del template.
+> el test (ver `tests/test_worked.py`). Sobre un clon completo del template, los
+> genes y el perfil del delta son idénticos byte a byte; las líneas nuevas de
+> `events.jsonl` también, salvo `approved_by` (tu identidad) y `prev` (encadena con
+> la historia del template). El hash global es otro porque incluye además los
+> genes base del template. Si tu git no tiene `user.email`, añade
+> `--approved-by tu@correo` a `onboard apply`.
+>
+> El hash no depende de quién aplica: excluye `approved_by` y `prev` del ledger
+> (desde 2026-11-02; por eso cambiaron los `state-hash.txt`, y nada más del caso).
 
 ## Casos disponibles
 

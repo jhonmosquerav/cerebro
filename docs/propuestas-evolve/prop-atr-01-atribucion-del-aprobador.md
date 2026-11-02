@@ -178,3 +178,16 @@ Hay que resolverlo en este mismo cambio. Dos caminos:
 Criterio de cierre: suite completa en verde (gateada con el exit code real, sin pipes),
 `verify` en verde, `events verify` sin EVT-09, las tres líneas nuevas con identidad real y
 `git verify-commit` válido en los cuatro commits.
+
+## Corrección posterior (2026-11-02)
+
+Esta propuesta tenía un error de diseño que ni ella ni sus tests vieron. Decía que los
+`worked/` "no cambian un byte", y era cierto, pero solo porque esos casos llaman a la API. Por
+la CLI, que es el camino real, `onboard apply` escribía la identidad de cada operador en el
+ledger, y el hash de estado incluía el ledger: **dos operadores con el mismo manifiesto y la
+misma fecha obtenían hashes distintos**, contra lo que promete [[gen-onboard]].
+
+El operador decidió sacar al aprobador del hash, no aclarar la promesa: `statehash` excluye
+`approved_by` y `prev` de `genome/events.jsonl`. Por eso, y contra lo que decía "Lo que NO hace",
+**sí cambiaron los tres `state-hash.txt`** (solo esa línea). Ningún gen se tocó: la frase de
+gen-onboard volvió a ser cierta, así que no hubo mutación ni línea nueva en el ledger.

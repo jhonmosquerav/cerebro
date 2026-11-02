@@ -89,3 +89,9 @@ integración formal de estas herramientas a los genes **se aplicó por compuerta
   EVT-10 valida su forma). La API `onboard.apply` conserva `user` solo para ledgers sin
   atribución, que es lo que regeneran los `worked/`. Lo que el script no puede saber: si la
   identidad resuelta aprobó de verdad. Eso lo prueba la firma del commit.
+- `hash` dice qué contiene el vault, no quién lo aprobó: de `genome/events.jsonl` excluye
+  `approved_by` y `prev` (desde 2026-11-02), así mismo manifiesto + misma fecha da el mismo hash
+  con cualquier operador. Por eso este hash no delata que alguien cambie al aprobador: eso lo
+  delatan la hash-chain y el append-only (EVT-05/07) y la firma. Un hash guardado antes de esa
+  fecha se reproduce haciendo checkout de su commit, porque las herramientas viajan con él
+  (comprobado con la auditoría `2026-08-07-e3f2a6d`).

@@ -224,7 +224,7 @@ no un script determinista. En concreto:
 
 | Probado por CI (mecánico, determinista) | Juicio del agente (LLM + compuerta) |
 |---|---|
-| `ONBOARD` aplicado: mismo manifiesto ⇒ mismo hash; idempotente | la entrevista que genera el manifiesto |
+| `ONBOARD` aplicado: mismo manifiesto y fecha ⇒ mismo hash con cualquier aprobador; idempotente | la entrevista que genera el manifiesto |
 | LINT: huérfanas, enlaces rotos, esquema, vencidos, identidad, ledger | contradicciones semánticas y redacción de arreglos |
 | ledger: esquema por línea, hash-chain, aprobador con dueño (EVT-09/10), append-only vs git | el porqué de cada mutación |
 | espejo `AGENTS.md` ≡ `CLAUDE.md` | — |
