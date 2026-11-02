@@ -6,6 +6,7 @@ herramienta (regenera los esperados y documenta por qué) o alguien editó
 un resultado a mano (no se hace).
 """
 import shutil
+import subprocess
 import unittest
 from pathlib import Path
 import sys
@@ -91,6 +92,31 @@ class TestWorked(unittest.TestCase):
                 regenerar(caso, root)
                 res2 = onboard.apply(root / "onboard" / "company.yaml", root, date=FECHA)
                 self.assertEqual(res2.actions, [], f"{caso}: re-aplicar debe ser no-op")
+
+    def test_la_cli_da_el_hash_publicado_con_cualquier_aprobador(self):
+        """LA promesa, por el camino real: mismo manifiesto + misma fecha ⇒ mismo hash,
+        sea quien sea el aprobador. Los esperados nacen de la API (`user`); un tercero
+        corre la CLI con su identidad y debe obtener exactamente el hash publicado."""
+        for caso in ("agencia-demo", "legal-demo", "piscc-demo"):
+            esperado = norm(REPO / "worked" / caso / "resultado-esperado" / "state-hash.txt"
+                            ).decode("utf-8").split()[1]
+            for aprobador in ("ana@empresa.test", "beto@otra.test"):
+                with self.subTest(caso=caso, aprobador=aprobador), \
+                        tempfile.TemporaryDirectory() as td:
+                    root = Path(td)
+                    (root / "genome" / "genes").mkdir(parents=True)
+                    (root / "wiki").mkdir()
+                    (root / "raw").mkdir()
+                    (root / "onboard").mkdir()
+                    (root / "index.md").write_text(INDEX_BASE, encoding="utf-8", newline="\n")
+                    shutil.copy(REPO / "worked" / caso / "company.yaml",
+                                root / "onboard" / "company.yaml")
+                    r = subprocess.run(
+                        [sys.executable, str(REPO / "tools" / "cerebro.py"), "--vault", str(root),
+                         "onboard", "apply", "--date", FECHA, "--approved-by", aprobador],
+                        capture_output=True, text=True, encoding="utf-8", cwd=REPO)
+                    self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+                    self.assertEqual(statehash.tree_hash(root, "genome"), esperado)
 
 
 if __name__ == "__main__":

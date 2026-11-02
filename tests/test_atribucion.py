@@ -17,7 +17,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "tools"))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from cerebro_core import events, identity, onboard
+from cerebro_core import events, identity, onboard, statehash
 
 from test_onboard import esqueleto
 
@@ -379,6 +379,51 @@ class TestOnboardApi(unittest.TestCase):
             filas = [json.loads(l) for l in (root / "genome" / "events.jsonl")
                      .read_text(encoding="utf-8").splitlines() if l.strip()]
             self.assertEqual({f["approved_by"] for f in filas}, {"ana@empresa.test"})
+
+
+class TestHashYProcedencia(unittest.TestCase):
+    """ATR-01 no puede romper la reproducibilidad: el aprobador va al ledger, no al hash."""
+
+    def _onboard_cli(self, td: str, aprobador: str) -> Path:
+        base = Path(td) / "vault"
+        base.mkdir()
+        root = esqueleto(str(base))
+        # el uso real: el ledger ya viene atribuido (clon del template)
+        (root / "genome" / "events.jsonl").write_text(linea(ev("autor@template.test")) + "\n",
+                                                      encoding="utf-8")
+        r = correr(dict(os.environ), "--vault", str(root), "onboard", "apply",
+                   "--date", "2026-10-25", "--approved-by", aprobador)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        return root
+
+    def test_dos_operadores_mismo_hash_con_ledger_atribuido(self):
+        with tempfile.TemporaryDirectory() as a, tempfile.TemporaryDirectory() as b:
+            ra = self._onboard_cli(a, "ana@empresa.test")
+            rb = self._onboard_cli(b, "beto@empresa.test")
+            for scope in ("genome", "all"):
+                with self.subTest(scope):
+                    self.assertEqual(statehash.tree_hash(ra, scope),
+                                     statehash.tree_hash(rb, scope))
+            # el ledger sí conserva quién aprobó cada uno: no se perdió la atribución
+            self.assertIn("ana@empresa.test",
+                          (ra / "genome" / "events.jsonl").read_text(encoding="utf-8"))
+            self.assertIn("beto@empresa.test",
+                          (rb / "genome" / "events.jsonl").read_text(encoding="utf-8"))
+
+    def test_el_hash_ignora_al_aprobador_pero_la_cadena_lo_delata(self):
+        """Sacarlo del hash no lo deja sin protección: adulterarlo rompe la hash-chain."""
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            ledger = root / "genome" / "events.jsonl"
+            ledger.parent.mkdir(parents=True)
+            events.append_line(ledger, ev("ana@empresa.test"))
+            events.append_line(ledger, ev("ana@empresa.test", target="gen-y"))
+            antes = statehash.tree_hash(root, "genome")
+            texto = ledger.read_text(encoding="utf-8")
+            ledger.write_text(texto.replace("ana@empresa.test", "intruso@otra.test", 1),
+                              encoding="utf-8")
+            self.assertEqual(statehash.tree_hash(root, "genome"), antes)
+            self.assertIn("EVT-05", codigos(ledger))
 
 
 class TestLedgerReal(unittest.TestCase):
